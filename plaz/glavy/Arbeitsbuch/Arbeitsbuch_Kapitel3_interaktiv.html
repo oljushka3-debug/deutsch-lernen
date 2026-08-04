@@ -146,9 +146,9 @@
     <div class="hoer-item">
       <h3>1. Was kauft die Frau?</h3>
       <div class="abc-options" data-q="k1">
-        <button class="abc-btn" onclick="selectABC(this,'k1','a')">Herd</button>
-        <button class="abc-btn" onclick="selectABC(this,'k1','b')">Waschmaschine</button>
-        <button class="abc-btn" onclick="selectABC(this,'k1','c')">Spülmaschine</button>
+        <button class="abc-btn" onclick="selectABC(this,'k1','a')">Herd und Waschmaschine</button>
+        <button class="abc-btn" onclick="selectABC(this,'k1','b')">Nur Spülmaschine</button>
+        <button class="abc-btn" onclick="selectABC(this,'k1','c')">Nur Herd</button>
       </div>
     </div>
     <div class="hoer-item">
@@ -433,7 +433,7 @@ function selectABC(btn, qId, val){
 }
 
 /* --- 4.2 Kreuzen Sie an --- */
-const kreuzCorrect = { k1:'b', k2:'b' };
+const kreuzCorrect = { k1:'a', k2:'b' };
 function checkKreuz42(){
   ['k1','k2'].forEach(k=>{
     const group = document.querySelector(`.abc-options[data-q="${k}"]`);

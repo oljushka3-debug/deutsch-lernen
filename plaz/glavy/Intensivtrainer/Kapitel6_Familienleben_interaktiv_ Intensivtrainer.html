@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Kapitel 6 – Familienleben – Interaktiv</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --blue:#1d5c9e; --lightblue:#eaf2fb; --green:#2e8b57; --red:#c0392b;
+  --grey:#666; --border:#ccd6e0;
+}
+*{box-sizing:border-box;}
+body{font-family:'Segoe UI',Arial,sans-serif;margin:0;background:#f4f7fb;color:#222;}
+header{background:var(--blue);color:#fff;padding:18px 20px;text-align:center;}
+header h1{margin:0;font-size:1.5em;}
+header p{margin:6px 0 0;font-size:.95em;opacity:.9;}
+nav{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:50;}
+nav button{flex:1;min-width:110px;padding:12px 6px;border:none;background:#fff;cursor:pointer;font-size:.9em;color:var(--blue);border-bottom:3px solid transparent;}
+nav button.active{border-bottom:3px solid var(--blue);font-weight:bold;background:var(--lightblue);}
+main{max-width:900px;margin:0 auto;padding:16px;}
+.tab{display:none;}
+.tab.active{display:block;}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.card h2{margin-top:0;color:var(--blue);font-size:1.15em;border-bottom:2px solid var(--lightblue);padding-bottom:8px;}
+.card h3{color:#333;font-size:1em;margin-bottom:6px;}
+.hint{color:var(--grey);font-size:.87em;margin-bottom:10px;}
+input[type=text]{border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:1em;margin:2px;min-width:70px;}
+input.correct{background:#e3f6e8;border-color:var(--green);}
+input.incorrect{background:#fdeaea;border-color:var(--red);}
+textarea{width:100%;min-height:70px;border:1px solid var(--border);border-radius:5px;padding:8px;font-size:1em;font-family:inherit;}
+select{border:1px solid var(--border);border-radius:5px;padding:4px;font-size:.95em;}
+button.act{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:8px 14px;margin:4px 6px 4px 0;cursor:pointer;font-size:.9em;}
+button.act.secondary{background:#8296ab;}
+button.act.clear{background:#b0392b;}
+button.act:hover{opacity:.88;}
+.result-box{margin-top:8px;font-weight:bold;padding:8px;border-radius:6px;display:none;}
+.result-box.show{display:block;}
+.result-box.ok{background:#e3f6e8;color:var(--green);}
+.result-box.bad{background:#fdeaea;color:var(--red);}
+.sentence-line{margin:10px 0;line-height:2.3;}
+.wordlist{display:flex;gap:14px 24px;flex-wrap:wrap;background:var(--lightblue);padding:10px 14px;border-radius:6px;margin-bottom:12px;font-size:.95em;}
+table.ex{border-collapse:collapse;width:100%;margin:8px 0;}
+table.ex td,table.ex th{border:1px solid var(--border);padding:6px 8px;font-size:.93em;}
+table.ex th{background:var(--lightblue);}
+.dlg{background:#fafcff;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;}
+.notes-area{margin-bottom:20px;}
+.notes-area label{display:block;font-weight:bold;margin:10px 0 4px;color:#333;}
+.autosave-note{color:var(--grey);font-size:.85em;font-style:italic;}
+.flash-wrap{text-align:center;}
+.flash-filter{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
+.flash-filter button{padding:6px 12px;border-radius:16px;border:1px solid var(--blue);background:#fff;color:var(--blue);cursor:pointer;font-size:.85em;}
+.flash-filter button.on{background:var(--blue);color:#fff;}
+.flashcard{max-width:420px;margin:0 auto;min-height:180px;border:2px solid var(--blue);border-radius:14px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;cursor:pointer;position:relative;}
+.flashcard .word{font-size:1.6em;font-weight:bold;color:var(--blue);text-align:center;}
+.flashcard .cat{color:var(--grey);font-size:.8em;margin-top:6px;}
+.flashcard .answer{font-size:1.3em;color:var(--green);margin-top:14px;display:none;}
+.flashcard.flipped .answer{display:block;}
+.flash-controls{margin-top:16px;}
+.flash-controls button{margin:0 5px;}
+.srs-buttons{display:none;margin-top:16px;gap:8px;justify-content:center;}
+.srs-buttons.show{display:flex;}
+.srs-buttons button{padding:8px 14px;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:.9em;}
+.srs-again{background:var(--red);}
+.srs-hard{background:#e0a020;}
+.srs-easy{background:var(--green);}
+.speak-btn{background:none;border:1px solid var(--blue);color:var(--blue);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:1.1em;margin-top:8px;}
+.flash-stats{text-align:center;color:var(--grey);margin-top:10px;font-size:.9em;}
+.dir-toggle{text-align:center;margin-bottom:12px;}
+.dir-toggle button{padding:6px 14px;border-radius:16px;border:1px solid var(--blue);background:#fff;color:var(--blue);cursor:pointer;}
+.dir-toggle button.on{background:var(--blue);color:#fff;}
+.exam-part{border-left:4px solid var(--blue);padding-left:14px;margin-bottom:22px;}
+.exam-part h3{color:var(--blue);}
+.rf-item{margin:10px 0;padding:8px;background:#fafcff;border-radius:6px;}
+.rf-btns button{padding:5px 12px;margin-right:6px;border:1px solid var(--border);background:#fff;border-radius:5px;cursor:pointer;}
+.rf-btns button.selected-r{background:var(--green);color:#fff;}
+.rf-btns button.selected-f{background:var(--red);color:#fff;}
+.exam-final{margin-top:20px;padding:16px;border-radius:8px;text-align:center;font-size:1.1em;display:none;}
+.exam-final.show{display:block;}
+.exam-final.pass{background:#e3f6e8;color:var(--green);}
+.exam-final.fail{background:#fdeaea;color:var(--red);}
+.exam-breakdown{font-size:.85em;font-weight:normal;margin-top:10px;text-align:left;background:#fff;border-radius:6px;padding:10px;}
+.mc-opts label{display:block;margin:4px 0;cursor:pointer;}
+footer{text-align:center;padding:20px;color:var(--grey);font-size:.85em;}
+</style>
+</head>
+<body>
+<header>
+<h1>Kapitel 6 – Familienleben</h1>
+<p>Berliner Platz 1 · Intensivtrainer · Interaktive Übungen</p>
+</header>
+<nav id="tabnav"></nav>
+<main id="mainArea"></main>
+<footer>Erstellt für dein Deutschlernen · Fortschritt wird lokal in deinem Browser gespeichert</footer>
+
+<script>
+/* =================== NAVIGATION =================== */
+const tabs = [
+  {id:'ex1', label:'Übung 1-2'},
+  {id:'ex3', label:'Übung 3'},
+  {id:'ex4', label:'Übung 4'},
+  {id:'ex5', label:'Übung 5'},
+  {id:'notes', label:'Notizen'},
+  {id:'cards', label:'Karten'},
+  {id:'quiz', label:'Abschlusstest'}
+];
+const nav = document.getElementById('tabnav');
+tabs.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.textContent=t.label;
+  b.onclick=()=>showTab(t.id);
+  b.id='navbtn-'+t.id;
+  if(i===0) b.className='active';
+  nav.appendChild(b);
+});
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('navbtn-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* =================== HELPERS =================== */
+function normalize(s){
+  return (s||'').toString().trim().toLowerCase()
+    .replace(/ß/g,'ss')
+    .replace(/[.,!?]/g,'')
+    .replace(/\s+/g,' ');
+}
+function checkGroup(cls){
+  const inputs = document.querySelectorAll('input.'+cls);
+  let correct=0, total=0;
+  inputs.forEach(inp=>{
+    total++;
+    const ans = (inp.dataset.ans||'').split('/').map(normalize);
+    const val = normalize(inp.value);
+    if(ans.includes(val)){ inp.classList.add('correct'); inp.classList.remove('incorrect'); correct++; }
+    else { inp.classList.add('incorrect'); inp.classList.remove('correct'); }
+  });
+  return {correct,total};
+}
+function showResult(boxId, correct, total){
+  const box=document.getElementById(boxId);
+  box.classList.add('show');
+  if(correct===total){ box.className='result-box show ok'; box.textContent='✓ Alles richtig! ('+correct+'/'+total+')'; }
+  else { box.className='result-box show bad'; box.textContent='Richtig: '+correct+' von '+total+'. Versuch es noch einmal!'; }
+}
+function revealGroup(cls){
+  document.querySelectorAll('input.'+cls).forEach(inp=>{
+    const ans=(inp.dataset.ans||'').split('/')[0];
+    inp.value=ans; inp.classList.add('correct'); inp.classList.remove('incorrect');
+  });
+}
+function clearGroup(cls, boxId){
+  document.querySelectorAll('input.'+cls).forEach(inp=>{
+    inp.value=''; inp.classList.remove('correct','incorrect');
+  });
+  if(boxId){ const box=document.getElementById(boxId); box.classList.remove('show'); }
+}
+function speak(text){
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='de-DE'; u.rate=0.9;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+}
+</script>
+
+<!-- ================= TAB 1: ÜBUNG 1-2 ================= -->
+<div class="tab active" id="tab-ex1">
+
+<div class="card">
+<h2>1a Familienfotos – Welche Wörter passen zusammen?</h2>
+<p class="hint">Wortliste: die Mutter, der Bruder, verheiratet, die Tante, der Sohn, der Freund, der Ehemann, die Frau</p>
+<div class="sentence-line">1. der Onkel → <input type="text" class="g1a" data-ans="die Tante" style="width:150px"></div>
+<div class="sentence-line">2. die Freundin → <input type="text" class="g1a" data-ans="der Freund" style="width:150px"></div>
+<div class="sentence-line">3. die Ehefrau → <input type="text" class="g1a" data-ans="der Ehemann" style="width:150px"></div>
+<div class="sentence-line">4. die Tochter → <input type="text" class="g1a" data-ans="der Sohn" style="width:150px"></div>
+<div class="sentence-line">5. die Schwester → <input type="text" class="g1a" data-ans="der Bruder" style="width:150px"></div>
+<div class="sentence-line">6. der Vater → <input type="text" class="g1a" data-ans="die Mutter" style="width:150px"></div>
+<div class="sentence-line">7. der Mann → <input type="text" class="g1a" data-ans="die Frau" style="width:150px"></div>
+<div class="sentence-line">8. alleinstehend → <input type="text" class="g1a" data-ans="verheiratet" style="width:150px"></div>
+<button class="act" onclick="check1a()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g1a')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g1a','res1a')">Очистить</button>
+<div class="result-box" id="res1a"></div>
+</div>
+
+<div class="card">
+<h2>1b Sätze ergänzen</h2>
+<p class="hint">Wortliste: Ausflug, Picknick, Haushalt, Geschwister, Familienfoto, schwer, langweilig, getrennt, lebe, mitnehmen, erziehe, zwischen</p>
+<div class="sentence-line">1. Am Sonntag machen wir oft ein <input type="text" class="g1b" data-ans="Picknick" size="12"> im Park.</div>
+<div class="sentence-line">2. Mein Sohn findet das <input type="text" class="g1b" data-ans="Familienfoto" size="14"> langweilig. Er sieht lieber fern.</div>
+<div class="sentence-line">3. Mein Mann möchte immer sehr viel Essen in den Park <input type="text" class="g1b" data-ans="mitnehmen" size="12">.</div>
+<div class="sentence-line">4. Am Wochenende möchten wir einen <input type="text" class="g1b" data-ans="Ausflug" size="10"> nach München machen.</div>
+<div class="sentence-line">5. Ich <input type="text" class="g1b" data-ans="lebe" size="8"> in Augsburg, aber ich arbeite in Stuttgart.</div>
+<div class="sentence-line">6. Mein Mann und ich sind <input type="text" class="g1b" data-ans="getrennt" size="10">.</div>
+<div class="sentence-line">7. Ich <input type="text" class="g1b" data-ans="erziehe" size="10"> meinen Sohn allein.</div>
+<div class="sentence-line">8. Manchmal ist der Alltag sehr <input type="text" class="g1b" data-ans="schwer" size="10">.</div>
+<div class="sentence-line">9. Die Arbeit, der Sohn und der <input type="text" class="g1b" data-ans="Haushalt" size="10"> – das kostet viel Zeit.</div>
+<div class="sentence-line">10. Ich habe zwei <input type="text" class="g1b" data-ans="Geschwister" size="12">, einen Bruder und eine Schwester.</div>
+<div class="sentence-line">11. Ist das dein <input type="text" class="g1b" data-ans="Familienfoto" size="14">? Ist das da rechts deine Oma?</div>
+<div class="sentence-line">12. In der Wohngemeinschaft sind alle <input type="text" class="g1b" data-ans="zwischen" size="10"> 71 und 89 Jahre alt.</div>
+<button class="act" onclick="check1b()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g1b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g1b','res1b')">Очистить</button>
+<div class="result-box" id="res1b"></div>
+</div>
+
+<div class="card">
+<h2>2 Wie groß ist Ihre Familie? – Fragen ergänzen und Antworten zuordnen</h2>
+<p class="hint">Wortliste: Sind Sie, Wie alt ist, Wo wohnen, Hast du, Wie viele</p>
+<table class="ex" id="ex2Table"></table>
+<button class="act" onclick="check2()">Проверить</button>
+<button class="act secondary" onclick="reveal2()">Показать ответ</button>
+<button class="act clear" onclick="clear2()">Очистить</button>
+<div class="result-box" id="res2"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 2: ÜBUNG 3 ================= -->
+<div class="tab" id="tab-ex3">
+
+<div class="card">
+<h2>3a Possessivartikel – Nominativ (Tabelle)</h2>
+<table class="ex" id="ex3aTable"></table>
+<button class="act" onclick="check3a()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g3a')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g3a','res3a')">Очистить</button>
+<div class="result-box" id="res3a"></div>
+</div>
+
+<div class="card">
+<h2>3b Akkusativ Maskulinum Singular – Endungen ergänzen</h2>
+<div class="sentence-line">1. Wir besuchen unser<input type="text" class="g3b" data-ans="en" size="4"> Vater einmal im Monat.</div>
+<div class="sentence-line">2. Ich kenne dein<input type="text" class="g3b" data-ans="en" size="4"> Vater aus der Schule.</div>
+<button class="act" onclick="showResult('res3b', checkGroup('g3b').correct, checkGroup('g3b').total)">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g3b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g3b','res3b')">Очистить</button>
+<div class="result-box" id="res3b"></div>
+</div>
+
+<div class="card">
+<h2>3c Possessivartikel im Nominativ oder Akkusativ ergänzen</h2>
+<div class="sentence-line">1. Ich bin 32 Jahre alt, m<input type="text" class="g3c" data-ans="ein" size="4"> Bruder ist 28 und m<input type="text" class="g3c" data-ans="eine" size="4"> Schwester 24.</div>
+<div class="sentence-line">2. Tom mag s<input type="text" class="g3c" data-ans="einen" size="4"> Bruder sehr. Er ist Lehrer.</div>
+<div class="sentence-line">3. Silke heiratet am Wochenende i<input type="text" class="g3c" data-ans="hren" size="4"> Freund.</div>
+<div class="sentence-line">4. U<input type="text" class="g3c" data-ans="nsere" size="6"> Oma ist 95 und u<input type="text" class="g3c" data-ans="nser" size="6"> Opa auch.</div>
+<div class="sentence-line">5. Ich möchte gern d<input type="text" class="g3c" data-ans="einen" size="4"> Vater und d<input type="text" class="g3c" data-ans="eine" size="4"> Mutter kennenlernen.</div>
+<div class="sentence-line">6. Leben e<input type="text" class="g3c" data-ans="ure" size="4"> Eltern noch?</div>
+<div class="sentence-line">7. Ich finde e<input type="text" class="g3c" data-ans="uren" size="4"> Bruder sehr nett. Wie alt ist er?</div>
+<div class="sentence-line">8. Rolf ist erst 16, aber s<input type="text" class="g3c" data-ans="eine" size="4"> Freundin ist 18.</div>
+<button class="act" onclick="check3c()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g3c')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g3c','res3c')">Очистить</button>
+<div class="result-box" id="res3c"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 3: ÜBUNG 4 ================= -->
+<div class="tab" id="tab-ex4">
+
+<div class="card">
+<h2>4a Datum – Jahreszahlen schreiben</h2>
+<p class="hint">Beispiel: 1776 = siebzehnhundertsechsundsiebzig</p>
+<div id="ex4aList"></div>
+<button class="act" onclick="check4a()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g4a')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g4a','res4a')">Очистить</button>
+<div class="result-box" id="res4a"></div>
+</div>
+
+<div class="card">
+<h2>4c Berühmte Leute – Geburtsdaten schreiben</h2>
+<p class="hint">Beispiel: Martin Luther, 10.11.1483 → "Martin Luther ist am zehnten November vierzehnhundertdreiundachtzig geboren."</p>
+<div id="ex4cList"></div>
+<button class="act" onclick="check4c()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g4c')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g4c','res4c')">Очистить</button>
+<div class="result-box" id="res4c"></div>
+</div>
+
+<div class="card">
+<h2>4d Jahreszeiten – Ergänze das Bild</h2>
+<p class="hint">Das Bild zeigt vier Jahreszeiten: Herbst (Blätter), Winter (Schneemann, Januar), Sommer (Strand), Frühling (Blumen). Ordne den Namen zu.</p>
+<div class="sentence-line">Blätter-Bild (fallende Blätter, Wind) = <input type="text" class="g4d" data-ans="Herbst" size="12"></div>
+<div class="sentence-line">Schneemann-Bild (Januar, Schnee) = <input type="text" class="g4d" data-ans="Winter" size="12"></div>
+<div class="sentence-line">Strand-Bild (Sonne, Liegestuhl) = <input type="text" class="g4d" data-ans="Sommer" size="12"></div>
+<div class="sentence-line">Blumen-Bild (blühende Wiese) = <input type="text" class="g4d" data-ans="Frühling/Fruehling" size="12"></div>
+<button class="act" onclick="check4d()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g4d')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g4d','res4d')">Очистить</button>
+<div class="result-box" id="res4d"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 4: ÜBUNG 5 ================= -->
+<div class="tab" id="tab-ex5">
+
+<div class="card">
+<h2>5a Die Vergangenheit von <em>haben</em> und <em>sein</em> – Tabelle</h2>
+<table class="ex" id="ex5aTable"></table>
+<button class="act" onclick="check5a()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g5a')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g5a','res5a')">Очистить</button>
+<div class="result-box" id="res5a"></div>
+</div>
+
+<div class="card">
+<h2>5b <em>sein</em> und <em>haben</em> in der passenden Form ergänzen</h2>
+<div class="sentence-line">1. Gestern <input type="text" class="g5b" data-ans="war" size="6"> ich einkaufen. Ich <input type="text" class="g5b" data-ans="hatte" size="6"> nichts mehr zu Hause.</div>
+<div class="sentence-line">2. <input type="text" class="g5b" data-ans="Hast" size="6"> du heute Zeit? – Nein, heute <input type="text" class="g5b" data-ans="habe" size="6"> ich keine Zeit.</div>
+<div class="sentence-line">3. Morgen <input type="text" class="g5b" data-ans="hat" size="6"> mein Sohn Geburtstag.</div>
+<div class="sentence-line">4. Mein Fest <input type="text" class="g5b" data-ans="war" size="6"> super. Aber heute <input type="text" class="g5b" data-ans="bin" size="6"> ich total kaputt.</div>
+<div class="sentence-line">5. Wann <input type="text" class="g5b" data-ans="wart" size="6"> ihr im Kino? – Gestern. Der Film <input type="text" class="g5b" data-ans="war" size="6"> langweilig.</div>
+<div class="sentence-line">6. Wir <input type="text" class="g5b" data-ans="sind" size="6"> am dritten Mai in Köln. <input type="text" class="g5b" data-ans="Habt" size="6"> ihr da Zeit für uns?</div>
+<div class="sentence-line">7. <input type="text" class="g5b" data-ans="Hast" size="6"> du heute Geburtstag? – Nein, er <input type="text" class="g5b" data-ans="war" size="6"> gestern.</div>
+<div class="sentence-line">8. <input type="text" class="g5b" data-ans="Seid" size="6"> ihr heute Abend zu Hause? – Ja, wir <input type="text" class="g5b" data-ans="sind" size="6"> ab acht da.</div>
+<div class="sentence-line">9. <input type="text" class="g5b" data-ans="Warst" size="6"> du schon mal in Berlin? – Nein, ich <input type="text" class="g5b" data-ans="hatte" size="6"> noch keine Zeit.</div>
+<div class="sentence-line">10. Gestern <input type="text" class="g5b" data-ans="war" size="6"> Tom bei mir. Er <input type="text" class="g5b" data-ans="hatte" size="6"> Fotos von Berlin.</div>
+<button class="act" onclick="check5b()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g5b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g5b','res5b')">Очистить</button>
+<div class="result-box" id="res5b"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 5: NOTIZEN ================= -->
+<div class="tab" id="tab-notes">
+
+<div class="card">
+<h2>6–9 Meine Notizen</h2>
+<p class="autosave-note">Diese Übungen haben keine "eine" richtige Antwort – sie werden automatisch gespeichert (localStorage).</p>
+
+<div class="notes-area">
+<label>6. Wörter thematisch – Welche Wörter und Ausdrücke passen? (Geburtstag, Datum, Familie – z.B. "Alles Gute!" gehört zu Geburtstag):</label>
+<textarea data-note="n6" placeholder="Geburtstag: Alles Gute!, ... / Datum: ... / Familie: ..."></textarea>
+</div>
+
+<div class="notes-area">
+<label>7. Wichtige Sätze und Ausdrücke – Schreiben Sie in Ihrer Sprache:</label>
+<textarea data-note="n7" placeholder="Meine Familie ist groß/klein. / Mein Sohn / Meine Tochter ist zwölf. / Ich habe einen Bruder und eine Schwester. / Bist du verheiratet? / Ich bin ledig/getrennt/geschieden. / Wann hast du Geburtstag? / Vielen Dank für die Einladung / das Geschenk."></textarea>
+</div>
+
+<div class="notes-area">
+<label>8. Wichtige Wörter und Sätze für Sie (Ihre Sprache / Deutsch):</label>
+<textarea data-note="n8" placeholder="Deine eigenen wichtigen Wörter und Sätze..."></textarea>
+</div>
+
+<div class="notes-area">
+<label>9. Ich über mich – Ein Mensch, viele Rollen (z.B. "Ich bin Sohn, Bruder, Vater, Ehemann, Freund, Kollege, Kunde, Lerner, Leser..."):</label>
+<textarea data-note="n9" placeholder="Ich bin..."></textarea>
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= TAB 6: KARTEN (FLASHCARDS) ================= -->
+<div class="tab" id="tab-cards">
+<div class="card flash-wrap">
+<h2>Wortschatz-Hitparade – Karteikarten</h2>
+<div class="dir-toggle">
+  <button id="dirDE" class="on" onclick="setDir('de')">DE → RU</button>
+  <button id="dirRU" onclick="setDir('ru')">RU → DE</button>
+</div>
+<div class="flash-filter" id="flashFilter"></div>
+<div class="flashcard" id="flashcard" onclick="flipCard()">
+  <div class="word" id="fcWord">–</div>
+  <div class="cat" id="fcCat"></div>
+  <div class="answer" id="fcAnswer">–</div>
+</div>
+<div>
+<button class="speak-btn" onclick="event.stopPropagation(); speakCurrent();">🔊</button>
+</div>
+<div class="srs-buttons" id="srsButtons">
+  <button class="srs-again" onclick="srsAnswer('again')">Nochmal</button>
+  <button class="srs-hard" onclick="srsAnswer('hard')">Schwer</button>
+  <button class="srs-easy" onclick="srsAnswer('easy')">Leicht</button>
+</div>
+<div class="flash-controls">
+<button class="act secondary" onclick="prevCard()">← Zurück</button>
+<button class="act" onclick="flipCard()">Umdrehen</button>
+<button class="act secondary" onclick="nextCard()">Weiter →</button>
+</div>
+<div class="flash-stats" id="flashStats"></div>
+</div>
+</div>
+
+<!-- ================= TAB 7: ABSCHLUSSTEST ================= -->
+<div class="tab" id="tab-quiz">
+
+<div class="card exam-part">
+<h3>Teil 1: Wortschatz &amp; Grammatik (10 Punkte)</h3>
+<p class="hint">Lies den Text und löse die Aufgaben.</p>
+<p style="background:#fafcff;padding:10px;border-radius:6px;">
+Familie Berger feiert am Samstag ein großes Fest: die Hochzeit von Tochter Lena. Die ganze Familie kommt – Eltern, Geschwister, Großeltern und viele Verwandte. Lenas Bruder Tim ist noch ledig, aber ihre Schwester Nina ist schon verheiratet und hat zwei Kinder. Die Großmutter ist 89 Jahre alt und freut sich sehr auf das Fest. Nach der Hochzeit machen alle ein großes Familienfoto.
+</p>
+<div id="teil1Box"></div>
+</div>
+
+<div class="card exam-part">
+<h3>Teil 2: Leseverstehen (4 Punkte)</h3>
+<p style="background:#fafcff;padding:10px;border-radius:6px;">
+Einladung: "Liebe Freunde, wir laden euch herzlich zu unserer Hochzeit ein! Die Feier findet am 14. Juni statt, ab 15 Uhr im Garten meiner Eltern. Bitte antwortet bis zum 1. Juni. Wir freuen uns auf euch! Herzliche Grüße, Anna und Paul."
+</p>
+<div id="teil2Box"></div>
+</div>
+
+<div class="card exam-part">
+<h3>Teil 3: Hörverstehen (4 Punkte)</h3>
+<p class="hint">Klicke auf ▶, um den Dialog zu hören (synthetische Stimme), und beantworte die Fragen.</p>
+<button class="act" onclick="playHoertext()">▶ Dialog anhören</button>
+<div id="teil3Box" style="margin-top:12px;"></div>
+</div>
+
+<div class="card exam-part">
+<h3>Teil 4: Schreiben (ungraded)</h3>
+<p class="hint">Beschreibe deine Familie: Wie viele Geschwister hast du? Bist du verheiratet? Wie alt sind deine Familienmitglieder? (nicht bewertet, nur zur Übung)</p>
+<textarea data-note="quiz-writing" placeholder="Meine Familie: ..."></textarea>
+</div>
+
+<div class="card">
+<button class="act" style="font-size:1.05em;padding:12px 20px;" onclick="checkFullExam()">Test auswerten</button>
+<div class="exam-final" id="examFinal"></div>
+</div>
+
+</div>
+
+<script>
+/* =================== 2 data (Fragen/Antworten Familie) =================== */
+const ex2Data = [
+  {q:"Geschwister hast du?", qword:"Wie viele", ans:"a", example:true},
+  {q:"verheiratet?", qword:"Sind Sie", ans:"c"},
+  {q:"deine Eltern?", qword:"Wo wohnen", ans:"b"},
+  {q:"deine Schwester?", qword:"Wie alt ist", ans:"e"},
+  {q:"Kinder?", qword:"Hast du", ans:"d"}
+];
+const ex2Options = "a) Drei Brüder und eine Schwester. | b) In Nairobi, in Kenia. | c) Nein, ich bin ledig. | d) Ja, einen Sohn. | e) Sie ist 26.";
+const ex2Table = document.getElementById('ex2Table');
+let optsRow2 = document.createElement('tr');
+optsRow2.innerHTML = `<th colspan="3" style="font-size:.85em;background:#fafcff;font-weight:normal;">${ex2Options}</th>`;
+ex2Table.appendChild(optsRow2);
+ex2Data.forEach((item,i)=>{
+  const tr=document.createElement('tr');
+  if(item.example){
+    tr.innerHTML = `<td><b>${item.qword}</b> (Bsp.)</td><td>${item.q}</td><td><b>${item.ans}</b></td>`;
+  } else {
+    tr.innerHTML = `<td><input type="text" class="g2q" data-ans="${item.qword}" style="width:95%"></td><td>${item.q}</td><td><input type="text" class="g2a" data-ans="${item.ans}" size="4" placeholder="a-e"></td>`;
+  }
+  ex2Table.appendChild(tr);
+});
+function check2(){
+  const r1=checkGroup('g2q'); const r2=checkGroup('g2a');
+  showResult('res2', r1.correct+r2.correct, r1.total+r2.total);
+}
+function reveal2(){ revealGroup('g2q'); revealGroup('g2a'); }
+function clear2(){ clearGroup('g2q'); clearGroup('g2a','res2'); }
+function check1a(){ const r=checkGroup('g1a'); showResult('res1a', r.correct, r.total); }
+function check1b(){ const r=checkGroup('g1b'); showResult('res1b', r.correct, r.total); }
+
+/* =================== 3a data (Possessivartikel Nominativ) =================== */
+const pronouns6 = ["ich","du","er","es","sie","wir","ihr","sie/Sie"];
+const poss3a = {
+  bruder: ["mein","dein","sein","sein","ihr","unser","euer","ihr/Ihr"],
+  kind: ["mein","dein","sein","sein","ihr","unser","euer","ihr/Ihr"],
+  schwester: ["meine","deine","seine","seine","ihre","unsere","eure","ihre/Ihre"]
+};
+const ex3aTable = document.getElementById('ex3aTable');
+let head3a = document.createElement('tr');
+head3a.innerHTML = '<th></th><th>der Bruder</th><th>das Kind</th><th>die Schwester</th><th>Plural: die Eltern</th>';
+ex3aTable.appendChild(head3a);
+pronouns6.forEach((p,pi)=>{
+  const tr=document.createElement('tr');
+  let cells = `<td><b>${p}</b></td>`;
+  if(p==='ich'){
+    cells += `<td><b>mein</b> Bruder (Bsp.)</td><td><input type="text" class="g3a" data-ans="mein" style="width:80%"> Kind</td><td><b>meine</b> Schwester (Bsp.)</td><td><input type="text" class="g3a" data-ans="meine" style="width:80%"> Eltern</td>`;
+  } else {
+    cells += `<td><input type="text" class="g3a" data-ans="${poss3a.bruder[pi]}" style="width:80%"> Bruder</td>`;
+    cells += `<td><input type="text" class="g3a" data-ans="${poss3a.kind[pi]}" style="width:80%"> Kind</td>`;
+    cells += `<td><input type="text" class="g3a" data-ans="${poss3a.schwester[pi]}" style="width:80%"> Schwester</td>`;
+    cells += `<td><input type="text" class="g3a" data-ans="${poss3a.schwester[pi]}" style="width:80%"> Eltern</td>`;
+  }
+  tr.innerHTML = cells;
+  ex3aTable.appendChild(tr);
+});
+function check3a(){ const r=checkGroup('g3a'); showResult('res3a', r.correct, r.total); }
+function check3c(){ const r=checkGroup('g3c'); showResult('res3c', r.correct, r.total); }
+
+/* =================== 4a data (Jahreszahlen) =================== */
+const ex4aData = [
+  {y:1776, w:"siebzehnhundertsechsundsiebzig", example:true},
+  {y:1789, w:"siebzehnhundertneunundachtzig"},
+  {y:1848, w:"achtzehnhundertachtundvierzig"},
+  {y:1914, w:"neunzehnhundertvierzehn"},
+  {y:1929, w:"neunzehnhundertneunundzwanzig"},
+  {y:1933, w:"neunzehnhundertdreiunddreißig/neunzehnhundertdreiunddreissig"},
+  {y:1945, w:"neunzehnhundertfünfundvierzig/neunzehnhundertfuenfundvierzig"},
+  {y:1961, w:"neunzehnhunderteinundsechzig"},
+  {y:1989, w:"neunzehnhundertneunundachtzig"},
+  {y:2001, w:"zweitausendeins"},
+  {y:2008, w:"zweitausendacht"}
+];
+const ex4aList = document.getElementById('ex4aList');
+ex4aData.forEach(item=>{
+  const div=document.createElement('div');
+  div.className='sentence-line';
+  if(item.example){
+    div.innerHTML = `<b>${item.y}</b> = <b>${item.w}</b> (Beispiel)`;
+  } else {
+    div.innerHTML = `<b>${item.y}</b> = <input type="text" class="g4a" data-ans="${item.w}" style="width:75%">`;
+  }
+  ex4aList.appendChild(div);
+});
+function check4a(){ const r=checkGroup('g4a'); showResult('res4a', r.correct, r.total); }
+
+/* =================== 4c data (Berühmte Leute) =================== */
+const ex4cData = [
+  {name:"Martin Luther", date:"10.11.1483", w:"Martin Luther ist am zehnten November vierzehnhundertdreiundachtzig geboren.", example:true},
+  {name:"J. W. von Goethe", date:"28.08.1749", w:"Johann Wolfgang von Goethe ist am achtundzwanzigsten August siebzehnhundertneunundvierzig geboren."},
+  {name:"W. A. Mozart", date:"27.01.1756", w:"Wolfgang Amadeus Mozart ist am siebenundzwanzigsten Januar siebzehnhundertsechsundfünfzig geboren./Wolfgang Amadeus Mozart ist am siebenundzwanzigsten Januar siebzehnhundertsechsundfuenfzig geboren."},
+  {name:"Otto von Bismarck", date:"01.04.1815", w:"Otto von Bismarck ist am ersten April achtzehnhundertfünfzehn geboren./Otto von Bismarck ist am ersten April achtzehnhundertfuenfzehn geboren."},
+  {name:"Sigmund Freud", date:"06.05.1856", w:"Sigmund Freud ist am sechsten Mai achtzehnhundertsechsundfünfzig geboren./Sigmund Freud ist am sechsten Mai achtzehnhundertsechsundfuenfzig geboren."},
+  {name:"Rosa Luxemburg", date:"05.03.1871", w:"Rosa Luxemburg ist am fünften März achtzehnhunderteinundsiebzig geboren./Rosa Luxemburg ist am fuenften Maerz achtzehnhunderteinundsiebzig geboren."},
+  {name:"Gabriele Münter", date:"19.02.1877", w:"Gabriele Münter ist am neunzehnten Februar achtzehnhundertsiebenundsiebzig geboren./Gabriele Muenter ist am neunzehnten Februar achtzehnhundertsiebenundsiebzig geboren."},
+  {name:"Albert Einstein", date:"14.03.1879", w:"Albert Einstein ist am vierzehnten März achtzehnhundertneunundsiebzig geboren./Albert Einstein ist am vierzehnten Maerz achtzehnhundertneunundsiebzig geboren."}
+];
+const ex4cList = document.getElementById('ex4cList');
+ex4cData.forEach(item=>{
+  const div=document.createElement('div');
+  div.className='sentence-line';
+  if(item.example){
+    div.innerHTML = `<b>${item.name} (${item.date})</b>: <b>${item.w}</b> (Beispiel)`;
+  } else {
+    div.innerHTML = `<b>${item.name} (${item.date})</b>:<br><input type="text" class="g4c" data-ans="${item.w}" style="width:95%">`;
+  }
+  ex4cList.appendChild(div);
+});
+function check4c(){ const r=checkGroup('g4c'); showResult('res4c', r.correct, r.total); }
+function check4d(){ const r=checkGroup('g4d'); showResult('res4d', r.correct, r.total); }
+
+/* =================== 5a data (haben/sein Vergangenheit Tabelle) =================== */
+const ex5aRows = [
+  {p:"ich", habenPr:"habe", habenPt:"hatte", seinPr:"bin", seinPt:"war", example:"habenPr"},
+  {p:"du", habenPr:"hast", habenPt:"hattest", seinPr:"bist", seinPt:"warst", example:"seinPt"},
+  {p:"er/es/sie", habenPr:"hat", habenPt:"hatte", seinPr:"ist", seinPt:"war"},
+  {p:"wir", habenPr:"haben", habenPt:"hatten", seinPr:"sind", seinPt:"waren", example:"seinPr"},
+  {p:"ihr", habenPr:"habt", habenPt:"hattet", seinPr:"seid", seinPt:"wart", example2:"habenPt"},
+  {p:"sie/Sie", habenPr:"haben", habenPt:"hatten", seinPr:"sind", seinPt:"waren"}
+];
+const ex5aTable = document.getElementById('ex5aTable');
+let head5a = document.createElement('tr');
+head5a.innerHTML = '<th></th><th>haben – Präsens</th><th>haben – Präteritum</th><th>sein – Präsens</th><th>sein – Präteritum</th>';
+ex5aTable.appendChild(head5a);
+ex5aRows.forEach(row=>{
+  const tr=document.createElement('tr');
+  const cell = (field, val) => {
+    if(row.example===field || row.example2===field){
+      return `<td><b>${val}</b> (Bsp.)</td>`;
+    }
+    return `<td><input type="text" class="g5a" data-ans="${val}" style="width:85%"></td>`;
+  };
+  tr.innerHTML = `<td><b>${row.p}</b></td>` + cell('habenPr', row.habenPr) + cell('habenPt', row.habenPt) + cell('seinPr', row.seinPr) + cell('seinPt', row.seinPt);
+  ex5aTable.appendChild(tr);
+});
+function check5a(){ const r=checkGroup('g5a'); showResult('res5a', r.correct, r.total); }
+function check5b(){ const r=checkGroup('g5b'); showResult('res5b', r.correct, r.total); }
+
+/* =================== NOTES (autosave) =================== */
+const NOTES_KEY='kapitel6-notes-v1';
+function loadNotes(){
+  const saved = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    const key = ta.dataset.note;
+    if(saved[key]) ta.value = saved[key];
+    ta.addEventListener('input', saveNotes);
+  });
+}
+function saveNotes(){
+  const data={};
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    data[ta.dataset.note] = ta.value;
+  });
+  localStorage.setItem(NOTES_KEY, JSON.stringify(data));
+}
+loadNotes();
+
+/* =================== FLASHCARDS =================== */
+const vocab = [
+  {cat:"Nomen", de:"der Ausflug, \"-e", ru:"поездка, экскурсия"},
+  {cat:"Nomen", de:"der Bruder, \"-", ru:"брат"},
+  {cat:"Nomen", de:"das Datum Sg.", ru:"дата"},
+  {cat:"Nomen", de:"der Ehemann, \"-er", ru:"муж"},
+  {cat:"Nomen", de:"die Einladung, -en", ru:"приглашение"},
+  {cat:"Nomen", de:"das Fest, -e", ru:"праздник"},
+  {cat:"Nomen", de:"der/die Freund/in", ru:"друг/подруга"},
+  {cat:"Nomen", de:"der Frühling Sg.", ru:"весна"},
+  {cat:"Nomen", de:"der Geburtstag, -e", ru:"день рождения"},
+  {cat:"Nomen", de:"das Geschenk, -e", ru:"подарок"},
+  {cat:"Nomen", de:"die Geschwister Pl.", ru:"братья и сёстры"},
+  {cat:"Nomen", de:"die Gesundheit Sg.", ru:"здоровье"},
+  {cat:"Nomen", de:"das Glück Sg.", ru:"счастье, удача"},
+  {cat:"Nomen", de:"der Glückwunsch, \"-e", ru:"поздравление"},
+  {cat:"Nomen", de:"die Großeltern Pl.", ru:"бабушка и дедушка"},
+  {cat:"Nomen", de:"die Großmutter, \"-", ru:"бабушка"},
+  {cat:"Nomen", de:"der Großvater, \"-", ru:"дедушка"},
+  {cat:"Nomen", de:"der Haushalt, -e", ru:"домашнее хозяйство"},
+  {cat:"Nomen", de:"der Herbst Sg.", ru:"осень"},
+  {cat:"Nomen", de:"die Hochzeit, -en", ru:"свадьба"},
+  {cat:"Nomen", de:"der/die Jugendliche, -n", ru:"подросток"},
+  {cat:"Nomen", de:"der Monat, -e", ru:"месяц"},
+  {cat:"Nomen", de:"die Mutter, \"-", ru:"мать"},
+  {cat:"Nomen", de:"der Onkel, -", ru:"дядя"},
+  {cat:"Nomen", de:"die Party, -s", ru:"вечеринка"},
+  {cat:"Nomen", de:"das Picknick, -s", ru:"пикник"},
+  {cat:"Nomen", de:"die Schwester, -n", ru:"сестра"},
+  {cat:"Nomen", de:"der Sommer Sg.", ru:"лето"},
+  {cat:"Nomen", de:"die Tante, -n", ru:"тётя"},
+  {cat:"Nomen", de:"der Vater, \"-", ru:"отец"},
+  {cat:"Nomen", de:"der/die Verwandte, -n", ru:"родственник"},
+  {cat:"Nomen", de:"der Winter Sg.", ru:"зима"},
+  {cat:"Verben", de:"aussehen", ru:"выглядеть"},
+  {cat:"Verben", de:"besuchen", ru:"посещать"},
+  {cat:"Verben", de:"erziehen", ru:"воспитывать"},
+  {cat:"Verben", de:"feiern", ru:"праздновать"},
+  {cat:"Verben", de:"(sich) freuen", ru:"радоваться"},
+  {cat:"Verben", de:"gratulieren", ru:"поздравлять"},
+  {cat:"Verben", de:"heiraten", ru:"жениться, выходить замуж"},
+  {cat:"Verben", de:"leben", ru:"жить"},
+  {cat:"Verben", de:"studieren", ru:"учиться (в вузе)"},
+  {cat:"Verben", de:"tanzen", ru:"танцевать"},
+  {cat:"Adjektive", de:"geschieden", ru:"разведённый"},
+  {cat:"Adjektive", de:"groß", ru:"большой"},
+  {cat:"Adjektive", de:"herzlich", ru:"сердечный"},
+  {cat:"Adjektive", de:"langweilig", ru:"скучный"},
+  {cat:"Adjektive", de:"ledig", ru:"холостой/незамужняя"},
+  {cat:"Adjektive", de:"schwer", ru:"тяжёлый, трудный"},
+  {cat:"Adjektive", de:"tot", ru:"мёртвый"},
+  {cat:"Adjektive", de:"verheiratet", ru:"женатый/замужняя"},
+  {cat:"Andere Wörter", de:"geboren", ru:"рождённый"},
+  {cat:"Andere Wörter", de:"leider", ru:"к сожалению"},
+  {cat:"Andere Wörter", de:"manchmal", ru:"иногда"},
+  {cat:"Andere Wörter", de:"schade", ru:"жаль"},
+  {cat:"Andere Wörter", de:"später", ru:"позже"},
+  {cat:"Andere Wörter", de:"vorgestern", ru:"позавчера"}
+];
+
+const SRS_KEY='kapitel6-srs-v1';
+const SRS_INTERVALS=[0,1,3,7,14,30];
+let srsData = JSON.parse(localStorage.getItem(SRS_KEY) || '{}');
+function saveSRS(){ localStorage.setItem(SRS_KEY, JSON.stringify(srsData)); }
+function getCardState(i){
+  if(!srsData[i]) srsData[i] = {level:0, due:0, seen:0};
+  return srsData[i];
+}
+
+let activeCats = new Set(vocab.map(v=>v.cat));
+let direction = 'de';
+let deck = [];
+let currentIdx = 0;
+let flipped = false;
+
+const catsUnique = [...new Set(vocab.map(v=>v.cat))];
+const filterDiv = document.getElementById('flashFilter');
+catsUnique.forEach(cat=>{
+  const b=document.createElement('button');
+  b.textContent=cat; b.className='on';
+  b.onclick=()=>{
+    if(activeCats.has(cat)){ activeCats.delete(cat); b.classList.remove('on'); }
+    else { activeCats.add(cat); b.classList.add('on'); }
+    buildDeck();
+  };
+  filterDiv.appendChild(b);
+});
+const allBtn=document.createElement('button');
+allBtn.textContent='Alle'; allBtn.className='on';
+allBtn.onclick=()=>{
+  activeCats = new Set(vocab.map(v=>v.cat));
+  filterDiv.querySelectorAll('button').forEach(b=>b.classList.add('on'));
+  buildDeck();
+};
+filterDiv.appendChild(allBtn);
+
+function setDir(d){
+  direction=d;
+  document.getElementById('dirDE').classList.toggle('on', d==='de');
+  document.getElementById('dirRU').classList.toggle('on', d==='ru');
+  flipped=false;
+  renderCard();
+}
+
+function buildDeck(){
+  deck = vocab.map((v,i)=>i).filter(i=>activeCats.has(vocab[i].cat));
+  currentIdx = 0;
+  flipped = false;
+  renderCard();
+}
+
+function renderCard(){
+  const stats=document.getElementById('flashStats');
+  if(deck.length===0){
+    document.getElementById('fcWord').textContent='–';
+    document.getElementById('fcCat').textContent='Keine Karten ausgewählt';
+    document.getElementById('fcAnswer').textContent='';
+    stats.textContent='';
+    return;
+  }
+  const idx = deck[currentIdx];
+  const item = vocab[idx];
+  const front = direction==='de' ? item.de : item.ru;
+  const back = direction==='de' ? item.ru : item.de;
+  document.getElementById('fcWord').textContent = front;
+  document.getElementById('fcCat').textContent = item.cat;
+  document.getElementById('fcAnswer').textContent = back;
+  const card=document.getElementById('flashcard');
+  card.classList.toggle('flipped', flipped);
+  document.getElementById('srsButtons').classList.toggle('show', flipped);
+  const st = getCardState(idx);
+  stats.textContent = `Karte ${currentIdx+1}/${deck.length} · Stufe ${st.level+1}/${SRS_INTERVALS.length} · Kategorie: ${item.cat}`;
+}
+
+function flipCard(){
+  if(deck.length===0) return;
+  flipped=!flipped;
+  renderCard();
+}
+function nextCard(){
+  if(deck.length===0) return;
+  currentIdx = (currentIdx+1) % deck.length;
+  flipped=false;
+  renderCard();
+}
+function prevCard(){
+  if(deck.length===0) return;
+  currentIdx = (currentIdx-1+deck.length) % deck.length;
+  flipped=false;
+  renderCard();
+}
+function srsAnswer(result){
+  if(deck.length===0) return;
+  const idx = deck[currentIdx];
+  const st = getCardState(idx);
+  if(result==='again'){ st.level=0; }
+  else if(result==='hard'){ st.level=Math.max(0, st.level); }
+  else if(result==='easy'){ st.level=Math.min(SRS_INTERVALS.length-1, st.level+1); }
+  st.seen++;
+  saveSRS();
+  nextCard();
+}
+function speakCurrent(){
+  if(deck.length===0) return;
+  const idx = deck[currentIdx];
+  const item = vocab[idx];
+  speak(item.de.split(',')[0].split('"')[0]);
+}
+buildDeck();
+
+/* =================== ABSCHLUSSTEST =================== */
+const teil1Data = [
+  {type:"mc", q:"1. Wen heiratet Lena?", opts:["Ihren Bruder","Das wird im Text nicht gesagt","Ihren Vater"], correct:1},
+  {type:"mc", q:"2. Ist Lenas Bruder Tim verheiratet?", opts:["Ja","Nein, er ist ledig","Er ist geschieden"], correct:1},
+  {type:"mc", q:"3. Wie viele Kinder hat Nina?", opts:["Eins","Zwei","Drei"], correct:1},
+  {type:"mc", q:"4. Wie alt ist die Großmutter?", opts:["79","89","99"], correct:1},
+  {type:"mc", q:"5. Was machen alle nach der Hochzeit?", opts:["Ein Picknick","Ein Familienfoto","Einen Ausflug"], correct:1},
+  {type:"text", q:"6. Gegenteil von 'verheiratet':", ans:"ledig"},
+  {type:"text", q:"7. Possessivartikel: 'Das ist ___ Bruder.' (ich)", ans:"mein"},
+  {type:"text", q:"8. Possessivartikel Akkusativ: 'Ich besuche mein___ Vater.' (Endung)", ans:"en"},
+  {type:"text", q:"9. Präteritum von 'haben' (ich):", ans:"hatte"},
+  {type:"text", q:"10. Präteritum von 'sein' (du):", ans:"warst"}
+];
+const teil1Box=document.getElementById('teil1Box');
+teil1Data.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='rf-item';
+  if(item.type==='mc'){
+    let optsHtml='';
+    item.opts.forEach((o,oi)=>{
+      optsHtml += `<label><input type="radio" name="t1q${i}" value="${oi}"> ${o}</label>`;
+    });
+    div.innerHTML = `<b>${item.q}</b><div class="mc-opts">${optsHtml}</div>`;
+  } else {
+    div.innerHTML = `<b>${item.q}</b> <input type="text" class="t1text" data-idx="${i}" style="width:150px;">`;
+  }
+  teil1Box.appendChild(div);
+});
+function scoreTeil1(){
+  let correct=0;
+  teil1Data.forEach((item,i)=>{
+    if(item.type==='mc'){
+      const sel = document.querySelector(`input[name="t1q${i}"]:checked`);
+      if(sel && parseInt(sel.value)===item.correct) correct++;
+    } else {
+      const inp = document.querySelector(`.t1text[data-idx="${i}"]`);
+      const val = normalize(inp.value);
+      const anss = item.ans.split('/').map(normalize);
+      if(anss.includes(val)){ correct++; inp.classList.add('correct'); inp.classList.remove('incorrect'); }
+      else { inp.classList.add('incorrect'); inp.classList.remove('correct'); }
+    }
+  });
+  return {correct, total: teil1Data.length};
+}
+
+const teil2Data = [
+  {q:"1. Anna und Paul heiraten.", ans:true},
+  {q:"2. Die Feier ist am 1. Juni.", ans:false},
+  {q:"3. Die Feier findet im Garten statt.", ans:true},
+  {q:"4. Man muss nicht antworten.", ans:false}
+];
+const teil2Box=document.getElementById('teil2Box');
+teil2Data.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='rf-item';
+  div.innerHTML = `<b>${item.q}</b><div class="rf-btns" id="t2rf${i}">
+    <button onclick="selectRF(this,'t2',${i},true)">Richtig</button>
+    <button onclick="selectRF(this,'t2',${i},false)">Falsch</button>
+  </div>`;
+  teil2Box.appendChild(div);
+});
+const rfAnswers={t2:{}, t3:{}};
+function selectRF(btn, teilId, idx, value){
+  rfAnswers[teilId][idx]=value;
+  const wrap=document.getElementById(teilId+'rf'+idx);
+  wrap.querySelectorAll('button').forEach(b=>b.classList.remove('selected-r','selected-f'));
+  btn.classList.add(value?'selected-r':'selected-f');
+}
+function scoreTeil2(){
+  let correct=0;
+  teil2Data.forEach((item,i)=>{
+    if(rfAnswers.t2[i]===item.ans) correct++;
+  });
+  return {correct, total: teil2Data.length};
+}
+
+const teil3Data = [
+  {q:"1. Maria hat drei Geschwister.", ans:false},
+  {q:"2. Ihr Bruder ist verheiratet.", ans:true},
+  {q:"3. Ihre Schwester lebt in Hamburg.", ans:true},
+  {q:"4. Maria besucht ihre Familie oft.", ans:true}
+];
+const teil3Box=document.getElementById('teil3Box');
+teil3Data.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='rf-item';
+  div.innerHTML = `<b>${item.q}</b><div class="rf-btns" id="t3rf${i}">
+    <button onclick="selectRF(this,'t3',${i},true)">Richtig</button>
+    <button onclick="selectRF(this,'t3',${i},false)">Falsch</button>
+  </div>`;
+  teil3Box.appendChild(div);
+});
+function scoreTeil3(){
+  let correct=0;
+  teil3Data.forEach((item,i)=>{
+    if(rfAnswers.t3[i]===item.ans) correct++;
+  });
+  return {correct, total: teil3Data.length};
+}
+function playHoertext(){
+  const text = "Frage: Erzähl mal, wie groß ist deine Familie? Maria: Ich habe zwei Geschwister, einen Bruder und eine Schwester. Frage: Sind sie verheiratet? Maria: Mein Bruder ja, er hat vor zwei Jahren geheiratet. Meine Schwester ist noch ledig. Frage: Wo wohnen sie? Maria: Mein Bruder wohnt hier in Berlin, aber meine Schwester lebt in Hamburg. Frage: Besuchst du deine Familie oft? Maria: Ja, ich besuche meine Eltern jeden Monat, das ist mir sehr wichtig.";
+  speak(text);
+}
+
+function checkFullExam(){
+  const r1=scoreTeil1(), r2=scoreTeil2(), r3=scoreTeil3();
+  const totalCorrect = r1.correct + r2.correct + r3.correct;
+  const totalPoints = r1.total + r2.total + r3.total;
+  const pct = Math.round((totalCorrect/totalPoints)*100);
+  const pass = pct>=60;
+  const box=document.getElementById('examFinal');
+  box.className = 'exam-final show ' + (pass?'pass':'fail');
+  box.innerHTML = `
+    ${pass ? '✓ BESTANDEN' : '✗ NICHT BESTANDEN'} – ${totalCorrect}/${totalPoints} Punkte (${pct}%)
+    <div class="exam-breakdown">
+      Teil 1 (Wortschatz &amp; Grammatik): ${r1.correct}/${r1.total}<br>
+      Teil 2 (Leseverstehen): ${r2.correct}/${r2.total}<br>
+      Teil 3 (Hörverstehen): ${r3.correct}/${r3.total}<br>
+      Teil 4 (Schreiben): nicht bewertet<br>
+      <br>Bestehensgrenze: 60%
+    </div>
+  `;
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+}
+</script>
+</body>
+</html>

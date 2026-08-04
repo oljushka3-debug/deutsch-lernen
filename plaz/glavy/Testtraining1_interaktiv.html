@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testtraining 1 — Interaktiver Übungstest</title>
+<style>
+  :root{
+    --bg:#f6f4ef;
+    --card:#ffffff;
+    --ink:#2b2a28;
+    --muted:#767268;
+    --accent:#d98c1f;
+    --accent2:#1f6f5c;
+    --line:#e3ddd0;
+    --ok:#1f6f5c;
+    --bad:#c0392b;
+    --chip:#efe9db;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.5;
+  }
+  header{
+    background:var(--ink);
+    color:#fdfaf3;
+    padding:28px 20px 22px;
+    text-align:center;
+  }
+  header h1{margin:0 0 4px;font-size:2rem;letter-spacing:.5px;}
+  header p{margin:0;color:#cfc8b8;font-size:.95rem;}
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:#fffdf8;
+    border-bottom:2px solid var(--line);
+    display:flex;flex-wrap:wrap;gap:6px;
+    padding:10px 16px;justify-content:center;
+  }
+  nav button{
+    font-family:inherit;border:1px solid var(--line);
+    background:var(--chip);color:var(--ink);
+    padding:7px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;
+  }
+  nav button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  main{max-width:840px;margin:0 auto;padding:24px 16px 80px;}
+  section{display:none;}
+  section.active{display:block;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 22px 24px;
+    margin-bottom:22px;
+    box-shadow:0 2px 6px rgba(0,0,0,.04);
+  }
+  .card h2{
+    margin-top:0;font-size:1.3rem;color:var(--accent);
+    border-bottom:2px dotted var(--line);padding-bottom:8px;
+  }
+  .instr{color:var(--muted);font-style:italic;margin-bottom:14px;font-size:.95rem;}
+  .btn-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .checkbtn, .revealbtn, .clearbtn{
+    font-family:inherit;border:none;padding:9px 18px;border-radius:10px;
+    cursor:pointer;font-size:.92rem;font-weight:bold;
+  }
+  .checkbtn{background:var(--ink);color:#fdfaf3;}
+  .revealbtn, .clearbtn{background:var(--chip);color:var(--ink);}
+  .checkbtn:hover{opacity:.88;}
+  .revealbtn:hover, .clearbtn:hover{background:#e4dcc7;}
+  .feedback{margin-top:10px;font-size:.9rem;font-weight:bold;}
+  .feedback.ok{color:var(--ok);}
+  .feedback.bad{color:var(--bad);}
+
+  .hoer-item{
+    background:#fbf9f3;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:18px;
+  }
+  .hoer-item h3{margin:0 0 10px;font-size:1rem;}
+  audio{width:100%;margin-bottom:12px;}
+  .abc-options{display:flex;gap:10px;flex-wrap:wrap;}
+  .abc-btn{
+    font-family:inherit;
+    border:1.5px solid var(--line);
+    background:#fff;
+    padding:10px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:.95rem;
+    flex:1;
+    min-width:110px;
+    text-align:center;
+  }
+  .abc-btn.selected{background:var(--accent2);color:#fff;border-color:var(--accent2);}
+  .hoer-note{font-size:.8rem;color:var(--muted);margin-top:8px;}
+
+  .exam-text{
+    background:#fbf9f3;
+    border-left:4px solid var(--accent2);
+    padding:12px 16px;
+    border-radius:6px;
+    margin:10px 0 14px;
+    font-size:.95rem;
+  }
+  .rf-row{display:flex;align-items:center;gap:14px;margin:8px 0;flex-wrap:wrap;}
+  .rf-row .rf-text{flex:1;min-width:200px;}
+  .rf-choice{display:flex;gap:6px;}
+  .rf-choice button{
+    font-family:inherit;border:1.5px solid var(--line);background:#fffef9;
+    padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.85rem;
+  }
+  .rf-choice button.selected-r{background:var(--ok);color:#fff;border-color:var(--ok);}
+  .rf-choice button.selected-f{background:var(--bad);color:#fff;border-color:var(--bad);}
+
+  .teil-points{font-size:.85rem;color:var(--muted);}
+  .teil-header{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:14px;
+  }
+  .teil-header h2{margin:0;border:none;padding:0;}
+
+  .exam-final{text-align:center;padding:26px 16px;border-radius:14px;margin-top:10px;}
+  .exam-final.info{background:#fdf5e8;border:2px solid var(--accent);}
+  .exam-final .big{font-size:2.2rem;font-weight:bold;color:var(--accent);}
+  .exam-breakdown{
+    margin-top:16px;text-align:left;max-width:400px;
+    margin-left:auto;margin-right:auto;font-size:.9rem;
+  }
+  .exam-breakdown div{
+    display:flex;justify-content:space-between;padding:5px 0;
+    border-bottom:1px dotted var(--line);
+  }
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px;}
+  .tipps-box{
+    background:#fdf5e8;
+    border:1px solid #e8d5ab;
+    border-radius:10px;
+    padding:14px 16px;
+    margin-top:14px;
+    font-size:.88rem;
+  }
+  .tipps-box b{color:var(--accent);}
+  .steckbrief{
+    background:#fffef0;
+    border:2px solid #d9c98a;
+    border-radius:8px;
+    padding:12px 16px;
+    font-size:.9rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Testtraining 1</h1>
+  <p>Berliner Platz 1 — Kursbuch · Nach Kapitel 1–2 · Start Deutsch 1 Format</p>
+</header>
+
+<nav id="tabs">
+  <button data-tab="hoeren" class="active">🎧 Hören</button>
+  <button data-tab="lesen">📖 Lesen</button>
+  <button data-tab="result">📊 Ergebnis</button>
+</nav>
+
+<main>
+
+<!-- ================= HÖREN ================= -->
+<section id="hoeren" class="active">
+  <div class="card">
+    <h2>🎧 Hören</h2>
+    <p class="instr">Kreuzen Sie an: a, b oder c. Hören Sie jeden Text zweimal (Player unten).</p>
+
+    <div class="hoer-item">
+      <h3>Beispiel 0. Wo ist der Deutschkurs A1?</h3>
+      <audio controls src="audio_tt1/track34.mp3"></audio>
+      <div class="abc-options">
+        <button class="abc-btn" disabled>a) in Raum 115</button>
+        <button class="abc-btn selected" disabled>b) in Raum 15 ✓</button>
+        <button class="abc-btn" disabled>c) in Raum 51</button>
+      </div>
+    </div>
+
+    <div class="hoer-item">
+      <h3>1. Was trinkt Magdalena?</h3>
+      <audio controls src="audio_tt1/track35.mp3"></audio>
+      <div class="abc-options" data-q="h1">
+        <button class="abc-btn" onclick="selectABC(this,'h1','a')">a) Wasser</button>
+        <button class="abc-btn" onclick="selectABC(this,'h1','b')">b) Tee</button>
+        <button class="abc-btn" onclick="selectABC(this,'h1','c')">c) Kaffee</button>
+      </div>
+    </div>
+
+    <div class="hoer-item">
+      <h3>2. Was kosten der Saft und das Wasser?</h3>
+      <audio controls src="audio_tt1/track36.mp3"></audio>
+      <div class="abc-options" data-q="h2">
+        <button class="abc-btn" onclick="selectABC(this,'h2','a')">a) 3 €</button>
+        <button class="abc-btn" onclick="selectABC(this,'h2','b')">b) 2,70 €</button>
+        <button class="abc-btn" onclick="selectABC(this,'h2','c')">c) 0,30 €</button>
+      </div>
+    </div>
+
+    <p class="hoer-note">⚠️ Die automatische Korrektur für „Hören" (Aufgaben 1–2) ist noch nicht verfügbar. Ihre Auswahl wird gespeichert und im Gesamtergebnis angezeigt — vergleichen Sie sie später selbst oder mit der Kursleiterin.</p>
+
+    <div class="tipps-box">
+      <b>TIPPS zum Hören:</b> Lesen Sie die Aufgaben ganz genau. Sie verstehen beim Hören nicht jedes Wort? Keine Panik! Sie brauchen nicht alle Wörter aus dem Hörtext für die Antwort. Markieren Sie schon beim ersten Hören die Antwort. Unsicher? Dann machen Sie ein ? und hören beim zweiten Hören genau auf diese Frage. Noch unsicher? Kreuzen Sie immer etwas an.
+    </div>
+  </div>
+</section>
+
+<!-- ================= LESEN ================= -->
+<section id="lesen">
+  <div class="card">
+    <div class="teil-header">
+      <h2>📖 Lesen</h2>
+      <span class="teil-points" id="l-points">0 / 2 Punkte</span>
+    </div>
+    <p class="instr">Lesen Sie die Texte und die Aufgaben. Kreuzen Sie an: Richtig oder Falsch.</p>
+
+    <p style="font-weight:bold;margin-bottom:4px;">Beispiel: Im Unterricht</p>
+    <div class="steckbrief">
+      <b>Steckbrief</b><br>
+      Familienname: Demirkan &nbsp;&nbsp; Land: Türkei<br>
+      Vorname: Fatima &nbsp;&nbsp; Stadt: Ankara<br>
+      Sprachen: Türkisch, Englisch
+    </div>
+    <div class="rf-row"><span class="rf-text">0. Fatima spricht drei Sprachen.</span>
+      <div class="rf-choice">
+        <button disabled>Richtig</button>
+        <button disabled class="selected-f" style="text-decoration:line-through;">Falsch ✓</button>
+      </div>
+    </div>
+
+    <p style="font-weight:bold;margin:18px 0 4px;">1. Adresse</p>
+    <div class="steckbrief">
+      <b>Jutta Paal</b><br>
+      Tietjenstraße 25<br>
+      28359 Bremen<br>
+      Telefon: 04 21/75 38 90
+    </div>
+    <div class="rf-row"><span class="rf-text">Frau Paal hat eine E-Mail-Adresse.</span>
+      <div class="rf-choice" data-idx="l-1">
+        <button onclick="selectRF(this,1,true)">Richtig</button>
+        <button onclick="selectRF(this,1,false)">Falsch</button>
+      </div>
+    </div>
+
+    <p style="font-weight:bold;margin:18px 0 4px;">2. In der Cafeteria</p>
+    <div class="steckbrief">
+      <b>Getränke</b><br>
+      Kaffee/Tee 1,60 &nbsp;|&nbsp; Wasser 1,20<br>
+      Espresso 1,20 &nbsp;|&nbsp; Orangensaft 1,50<br>
+      Cappuccino 1,80 &nbsp;|&nbsp; Bionade 1,40<br>
+      Milch 0,90 &nbsp;|&nbsp; Bluna/Cola 1,30
+    </div>
+    <div class="rf-row"><span class="rf-text">In der Cafeteria gibt es Saft.</span>
+      <div class="rf-choice" data-idx="l-2">
+        <button onclick="selectRF(this,2,true)">Richtig</button>
+        <button onclick="selectRF(this,2,false)">Falsch</button>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkLesen()">Проверить</button>
+      <button class="revealbtn" onclick="revealLesen()">Показать ответ</button>
+      <button class="clearbtn" onclick="clearLesen()">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-lesen"></div>
+
+    <div class="tipps-box">
+      <b>TIPPS zum Lesen:</b> Lesen Sie zuerst die Aufgabe und dann den Text. Suchen Sie im Text ähnliche Wörter wie in der Aufgabe. Sie müssen nicht jedes Wort im Text verstehen!
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESULT ================= -->
+<section id="result">
+  <div class="card">
+    <h2>📊 Gesamtergebnis</h2>
+    <p class="instr">Werten Sie Lesen aus. Hören wird separat angezeigt (ohne automatische Korrektur).</p>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkFullExam()" style="font-size:1rem;padding:12px 24px;">📊 Gesamtergebnis auswerten</button>
+      <button class="clearbtn" onclick="clearFullExam()">Alles zurücksetzen</button>
+    </div>
+    <div id="examResult"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>Berliner Platz 1 · Kursbuch · Testtraining 1 (nach Kapitel 1–2) · echtes Audio aus dem Lehrwerk</footer>
+
+<script>
+document.querySelectorAll('#tabs button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ---------- HÖREN ---------- */
+const hoerenAnswers = {};
+function selectABC(btn, qId, val){
+  hoerenAnswers[qId] = val;
+  const group = document.querySelector(`.abc-options[data-q="${qId}"]`);
+  group.querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+/* ---------- LESEN (richtig/falsch) ---------- */
+const lesenData = { 1:false, 2:true };
+const rfAnswers = {};
+function selectRF(btn, idx, value){
+  rfAnswers[idx] = value;
+  const group = btn.parentElement;
+  group.querySelectorAll('button').forEach(b=>b.classList.remove('selected-r','selected-f'));
+  btn.classList.add(value?'selected-r':'selected-f');
+}
+function scoreLesen(){
+  let correct=0, total=0;
+  Object.keys(lesenData).forEach(k=>{
+    total++;
+    if(rfAnswers[k] === lesenData[k]) correct++;
+  });
+  document.getElementById('l-points').textContent = `${correct} / ${total} Punkte`;
+  return {correct, total};
+}
+function checkLesen(){
+  Object.keys(lesenData).forEach(k=>{
+    const group = document.querySelector(`.rf-choice[data-idx="l-${k}"]`);
+    const btns = group.querySelectorAll('button');
+    btns.forEach(b=>b.style.outline='');
+    const chosen = rfAnswers[k];
+    if(chosen === lesenData[k]){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--ok)'; });
+    } else if(chosen !== undefined){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--bad)'; });
+    }
+  });
+  const r = scoreLesen();
+  const fb = document.getElementById('fb-lesen');
+  fb.textContent = `${r.correct} von ${r.total} richtig.` + (r.correct===r.total?' 🎉':'');
+  fb.className = 'feedback ' + (r.correct===r.total?'ok':'bad');
+}
+function revealLesen(){
+  Object.keys(lesenData).forEach(k=>{
+    rfAnswers[k] = lesenData[k];
+    const group = document.querySelector(`.rf-choice[data-idx="l-${k}"]`);
+    const btns = group.querySelectorAll('button');
+    btns.forEach(b=>{ b.classList.remove('selected-r','selected-f'); b.style.outline=''; });
+    btns[lesenData[k]?0:1].classList.add(lesenData[k]?'selected-r':'selected-f');
+  });
+  scoreLesen();
+  document.getElementById('fb-lesen').textContent = 'Ответы показаны.';
+  document.getElementById('fb-lesen').className = 'feedback';
+}
+function clearLesen(){
+  Object.keys(rfAnswers).forEach(k=>delete rfAnswers[k]);
+  document.querySelectorAll('#lesen .rf-choice button').forEach(b=>{ if(!b.disabled){ b.classList.remove('selected-r','selected-f'); b.style.outline=''; } });
+  document.getElementById('l-points').textContent = '0 / 2 Punkte';
+  document.getElementById('fb-lesen').textContent=''; document.getElementById('fb-lesen').className='feedback';
+}
+
+/* ---------- FULL EXAM ---------- */
+function checkFullExam(){
+  const r = scoreLesen();
+  const pct = r.total>0 ? Math.round(r.correct/r.total*100) : 0;
+  const hoerenCount = Object.keys(hoerenAnswers).length;
+
+  const result = document.getElementById('examResult');
+  result.innerHTML = `
+    <div class="exam-final info">
+      <div class="big">${pct}%</div>
+      <div class="exam-breakdown">
+        <div><span>Hören (${hoerenCount} / 2 beantwortet)</span><span>ohne Korrektur</span></div>
+        <div><span>Lesen</span><span>${r.correct} / ${r.total}</span></div>
+      </div>
+      <p style="margin-top:14px;font-size:.85rem;color:var(--muted);">Hören wird noch nicht automatisch bewertet. Vergleichen Sie Ihre Auswahl selbst oder mit der Kursleiterin.</p>
+    </div>
+  `;
+  result.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function clearFullExam(){
+  clearLesen();
+  document.getElementById('examResult').innerHTML = '';
+}
+</script>
+</body>
+</html>

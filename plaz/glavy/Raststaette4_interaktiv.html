@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Raststätte 4 – Interaktiv</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --blue:#1d5c9e; --lightblue:#eaf2fb; --green:#2e8b57; --red:#c0392b;
+  --grey:#666; --border:#ccd6e0; --yellow:#fdf6d8; --lgreen:#e3f0da;
+}
+*{box-sizing:border-box;}
+body{font-family:'Segoe UI',Arial,sans-serif;margin:0;background:#f4f7fb;color:#222;}
+header{background:var(--blue);color:#fff;padding:18px 20px;text-align:center;}
+header h1{margin:0;font-size:1.5em;}
+header p{margin:6px 0 0;font-size:.95em;opacity:.9;}
+nav{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:50;}
+nav button{flex:1;min-width:110px;padding:12px 6px;border:none;background:#fff;cursor:pointer;font-size:.9em;color:var(--blue);border-bottom:3px solid transparent;}
+nav button.active{border-bottom:3px solid var(--blue);font-weight:bold;background:var(--lightblue);}
+main{max-width:950px;margin:0 auto;padding:16px;}
+.tab{display:none;}
+.tab.active{display:block;}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.card h2{margin-top:0;color:var(--blue);font-size:1.15em;border-bottom:2px solid var(--lightblue);padding-bottom:8px;}
+.hint{color:var(--grey);font-size:.87em;margin-bottom:10px;}
+.notice{background:#fff3cd;border:1px solid #e0c460;border-radius:6px;padding:10px 14px;font-size:.87em;margin-bottom:14px;color:#7a5c00;}
+textarea{width:100%;min-height:60px;border:1px solid var(--border);border-radius:5px;padding:8px;font-size:1em;font-family:inherit;}
+button.act{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:8px 14px;margin:4px 6px 4px 0;cursor:pointer;font-size:.9em;}
+button.act.secondary{background:#8296ab;}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;}
+.board-cell{border-radius:10px;padding:12px;min-height:110px;font-size:.85em;position:relative;cursor:pointer;transition:transform .1s;}
+.board-cell:hover{transform:scale(1.02);}
+.board-cell.c0{background:#cfe0f5;}
+.board-cell.c1{background:#ffe0b2;}
+.board-cell.c2{background:#fff9c4;}
+.board-cell.c3{background:#c8e6c9;}
+.board-cell.c4{background:#d1c4e9;}
+.board-cell .num{font-weight:bold;color:var(--blue);position:absolute;top:6px;right:8px;font-size:.8em;}
+.board-cell.done{outline:3px solid var(--green);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:#fff;border-radius:10px;padding:20px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
+.modal-box h3{margin-top:0;color:var(--blue);}
+.modal-box textarea{margin-top:10px;}
+.notes-area label{display:block;font-weight:bold;margin:10px 0 4px;color:#333;}
+.self-check{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.self-check .box{padding:14px;border-radius:8px;}
+.self-check .box.y{background:var(--yellow);}
+.self-check .box.g{background:var(--lgreen);}
+.self-check .box h3{margin-top:0;font-size:.95em;}
+.smiley-row button{font-size:1.4em;background:none;border:2px solid var(--border);border-radius:50%;width:44px;height:44px;cursor:pointer;margin:3px;}
+.smiley-row button.sel{border-color:var(--blue);background:var(--lightblue);}
+.q-list{margin:0;padding-left:0;list-style:none;}
+.q-list li{margin-bottom:6px;padding:8px;background:#fafcff;border-radius:6px;cursor:pointer;}
+.q-list li:hover{background:var(--lightblue);}
+.q-list li.answered{border-left:4px solid var(--green);}
+.wg-wrap{column-count:2;column-gap:24px;}
+@media (max-width:600px){.wg-wrap{column-count:1;}}
+.wg-item{break-inside:avoid;padding:3px 0;font-size:.92em;}
+footer{text-align:center;padding:20px;color:var(--grey);font-size:.85em;}
+</style>
+</head>
+<body>
+<header>
+<h1>Raststätte 4</h1>
+<p>Berliner Platz 1 · Kursbuch · Große Wiederholung (Kapitel 7–12)</p>
+</header>
+<nav id="tabnav"></nav>
+<main id="mainArea"></main>
+<footer>Erstellt für dein Deutschlernen · Fortschritt wird lokal in deinem Browser gespeichert</footer>
+
+<div class="modal-overlay" id="modalOverlay">
+<div class="modal-box">
+<h3 id="modalTitle"></h3>
+<p id="modalBody"></p>
+<textarea id="modalAnswer" placeholder="Schreibe deine Antwort hier..."></textarea>
+<div style="margin-top:12px;text-align:right;">
+<button class="act secondary" onclick="closeModal()">Schließen</button>
+<button class="act" onclick="saveModalAnswer()">Speichern</button>
+</div>
+</div>
+</div>
+
+<script>
+const tabs = [
+  {id:'ex1', label:'1. Drei in einer Reihe'},
+  {id:'ex2', label:'2. Wie gut kennen Sie...?'},
+  {id:'learn', label:'Effektiv lernen'},
+  {id:'check', label:'Was kann ich?'},
+  {id:'me', label:'Ich über mich'}
+];
+const nav = document.getElementById('tabnav');
+tabs.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.textContent=t.label;
+  b.onclick=()=>showTab(t.id);
+  b.id='navbtn-'+t.id;
+  if(i===0) b.className='active';
+  nav.appendChild(b);
+});
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('navbtn-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+
+<!-- ============ TAB 1: Drei in einer Reihe (Wiederholungsspiel) ============ -->
+<div class="tab active" id="tab-ex1">
+<div class="card">
+<h2>1. Wiederholungsspiel – "Drei in einer Reihe"</h2>
+<p class="notice">Hinweis: Dieses Spiel wiederholt Themen aus dem GANZEN Buch (auch Kapitel 7-12, z.B. Beruf, Gesundheit, Dativpräpositionen, Bahnfahrkarten – Themen, die eventuell noch nicht behandelt wurden). Beantworte, was du schon kannst, und lass den Rest offen – das ist völlig normal.</p>
+<p class="hint">Original: Zu zweit/zu viert eine Münze auf ein Feld legen, Aufgabe lösen. Drei Felder in einer Reihe (waagerecht, senkrecht oder diagonal) = gewonnen. Hier: Klicke auf ein Feld, um die Aufgabe zu lösen und deine Antwort zu speichern.</p>
+<div class="board" id="board3row"></div>
+</div>
+</div>
+
+<!-- ============ TAB 2: Wie gut kennen Sie Berliner Platz? ============ -->
+<div class="tab" id="tab-ex2">
+<div class="card">
+<h2>2. Wie gut kennen Sie "Berliner Platz NEU"? – Spiel gegen die Uhr</h2>
+<p class="notice">Diese 30 Fragen beziehen sich auf Personen und Geschichten aus dem GESAMTEN Kursbuch (viele davon aus späteren Kapiteln, die du eventuell noch nicht gelesen hast). Beantworte, was du weißt, oder nutze es als Ausblick auf kommende Kapitel.</p>
+<p class="hint">Klicke auf eine Frage, um sie zu beantworten (aus dem Gedächtnis oder nach Nachschlagen im Buch).</p>
+<ul class="q-list" id="q30list"></ul>
+</div>
+</div>
+
+<!-- ============ TAB 3: Effektiv lernen – Wörter in Gruppen ============ -->
+<div class="tab" id="tab-learn">
+<div class="card">
+<h2>Effektiv lernen – Wörter in Gruppen lernen</h2>
+<p class="hint">Hier sind 100 Wörter aus dem ganzen Kurs. Ordne sie in eigene Gruppen (Wortfelder) – das hilft beim Lernen.</p>
+<div class="wg-wrap" id="wg100"></div>
+</div>
+
+<div class="card">
+<h2>a-c Aufgaben zu den 100 Wörtern</h2>
+<div class="notes-area">
+<label>a. Wähle zwei oder drei Wortfelder und schreibe die Wörter dazu (ergänze mit weiteren Wörtern):</label>
+<textarea data-note="rast4-wg-a" placeholder="z.B. Essen & Trinken: Banane, Milch, Käse, Joghurt, Zucker, Salat..."></textarea>
+</div>
+<div class="notes-area">
+<label>b. Drei Minuten Zeit: Wie viele Nomen kannst du mit Artikel und Pluralform nennen?</label>
+<textarea data-note="rast4-wg-b" placeholder="z.B. der Kollege, die Kollegen / die Kartoffel, die Kartoffeln / ..."></textarea>
+</div>
+<div class="notes-area">
+<label>c. Markiere alle Verben in der Liste und schreibe zehn Verben mit der Perfektform (Beispiel: arbeiten → ich arbeite → ich habe gearbeitet):</label>
+<textarea data-note="rast4-wg-c" placeholder="arbeiten – ich arbeite – ich habe gearbeitet
+..."></textarea>
+</div>
+</div>
+</div>
+
+<!-- ============ TAB 4: Was kann ich schon? ============ -->
+<div class="tab" id="tab-check">
+<div class="card">
+<h2>Was kann ich schon? – Selbsttest</h2>
+<p class="hint">Mach die Aufgaben 1-12 und kontrolliere selbst.</p>
+<div class="self-check">
+<div class="box y">
+<h3>1. Ihr Nachbar / Ihre Nachbarin – vier Informationen</h3>
+<textarea data-note="rast4-sk1" placeholder="Das ist... / Er/Sie ist..."></textarea>
+</div>
+<div class="box g">
+<h3>2. Preise</h3>
+<textarea data-note="rast4-sk2" placeholder="Was kostet der Fernseher? Das ist..."></textarea>
+</div>
+<div class="box y">
+<h3>3. Öffnungszeiten</h3>
+<textarea data-note="rast4-sk3" placeholder="Wann hat die Apotheke auf? / Wann öffnet die Apotheke?"></textarea>
+</div>
+<div class="box g">
+<h3>4. Im Supermarkt an der Käsetheke</h3>
+<textarea data-note="rast4-sk4" placeholder="Sie wünschen, bitte? – ..."></textarea>
+</div>
+<div class="box y">
+<h3>5. Im Kurs hat jemand Geburtstag. Was wünschen Sie?</h3>
+<textarea data-note="rast4-sk5" placeholder="Alles Gute! / Herzlichen Glückwunsch!"></textarea>
+</div>
+<div class="box g">
+<h3>6. Fragen Sie nach dem Weg</h3>
+<textarea data-note="rast4-sk6" placeholder="Entschuldigung, wie komme ich zum Bahnhof?"></textarea>
+</div>
+<div class="box y">
+<h3>7. Beruf – drei Fragen</h3>
+<textarea data-note="rast4-sk7" placeholder="Was sind Sie von Beruf? / Von wann bis wann arbeiten Sie? / Wie viel verdienen Sie?"></textarea>
+</div>
+<div class="box g">
+<h3>8. Beim Arzt. Was sagen Sie?</h3>
+<textarea data-note="rast4-sk8" placeholder="Was fehlt Ihnen denn? – Ich habe..."></textarea>
+</div>
+<div class="box y">
+<h3>9. Wohnungssuche – drei Fragen</h3>
+<textarea data-note="rast4-sk9" placeholder="Wie groß ist die Wohnung? / Wie hoch ist die Miete? / ..."></textarea>
+</div>
+<div class="box g">
+<h3>10. Gestern/vorgestern – drei Fragen</h3>
+<textarea data-note="rast4-sk10" placeholder="Was hast du gestern gemacht? / ..."></textarea>
+</div>
+<div class="box y">
+<h3>11. Lebenslauf – drei Aussagen (geboren, Schule, Beruf)</h3>
+<textarea data-note="rast4-sk11" placeholder="Ich bin ... geboren. / Ich war in der Schule... / Ich bin von Beruf..."></textarea>
+</div>
+<div class="box g">
+<h3>12. Reisebüro</h3>
+<textarea data-note="rast4-sk12" placeholder="Kann ich Ihnen helfen? – Ja, ich möchte..."></textarea>
+</div>
+</div>
+<p><b>Mein Ergebnis finde ich:</b></p>
+<div class="smiley-row" id="smileyRow">
+<button data-v="good" onclick="selectSmiley(this)">☺</button>
+<button data-v="ok" onclick="selectSmiley(this)">😐</button>
+<button data-v="bad" onclick="selectSmiley(this)">☹</button>
+</div>
+</div>
+</div>
+
+<!-- ============ TAB 5: Ich über mich ============ -->
+<div class="tab" id="tab-me">
+<div class="card">
+<h2>Ich über mich – Berufserfahrungen</h2>
+<p class="hint">Beispieltexte aus dem Buch:</p>
+<p style="background:#fafcff;padding:10px;border-radius:6px;font-size:.9em;">
+"Nach der Schule habe ich eine Ausbildung als Krankenschwester gemacht. Dann habe ich drei Jahre in einem Krankenhaus für Kinder gearbeitet. Danach habe ich in der Verwaltung gearbeitet. Aber Büroarbeit kann ich nicht so gut. Ich arbeite lieber mit Kindern. Also bin ich zurück auf die Station. Vor zwei Jahren bin ich mit meiner Familie nach Deutschland gezogen. Ich habe gleich wieder eine Stelle im Krankenhaus bekommen und arbeite als Gesundheits- und Krankenpflegerin."
+</p>
+<p style="background:#fafcff;padding:10px;border-radius:6px;font-size:.9em;">
+"Ich habe schon viele Jobs gemacht: Taxifahrer, Kellner, Verkäufer. Früher wollte ich Ingenieur werden – aber ich arbeite lieber mit Menschen und ich kann gut organisieren. Heute habe ich mit zwei Freunden eine kleine Firma: Wir renovieren Wohnungen. Und wir machen auch Umzüge. Manchmal arbeite ich 60 Stunden in der Woche, aber ich verdiene gut."
+</p>
+<p class="hint">Jetzt du: Schreibe über deine eigenen Berufserfahrungen.</p>
+<textarea data-note="rast4-ichubermich" style="min-height:200px;" placeholder="Nach der Schule habe ich... / Ich habe schon folgende Jobs gemacht... / Heute arbeite ich als..."></textarea>
+</div>
+</div>
+
+<script>
+/* ============ Tab 1: Drei in einer Reihe board ============ */
+const board3rowData = [
+  {t:"Familie: Ergänzen Sie die Eltern", d:"der ___ / die ___ (Vater/Mutter), die Groß___: der ___ / die ___ (Großeltern)"},
+  {t:"Was haben Sie gestern gemacht? Vier Dinge", d:"Ich habe..."},
+  {t:"Wie heißt der Plural?", d:"Saft, Fuß, Büro, Bus"},
+  {t:"Wetter", d:"Beschreibe das Wetter: Sonne, Berge/Wind, Regen (drei Bilder)"},
+  {t:"Wie heißt das Partizip?", d:"hören, lesen, einkaufen"},
+  {t:"Wer ist das?", d:"zwei Söhne, zwei Väter – aber nur drei Personen. Wer sind sie?"},
+  {t:"Nennen Sie fünf Lebensmittel", d:"z.B. Brot, Käse, Butter, Kartoffeln, Äpfel..."},
+  {t:"Fragen Sie", d:"Bus, Uhrzeit, Rathausplatz"},
+  {t:"'Wohnungssuche' – drei Fragen", d:"Wie...? Wann...? Wo...?"},
+  {t:"Welche Körperteile haben wir zweimal? Vier Beispiele", d:"Wir haben zwei A... (Augen, Arme, Ohren, Hände...)"},
+  {t:"Antworten Sie bitte", d:"Lernen Sie nicht Deutsch?"},
+  {t:"Wie heißt das Präteritum von sein und haben?", d:"ich... / du..."},
+  {t:"Nennen Sie vier Krankheiten", d:"z.B. Kopfschmerzen, Grippe, Bauchschmerzen, Fieber..."},
+  {t:"Was bedeuten die Abkürzungen?", d:"ZKB, NK, qm"},
+  {t:"Sie können nicht arbeiten und brauchen ein Medikament", d:"Was sagen Sie zum Arzt?"},
+  {t:"Sie gehen zum Arzt", d:"Was müssen Sie mitbringen?"},
+  {t:"In welcher deutschen Stadt steht der 'Reichstag'?", d:"Antwort: Berlin"},
+  {t:"Dativpräpositionen: drei Beispielsätze", d:"mit – in – an – auf – zu"},
+  {t:"5 Berufe", d:"Nenne fünf Berufe, z.B. Verkäufer, Lehrer, Arzt, Sekretärin, Kellner..."},
+  {t:"Vokale: kurz oder lang? Sprechen Sie", d:"Öffnungszeiten, Wohnung, Woche"},
+  {t:"Wie heißt die Frage?", d:"Antwort: '1900 Euro, netto.' Frage: Wie viel...?"},
+  {t:"Ergänzen Sie den Dialog", d:"Arzt: Haben Sie Bauchschmerzen? Sie: Nein, ..."},
+  {t:"Arbeit – Was ist wichtig? Drei Beispiele", d:"Ich möchte... / Ich will nicht... / Die Arbeit muss..."},
+  {t:"Ergänzen Sie bitte", d:"Ich arbeite G... . Manchmal schon ab 7 Uhr 30 und manchmal erst ab 9 Uhr. (Gleitzeit)"},
+  {t:"Sie suchen den Bahnhof. Fragen Sie", d:"W... (Wo ist der Bahnhof? / Wie komme ich zum Bahnhof?)"},
+  {t:"Fahrkarte kaufen", d:"ICE, Heidelberg, 3. Oktober, BahnCard, hin und zurück – formuliere die Bestellung"},
+  {t:"Wie heißt der Satz?", d:"Ich / müssen / jeden Tag / arbeiten / 8 Stunden /."},
+  {t:"Wortfeld 'Stadt': fünf Nomen", d:"z.B. Ampel, Kreuzung, Rathaus, Supermarkt, Park..."},
+  {t:"Wohnung. Was ist wichtig? Vier Beispiele", d:"Wo? Wie viel? ..."},
+  {t:"Wie heißt das Gegenteil?", d:"früh ▶ s... / teuer ▶ ... / interessant ▶ ..."}
+];
+const boardDiv = document.getElementById('board3row');
+board3rowData.forEach((item,i)=>{
+  const cell=document.createElement('div');
+  cell.className = 'board-cell c'+(i%5);
+  cell.id = 'cell-'+i;
+  cell.innerHTML = `<span class="num">${i+1}</span>${item.t}`;
+  cell.onclick = ()=>openModal('board3row', i, item.t, item.d);
+  boardDiv.appendChild(cell);
+});
+
+/* ============ Tab 2: 30 questions list ============ */
+const q30Data = [
+  "1. Was hat Carlos nach seinem Fahrradunfall gemacht?",
+  "2. Mit welcher Buslinie kann man in Berlin eine Stadtrundfahrt machen?",
+  "3. Wer ist Beata?",
+  "4. Aus welchem Land kommt Hiromi?",
+  "5. Was zeigt dieses Bild? (Waschmaschine)",
+  "6. Wer ist das? (Mann im grünen Hemd)",
+  "7. Was ist das? (rundes Objekt)",
+  "8. Was kostet ein Pfund Tomaten bei Mati?",
+  "9. Welches Problem hat Frau Tomba?",
+  "10. Nennen Sie die kompletten Namen von drei Kursteilnehmern aus dem Buch.",
+  "11. Wann hat Ben Geburtstag?",
+  "12. Kommt Kasimir aus Russland?",
+  "13. Wo arbeitet Swetlana heute?",
+  "14. Wo sind Angela Happle und Jürgen Braun?",
+  "15. Ist Lena Pirk Raumpflegerin?",
+  "16. Um wie viel Uhr macht die Sparkasse auf?",
+  "17. Wo kauft Frau Schmidt gerne ein?",
+  "18. Wo wohnt Lucia Paoletti?",
+  "19. Was ist Lukas Bucher von Beruf?",
+  "20. Wie viel Gramm Zucchini braucht man für einen Zucchiniauflauf?",
+  "21. Wie viel verdient Lena Pirk im Monat?",
+  "22. War Swetlana früher Busfahrerin?",
+  "23. Was macht Herr Kölmel vom 1.–20. August?",
+  "24. Was essen die Deutschen am liebsten?",
+  "25. Wo lernt Olga in Wien einen jungen Mann kennen?",
+  "26. Zu welcher Adresse fährt 'Möbel-Blitz'?",
+  "27. Welches Museum ist am 'Checkpoint Charlie' in Berlin?",
+  "28. Welches Problem hat Herr Wetz mit der Lohnabrechnung?",
+  "29. Welches Rezept bekommt Frau Tomba?",
+  "30. Wie viele Kinder hat Frau Klose?"
+];
+const q30list = document.getElementById('q30list');
+q30Data.forEach((q,i)=>{
+  const li=document.createElement('li');
+  li.textContent = q;
+  li.id = 'q30-'+i;
+  li.onclick = ()=>openModal('q30', i, 'Frage '+(i+1), q);
+  q30list.appendChild(li);
+});
+
+/* ============ Tab 3: 100 words ============ */
+const wg100Data = ["Abend","arbeiten","arbeitslos","Arbeitsplatz","aufstehen","Banane","Bauchschmerzen","billig","blau","Brot","Büro","Butter","Cafeteria","Computer","dauern","duschen","essen","Fahrrad","Familienfeier","feiern","Fisch","funktionieren","Geld","Geschwister","Gesicht","Gleitzeit","Gramm","Grippe","günstig","Haltestelle","Hausarzt","Hausnummer","Joghurt","kaputt","Kartoffel","Käse","Kino","Kollege","kommen","Konto","Kopf","Krankmeldung","Küche","Kühlschrank","Kuli","Kultur","Kundin","Lebenslauf","Liter","machen","Mann","Medikament","Milch","Mineralwasser","Mittagessen","Mutter","nach","Nebenkosten","nehmen","Obst","öffnen","Orangensaft","Parkplatz","Pass","Postleitzahl","Preis","putzen","Rathaus","Reise","reparieren","rot","Salat","sauber machen","schmecken","Sekretärin","Sohn","Sparkasse","spazieren gehen","spielen","Sport","Straßenbahn","Stunde","Tante","Tee","Telefonnummer","Teller","Ticket","U-Bahn","Uhr","umsteigen","Unterricht","verdienen","Verkäuferin","vermieten","Waschmaschine","wehtun","Wohnung","zahlen","Zentrum","Zucker"];
+const wg100Div = document.getElementById('wg100');
+wg100Data.forEach((w,i)=>{
+  const div=document.createElement('div');
+  div.className='wg-item';
+  div.textContent = (i+1)+' '+w;
+  wg100Div.appendChild(div);
+});
+
+/* ============ Modal logic ============ */
+let currentModalKey = null;
+const RAST4_KEY = 'raststaette4-answers-v1';
+let rast4Answers = JSON.parse(localStorage.getItem(RAST4_KEY) || '{}');
+function openModal(prefix, idx, title, body){
+  currentModalKey = prefix+'-'+idx;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').textContent = body;
+  document.getElementById('modalAnswer').value = rast4Answers[currentModalKey] || '';
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('show');
+  currentModalKey = null;
+}
+function saveModalAnswer(){
+  if(!currentModalKey) return;
+  const val = document.getElementById('modalAnswer').value;
+  rast4Answers[currentModalKey] = val;
+  localStorage.setItem(RAST4_KEY, JSON.stringify(rast4Answers));
+  if(val.trim()){
+    const parts = currentModalKey.split('-');
+    const idx = parts[parts.length-1];
+    if(currentModalKey.startsWith('board3row')){
+      const cell = document.getElementById('cell-'+idx);
+      if(cell) cell.classList.add('done');
+    } else if(currentModalKey.startsWith('q30')){
+      const li = document.getElementById('q30-'+idx);
+      if(li) li.classList.add('answered');
+    }
+  }
+  closeModal();
+}
+function loadModalState(){
+  Object.keys(rast4Answers).forEach(key=>{
+    if(!rast4Answers[key] || !rast4Answers[key].trim()) return;
+    const parts = key.split('-');
+    const idx = parts[parts.length-1];
+    if(key.startsWith('board3row')){
+      const cell = document.getElementById('cell-'+idx);
+      if(cell) cell.classList.add('done');
+    } else if(key.startsWith('q30')){
+      const li = document.getElementById('q30-'+idx);
+      if(li) li.classList.add('answered');
+    }
+  });
+}
+loadModalState();
+
+/* ============ smiley select ============ */
+function selectSmiley(btn){
+  document.querySelectorAll('#smileyRow button').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  saveNotes();
+}
+
+/* ============ NOTES autosave ============ */
+const NOTES_KEY='raststaette4-notes-v1';
+function loadNotes(){
+  const saved = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    const key = ta.dataset.note;
+    if(saved[key]) ta.value = saved[key];
+    ta.addEventListener('input', saveNotes);
+  });
+  if(saved['smiley']){
+    const btn = document.querySelector(`#smileyRow button[data-v="${saved['smiley']}"]`);
+    if(btn) btn.classList.add('sel');
+  }
+}
+function saveNotes(){
+  const data = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    data[ta.dataset.note] = ta.value;
+  });
+  const selSmiley = document.querySelector('#smileyRow button.sel');
+  if(selSmiley) data['smiley'] = selSmiley.dataset.v;
+  localStorage.setItem(NOTES_KEY, JSON.stringify(data));
+}
+loadNotes();
+</script>
+</body>
+</html>

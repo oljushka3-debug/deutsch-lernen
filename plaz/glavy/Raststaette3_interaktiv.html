@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Raststätte 3 – Interaktiv</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --blue:#1d5c9e; --lightblue:#eaf2fb; --green:#2e8b57; --red:#c0392b;
+  --grey:#666; --border:#ccd6e0; --yellow:#fdf6d8; --lgreen:#e3f0da;
+}
+*{box-sizing:border-box;}
+body{font-family:'Segoe UI',Arial,sans-serif;margin:0;background:#f4f7fb;color:#222;}
+header{background:var(--blue);color:#fff;padding:18px 20px;text-align:center;}
+header h1{margin:0;font-size:1.5em;}
+header p{margin:6px 0 0;font-size:.95em;opacity:.9;}
+nav{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:50;}
+nav button{flex:1;min-width:110px;padding:12px 6px;border:none;background:#fff;cursor:pointer;font-size:.9em;color:var(--blue);border-bottom:3px solid transparent;}
+nav button.active{border-bottom:3px solid var(--blue);font-weight:bold;background:var(--lightblue);}
+main{max-width:900px;margin:0 auto;padding:16px;}
+.tab{display:none;}
+.tab.active{display:block;}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.card h2{margin-top:0;color:var(--blue);font-size:1.15em;border-bottom:2px solid var(--lightblue);padding-bottom:8px;}
+.hint{color:var(--grey);font-size:.87em;margin-bottom:10px;}
+input[type=text]{border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:1em;margin:2px;min-width:70px;}
+input.correct{background:#e3f6e8;border-color:var(--green);}
+input.incorrect{background:#fdeaea;border-color:var(--red);}
+textarea{width:100%;min-height:70px;border:1px solid var(--border);border-radius:5px;padding:8px;font-size:1em;font-family:inherit;}
+button.act{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:8px 14px;margin:4px 6px 4px 0;cursor:pointer;font-size:.9em;}
+button.act.secondary{background:#8296ab;}
+button.act.clear{background:#b0392b;}
+button.act:hover{opacity:.88;}
+.result-box{margin-top:8px;font-weight:bold;padding:8px;border-radius:6px;display:none;}
+.result-box.show{display:block;}
+.result-box.ok{background:#e3f6e8;color:var(--green);}
+.result-box.bad{background:#fdeaea;color:var(--red);}
+.sentence-line{margin:10px 0;line-height:2.3;}
+.notes-area label{display:block;font-weight:bold;margin:10px 0 4px;color:#333;}
+.autosave-note{color:var(--grey);font-size:.85em;font-style:italic;}
+.dlg{background:#fafcff;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;}
+.self-check{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.self-check .box{padding:14px;border-radius:8px;}
+.self-check .box.y{background:var(--yellow);}
+.self-check .box.g{background:var(--lgreen);}
+.self-check .box h3{margin-top:0;font-size:.95em;}
+.smiley-row button{font-size:1.4em;background:none;border:2px solid var(--border);border-radius:50%;width:44px;height:44px;cursor:pointer;margin:3px;}
+.smiley-row button.sel{border-color:var(--blue);background:var(--lightblue);}
+.pool-word{display:inline-block;background:var(--lightblue);padding:5px 10px;border-radius:14px;margin:3px;cursor:pointer;font-size:.9em;}
+.map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0;}
+.map-cell{padding:10px;border-radius:8px;text-align:center;font-size:.85em;}
+.map-cell.a{background:#fff9c4;}
+.map-cell.b{background:#ffccbc;}
+.map-cell.c{background:#d1c4e9;}
+.dice-btn{width:70px;height:70px;background:#fff;border:2px solid var(--blue);border-radius:10px;font-size:1em;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.dice-row{display:flex;gap:14px;justify-content:center;margin:16px 0;flex-wrap:wrap;}
+.game-result{text-align:center;font-size:1.05em;margin-top:10px;font-weight:bold;color:var(--blue);}
+.dice-word{display:inline-block;background:var(--lightblue);padding:5px 10px;border-radius:14px;margin:3px;font-size:.9em;}
+footer{text-align:center;padding:20px;color:var(--grey);font-size:.85em;}
+</style>
+</head>
+<body>
+<header>
+<h1>Raststätte 3</h1>
+<p>Berliner Platz 1 · Kursbuch · Interaktive Wiederholung (Wegbeschreibung, W-Fragen, Tagesablauf, Wohnung)</p>
+</header>
+<nav id="tabnav"></nav>
+<main id="mainArea"></main>
+<footer>Erstellt für dein Deutschlernen · Fortschritt wird lokal in deinem Browser gespeichert</footer>
+
+<script>
+const tabs = [
+  {id:'ex1', label:'1. Wege'},
+  {id:'ex2', label:'2. Vor Ort'},
+  {id:'ex3', label:'3. W-Fragen'},
+  {id:'ex4', label:'4. Verben'},
+  {id:'ex5', label:'5. Tagesablauf'},
+  {id:'ex6', label:'6. Wohnung'},
+  {id:'check', label:'Was kann ich?'},
+  {id:'me', label:'Ich über mich'}
+];
+const nav = document.getElementById('tabnav');
+tabs.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.textContent=t.label;
+  b.onclick=()=>showTab(t.id);
+  b.id='navbtn-'+t.id;
+  if(i===0) b.className='active';
+  nav.appendChild(b);
+});
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('navbtn-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function normalize(s){
+  return (s||'').toString().trim().toLowerCase().replace(/ß/g,'ss').replace(/[.,!?]/g,'').replace(/\s+/g,' ');
+}
+function checkGroup(cls){
+  const inputs = document.querySelectorAll('input.'+cls);
+  let correct=0, total=0;
+  inputs.forEach(inp=>{
+    total++;
+    const ans = (inp.dataset.ans||'').split('/').map(normalize);
+    const val = normalize(inp.value);
+    if(ans.includes(val)){ inp.classList.add('correct'); inp.classList.remove('incorrect'); correct++; }
+    else { inp.classList.add('incorrect'); inp.classList.remove('correct'); }
+  });
+  return {correct,total};
+}
+function showResult(boxId, correct, total){
+  const box=document.getElementById(boxId);
+  box.classList.add('show');
+  if(correct===total){ box.className='result-box show ok'; box.textContent='✓ Alles richtig! ('+correct+'/'+total+')'; }
+  else { box.className='result-box show bad'; box.textContent='Richtig: '+correct+' von '+total+'. Versuch es noch einmal!'; }
+}
+function revealGroup(cls){
+  document.querySelectorAll('input.'+cls).forEach(inp=>{
+    const ans=(inp.dataset.ans||'').split('/')[0];
+    inp.value=ans; inp.classList.add('correct'); inp.classList.remove('incorrect');
+  });
+}
+function clearGroup(cls, boxId){
+  document.querySelectorAll('input.'+cls).forEach(inp=>{
+    inp.value=''; inp.classList.remove('correct','incorrect');
+  });
+  if(boxId){ const box=document.getElementById(boxId); box.classList.remove('show'); }
+}
+function speak(text){
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='de-DE'; u.rate=0.9;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+}
+</script>
+
+<!-- ============ TAB 1: Wege beschreiben ============ -->
+<div class="tab active" id="tab-ex1">
+<div class="card">
+<h2>1a Redemittel für Wegbeschreibungen</h2>
+<p class="hint">Sammle nützliche Ausdrücke, um einen Weg zu beschreiben (kein "eine" richtige Antwort – wird gespeichert).</p>
+<textarea data-note="rast3-redemittel" placeholder="z.B. Gehen Sie geradeaus. / Biegen Sie links/rechts ab. / Die erste/zweite Straße rechts. / Es ist gegenüber von... / Es ist neben..."></textarea>
+</div>
+
+<div class="card">
+<h2>1b Drei Dialoge – Wo wollen die Leute hin? (Karte)</h2>
+<p class="hint">Original hat Audio (Track 2.31). Höre die synthetischen Dialoge und ordne jedem Dialog das richtige Ziel zu. Karten-Legende: 1 = Bäckerei (Feld G3/G4 Bereich), 2 = Hotel (Feld C/D7 Bereich), 3 = Touristeninformation (Feld E7 Bereich).</p>
+<button class="act secondary" onclick="playR3Dialog(1)">▶ Dialog 1 anhören</button>
+<div class="sentence-line">Ziel Dialog 1: <input type="text" class="g1b" data-ans="Bäckerei/Baeckerei" style="width:200px"></div>
+<button class="act secondary" onclick="playR3Dialog(2)">▶ Dialog 2 anhören</button>
+<div class="sentence-line">Ziel Dialog 2: <input type="text" class="g1b" data-ans="Hotel" style="width:200px"></div>
+<button class="act secondary" onclick="playR3Dialog(3)">▶ Dialog 3 anhören</button>
+<div class="sentence-line">Ziel Dialog 3: <input type="text" class="g1b" data-ans="Touristeninformation" style="width:200px"></div>
+<button class="act" onclick="check1b()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g1b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g1b','res1b')">Очистить</button>
+<div class="result-box" id="res1b"></div>
+</div>
+</div>
+
+<!-- ============ TAB 2: Informationen vor Ort ============ -->
+<div class="tab" id="tab-ex2">
+<div class="card">
+<h2>2a Wählen Sie eine Situation. Schreiben Sie Dialoge</h2>
+<p class="hint">Kein "eine" richtige Antwort – wird automatisch gespeichert.</p>
+<div class="sentence-line">1. Sie sind in der Post und wollen zum Bahnhof.</div>
+<textarea data-note="rast3-2a-1" placeholder="A: Entschuldigung, wie komme ich zum Bahnhof? / B: ..."></textarea>
+<div class="sentence-line">2. Sie sind am Bahnhof und wollen zum Rathaus.</div>
+<textarea data-note="rast3-2a-2" placeholder="A: ... / B: ..."></textarea>
+<div class="sentence-line">3. Sie sind in der Volkshochschule und wollen zum Supermarkt.</div>
+<textarea data-note="rast3-2a-3" placeholder="A: ... / B: ..."></textarea>
+<div class="sentence-line">4. Sie sind in der Touristeninformation. Sie brauchen Euros.</div>
+<textarea data-note="rast3-2a-4" placeholder="A: ... / B: ..."></textarea>
+<div class="sentence-line">5. Sie sind im Schwimmbad und haben Hunger.</div>
+<textarea data-note="rast3-2a-5" placeholder="A: ... / B: ..."></textarea>
+</div>
+
+<div class="card">
+<h2>2b Sie sind an Ihrem Ziel angekommen. Spielen Sie weiter</h2>
+<div class="sentence-line">1. Sie sind am Bahnhof und möchten nach Berlin fahren.</div>
+<textarea data-note="rast3-2b-1" placeholder="A: Ich möchte eine Fahrkarte nach Berlin. / B: ..."></textarea>
+<div class="sentence-line">2. Sie möchten die Öffnungszeiten vom Schwimmbad wissen.</div>
+<textarea data-note="rast3-2b-2" placeholder="A: ... / B: ..."></textarea>
+<div class="sentence-line">3. Sie möchten eine Monatskarte für die U-Bahn.</div>
+<textarea data-note="rast3-2b-3" placeholder="A: ... / B: ..."></textarea>
+</div>
+</div>
+
+<!-- ============ TAB 3: W-Fragen-Spiel ============ -->
+<div class="tab" id="tab-ex3">
+<div class="card">
+<h2>3a W-Fragen ergänzen</h2>
+<p class="hint">Es gibt zum Teil mehrere Möglichkeiten – jede sinnvolle Ergänzung wird akzeptiert.</p>
+<div class="sentence-line">1. W<input type="text" class="g3a" data-ans="ann" size="6"> ko<input type="text" class="g3a" data-ans="mmst" size="6"> du?</div>
+<div class="sentence-line">2. W<input type="text" class="g3a" data-ans="ie" size="6"> ist das R<input type="text" class="g3a" data-ans="ezept" size="8">?</div>
+<div class="sentence-line">3. W<input type="text" class="g3a" data-ans="ie" size="6"> ko<input type="text" class="g3a" data-ans="mme" size="6"> ich z<input type="text" class="g3a" data-ans="um" size="6"> V<input type="text" class="g3a" data-ans="olkspark/Verein/Vater" size="10">?</div>
+<div class="sentence-line">4. W<input type="text" class="g3a" data-ans="elche" size="6"> U-<input type="text" class="g3a" data-ans="Bahn" size="6"> fährt z<input type="text" class="g3a" data-ans="um" size="6"> Z<input type="text" class="g3a" data-ans="entrum" size="8">?</div>
+<div class="sentence-line">5. W<input type="text" class="g3a" data-ans="elcher" size="6"> B<input type="text" class="g3a" data-ans="us" size="6"> fährt n<input type="text" class="g3a" data-ans="ach" size="6"> Schöneberg?</div>
+<div class="sentence-line">6. W<input type="text" class="g3a" data-ans="ie" size="6"> v<input type="text" class="g3a" data-ans="iele" size="6"> St<input type="text" class="g3a" data-ans="ationen" size="8"> sind es b<input type="text" class="g3a" data-ans="is" size="6"> z<input type="text" class="g3a" data-ans="um" size="6"> P<input type="text" class="g3a" data-ans="ark/Platz" size="8">?</div>
+<div class="sentence-line">7. W<input type="text" class="g3a" data-ans="o" size="6"> wo<input type="text" class="g3a" data-ans="hnst" size="6"> d<input type="text" class="g3a" data-ans="u" size="4">?</div>
+<div class="sentence-line">8. W<input type="text" class="g3a" data-ans="ie" size="6"> v<input type="text" class="g3a" data-ans="iele" size="6"> Zi<input type="text" class="g3a" data-ans="mmer" size="6"> h<input type="text" class="g3a" data-ans="at" size="6"> d<input type="text" class="g3a" data-ans="eine" size="6"> Wohnung?</div>
+<div class="sentence-line">9. W<input type="text" class="g3a" data-ans="ie" size="6"> i<input type="text" class="g3a" data-ans="st" size="6"> d<input type="text" class="g3a" data-ans="eine" size="6"> N<input type="text" class="g3a" data-ans="ummer/Nachbarschaft" size="10">?</div>
+<button class="act" onclick="check3a()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g3a')">Показать ответ (eine Möglichkeit)</button>
+<button class="act clear" onclick="clearGroup('g3a','res3a')">Очистить</button>
+<div class="result-box" id="res3a"></div>
+</div>
+
+<div class="card">
+<h2>3b Tauschen Sie Ihre Fragen. Schreiben Sie Antworten</h2>
+<p class="hint">Kein "eine" richtige Antwort – wird gespeichert.</p>
+<textarea data-note="rast3-3b" placeholder="Beantworte deine eigenen Fragen aus 3a hier..."></textarea>
+</div>
+</div>
+
+<!-- ============ TAB 4: Verben wiederholen (Würfelspiel) ============ -->
+<div class="tab" id="tab-ex4">
+<div class="card">
+<h2>4. Verben wiederholen – Solo-Version</h2>
+<p class="hint">Original: A nimmt eine Verbkarte, B wählt eine Person, A sagt einen passenden Satz. Hier: Klicke auf ein Verb, dann auf eine Person, und bilde selbst einen Satz.</p>
+<div id="verbPoolR3" style="margin-bottom:10px;"></div>
+<div class="dice-row" id="personPoolR3"></div>
+<div class="game-result" id="r3diceResult">Wähle zuerst ein Verb, dann eine Person!</div>
+<textarea id="r3sentences" data-note="rast3-verb-sentences" placeholder="Schreibe hier deine Sätze, z.B. 'Carlos spricht Spanisch und Deutsch.'" style="margin-top:10px;"></textarea>
+</div>
+</div>
+
+<!-- ============ TAB 5: Ein Tagesablauf ============ -->
+<div class="tab" id="tab-ex5">
+<div class="card">
+<h2>5. Ein Tagesablauf – Frau Fischer</h2>
+<p class="hint">Bildergeschichte (6 Bilder): 1) Sie wacht um 7 Uhr auf und gähnt. 2) Sie zieht sich an der Garderobe an, die Uhr zeigt kurz vor 8. 3) Sie fährt mit dem Bus. 4) Sie steigt an der Haltestelle "Hohenzollernplatz" aus und eilt zur Arbeit. 5) Sie telefoniert am Arbeitsplatz. 6) Um 12:30 isst sie mit einer Kollegin zu Mittag.</p>
+<p class="hint">Schreibe zu jedem Bild einen Satz im Tagesablauf von Frau Fischer (Beispiel: "Am Morgen steht Frau Fischer auf. Um...").</p>
+<textarea data-note="rast3-tagesablauf" style="min-height:150px;" placeholder="1. Am Morgen wacht Frau Fischer um sieben Uhr auf.
+2. ...
+3. ...
+4. ...
+5. ...
+6. ..."></textarea>
+</div>
+</div>
+
+<!-- ============ TAB 6: Zimmer - Küche - Bad ============ -->
+<div class="tab" id="tab-ex6">
+<div class="card">
+<h2>6a Zimmer – Küche – Bad: Notizzettel schreiben</h2>
+<p class="hint">Beispiel: "Ich wohne in Düsseldorf. Meine Wohnung hat 100 qm. Sie hat drei Zimmer und einen Balkon. Die Miete ist 1200 Euro. Die Wohnung liegt an einem Park. In der Nähe gibt es ein Schwimmbad und ein Einkaufszentrum."</p>
+<p class="hint">Wähle eine der vier Personen im Buch (Geschäftsmann, älteres Ehepaar, Mutter mit Tochter, oder große Familie) und schreibe einen Notizzettel über die (fiktive) Wohnung dieser Person.</p>
+<textarea data-note="rast3-6a" placeholder="Ich wohne in... / Meine Wohnung hat ... qm. / Sie hat ... Zimmer... / Die Miete ist... / Die Wohnung liegt..."></textarea>
+</div>
+
+<div class="card">
+<h2>6b Spielen Sie im Kurs – Solo-Übung</h2>
+<p class="hint">Beispielfragen: Wo wohnst du? / Wie groß ist deine Wohnung? / Wie hoch ist die Miete?</p>
+<textarea data-note="rast3-6b" placeholder="Beantworte die Fragen für deine eigene Wohnung: Ich wohne in... / Die Wohnung hat... / Die Miete ist..."></textarea>
+</div>
+</div>
+
+<!-- ============ TAB 7: Was kann ich schon? ============ -->
+<div class="tab" id="tab-check">
+<div class="card">
+<h2>Was kann ich schon? – Selbsttest</h2>
+<p class="hint">Mach die Aufgaben 1-8 und kontrolliere selbst.</p>
+<div class="self-check">
+<div class="box y">
+<h3>1. Nach dem Weg fragen</h3>
+<textarea data-note="rast3-sk1" placeholder="Wie komme ich zum Rathaus? / Wie komme ich zum Bahnhof? / Wo ist das Internetcafé?"></textarea>
+</div>
+<div class="box g">
+<h3>2. Fragen beantworten</h3>
+<textarea data-note="rast3-sk2" placeholder="Wo wohnen Sie? Wie kommen Sie in die Stadt?"></textarea>
+</div>
+<div class="box y">
+<h3>3. Ein Telefongespräch beginnen</h3>
+<textarea data-note="rast3-sk3" placeholder="Sparkasse, guten Tag. – ..."></textarea>
+</div>
+<div class="box g">
+<h3>4. Thema "Wohnung" – Fragen</h3>
+<textarea data-note="rast3-sk4" placeholder="Wie groß ist die Wohnung? 65 qm. / Wie hoch ist die Miete? 550 € im Monat. / ..."></textarea>
+</div>
+<div class="box y">
+<h3>5. Sagen, was man an einem Tag gemacht hat</h3>
+<textarea data-note="rast3-sk5" placeholder="Gestern habe ich... / Letzte Woche..."></textarea>
+</div>
+<div class="box g">
+<h3>6. Was können Sie? Drei Beispiele</h3>
+<textarea data-note="rast3-sk6" placeholder="Ich kann gut singen. / Ich kann..."></textarea>
+</div>
+<div class="box y">
+<h3>7. Über die Familie sprechen</h3>
+<div class="sentence-line">Ich liebe m<input type="text" class="g7" data-ans="einen" size="6"> Sohn.</div>
+<div class="sentence-line">Wo wohnt d<input type="text" class="g7" data-ans="ie" size="6"> Mutter?</div>
+<div class="sentence-line">Petra fährt nach Potsdam. I<input type="text" class="g7" data-ans="hr" size="6"> Vater wohnt dort.</div>
+<div class="sentence-line">U<input type="text" class="g7" data-ans="nsere" size="6"> Tochter geht schon in die Schule.</div>
+<button class="act" onclick="checkSk7()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g7')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g7','resSk7')">Очистить</button>
+<div class="result-box" id="resSk7"></div>
+</div>
+<div class="box g">
+<h3>8. Was wollen Sie? Drei Beispiele</h3>
+<textarea data-note="rast3-sk8" placeholder="Nächsten Monat... / In zwei Jahren..."></textarea>
+</div>
+</div>
+<p><b>Mein Ergebnis finde ich:</b></p>
+<div class="smiley-row" id="smileyRow">
+<button data-v="good" onclick="selectSmiley(this)">☺</button>
+<button data-v="ok" onclick="selectSmiley(this)">😐</button>
+<button data-v="bad" onclick="selectSmiley(this)">☹</button>
+</div>
+</div>
+</div>
+
+<!-- ============ TAB 8: Ich über mich ============ -->
+<div class="tab" id="tab-me">
+<div class="card">
+<h2>Ich über mich – Land des Lächelns</h2>
+<p class="hint">Beispieltext (Hiromi aus Japan): Die Wohnungssuche war für sie und ihren Mann kein Problem – ein Makler hat gesucht, sie haben drei Wohnungen angesehen und sich für eine in der Nähe des Englischen Gartens entschieden. Am Abend hatten sie ein lustiges Missverständnis mit dem Schlüssel bei der falschen Wohnungstür, trafen dabei aber ihren neuen Nachbarn.</p>
+<p class="hint">Jetzt du: Schreibe über deine Wohnung und/oder deine Wohnungssuche.</p>
+<textarea data-note="rast3-ichubermich" style="min-height:220px;" placeholder="Meine Wohnungssuche... / Ich wohne in... / Meine Wohnung hat... / ..."></textarea>
+</div>
+</div>
+
+<script>
+/* ============ Tab 1: dialog audio (synthesized) ============ */
+const r3Dialogs = {
+  1: "Entschuldigung, wo ist die Bäckerei? Gehen Sie hier geradeaus bis zur Ampel, dann rechts. Die Bäckerei ist auf der linken Seite, neben dem Krankenhaus.",
+  2: "Wir suchen ein Hotel. Gehen Sie hier die Straße entlang bis zur Kreuzung, dann links. Das Hotel ist am Ende der Straße, gegenüber vom Markt.",
+  3: "Wo finde ich die Touristeninformation? Gehen Sie geradeaus, vorbei am Markt, dann ist sie auf der rechten Seite."
+};
+function playR3Dialog(n){ speak(r3Dialogs[n]); }
+function check1b(){ const r=checkGroup('g1b'); showResult('res1b', r.correct, r.total); }
+
+/* ============ Tab 3: W-Fragen ============ */
+function check3a(){ const r=checkGroup('g3a'); showResult('res3a', r.correct, r.total); }
+
+/* ============ Tab 4: Verben wiederholen ============ */
+const verbListR3 = ["sprechen","kommen","wohnen","arbeiten","fahren","essen","trinken","kaufen","lesen","schreiben","kochen","lernen","spielen","sehen","haben","sein","gehen","suchen","finden","brauchen"];
+const personListR3 = ["ich","du","Carlos","wir","ihr","Herr und Frau Müller"];
+let chosenVerbR3 = null, chosenPersonR3 = null;
+const verbPoolR3 = document.getElementById('verbPoolR3');
+verbListR3.forEach(v=>{
+  const span=document.createElement('span');
+  span.className='dice-word'; span.style.cursor='pointer';
+  span.textContent=v;
+  span.onclick=()=>{ chosenVerbR3=v; updateR3Result(); };
+  verbPoolR3.appendChild(span);
+});
+const personPoolR3 = document.getElementById('personPoolR3');
+personListR3.forEach(p=>{
+  const btn=document.createElement('button');
+  btn.className='dice-btn'; btn.style.width='auto'; btn.style.height='auto'; btn.style.padding='10px 14px';
+  btn.textContent=p;
+  btn.onclick=()=>{ chosenPersonR3=p; updateR3Result(); };
+  personPoolR3.appendChild(btn);
+});
+function updateR3Result(){
+  const box = document.getElementById('r3diceResult');
+  if(chosenVerbR3 && chosenPersonR3){
+    box.textContent = `Person: ${chosenPersonR3} · Verb: ${chosenVerbR3} – bilde jetzt einen Satz!`;
+  } else if(chosenVerbR3){
+    box.textContent = `Verb gewählt: ${chosenVerbR3}. Wähle jetzt eine Person.`;
+  } else if(chosenPersonR3){
+    box.textContent = `Person gewählt: ${chosenPersonR3}. Wähle jetzt ein Verb.`;
+  }
+}
+
+/* ============ Tab 7: Selbsttest Familie ============ */
+function checkSk7(){ const r=checkGroup('g7'); showResult('resSk7', r.correct, r.total); }
+
+/* ============ Tab 7: smiley select ============ */
+function selectSmiley(btn){
+  document.querySelectorAll('#smileyRow button').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  saveNotes();
+}
+
+/* ============ NOTES autosave ============ */
+const NOTES_KEY='raststaette3-notes-v1';
+function loadNotes(){
+  const saved = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    const key = ta.dataset.note;
+    if(saved[key]) ta.value = saved[key];
+    ta.addEventListener('input', saveNotes);
+  });
+  if(saved['smiley']){
+    const btn = document.querySelector(`#smileyRow button[data-v="${saved['smiley']}"]`);
+    if(btn) btn.classList.add('sel');
+  }
+}
+function saveNotes(){
+  const data = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    data[ta.dataset.note] = ta.value;
+  });
+  const selSmiley = document.querySelector('#smileyRow button.sel');
+  if(selSmiley) data['smiley'] = selSmiley.dataset.v;
+  localStorage.setItem(NOTES_KEY, JSON.stringify(data));
+}
+loadNotes();
+</script>
+</body>
+</html>

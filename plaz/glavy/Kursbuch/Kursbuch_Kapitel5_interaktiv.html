@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kursbuch Kapitel 5 — Was darf's sein? — Interaktive Übungen</title>
+<style>
+  :root{--bg:#f6f4ef;--card:#ffffff;--ink:#2b2a28;--muted:#767268;--accent:#d98c1f;--accent2:#1f6f5c;--line:#e3ddd0;--ok:#1f6f5c;--bad:#c0392b;--chip:#efe9db;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Georgia','Iowan Old Style',serif;background:var(--bg);color:var(--ink);line-height:1.5;}
+  header{background:var(--ink);color:#fdfaf3;padding:28px 20px 22px;text-align:center;}
+  header h1{margin:0 0 4px;font-size:2rem;letter-spacing:.5px;}
+  header p{margin:0;color:#cfc8b8;font-size:.95rem;}
+  nav{position:sticky;top:0;z-index:50;background:#fffdf8;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;justify-content:center;}
+  nav button{font-family:inherit;border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:7px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;}
+  nav button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  main{max-width:840px;margin:0 auto;padding:24px 16px 80px;}
+  section{display:none;}
+  section.active{display:block;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 22px 24px;margin-bottom:22px;box-shadow:0 2px 6px rgba(0,0,0,.04);}
+  .card h2{margin-top:0;font-size:1.3rem;color:var(--accent);border-bottom:2px dotted var(--line);padding-bottom:8px;}
+  .instr{color:var(--muted);font-style:italic;margin-bottom:14px;font-size:.95rem;}
+  .row{display:flex;align-items:center;gap:10px;margin:10px 0;flex-wrap:wrap;}
+  .row .label{min-width:26px;color:var(--muted);font-size:.9rem;}
+  input[type=text]{font-family:inherit;font-size:1rem;padding:7px 10px;border:1.5px solid var(--line);border-radius:8px;background:#fffef9;color:var(--ink);min-width:120px;flex:1;}
+  input[type=text].wide{min-width:220px;}
+  input[type=text].narrow{min-width:60px;flex:none;width:80px;}
+  input[type=text]:focus{outline:none;border-color:var(--accent2);}
+  input.correct{border-color:var(--ok);background:#eef7f2;}
+  input.incorrect{border-color:var(--bad);background:#fbeceb;}
+  .btn-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .checkbtn, .revealbtn, .clearbtn{font-family:inherit;border:none;padding:9px 18px;border-radius:10px;cursor:pointer;font-size:.92rem;font-weight:bold;}
+  .checkbtn{background:var(--ink);color:#fdfaf3;}
+  .revealbtn, .clearbtn{background:var(--chip);color:var(--ink);}
+  .checkbtn:hover{opacity:.88;}
+  .revealbtn:hover, .clearbtn:hover{background:#e4dcc7;}
+  .feedback{margin-top:10px;font-size:.9rem;font-weight:bold;}
+  .feedback.ok{color:var(--ok);}
+  .feedback.bad{color:var(--bad);}
+  audio{width:100%;margin-bottom:12px;}
+  .abc-options{display:flex;gap:10px;flex-wrap:wrap;}
+  .abc-btn{font-family:inherit;border:1.5px solid var(--line);background:#fff;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:.95rem;flex:1;min-width:110px;text-align:center;}
+  .abc-btn.selected{background:var(--accent2);color:#fff;border-color:var(--accent2);}
+  .dialog-box{background:#fbf9f3;border-left:4px solid var(--accent2);padding:14px 16px;border-radius:6px;margin:10px 0 16px;}
+  .word-bank{background:var(--chip);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.92rem;color:var(--muted);}
+  .word-bank b{color:var(--ink);}
+  .srs-card{background:#fbf9f3;border:1px solid var(--line);border-radius:14px;padding:30px 24px;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;margin-bottom:16px;}
+  .srs-controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .srs-controls button{font-family:inherit;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:bold;color:#fff;}
+  .srs-meta{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:10px;}
+  .srs-toggle{display:flex;justify-content:center;gap:8px;margin-bottom:16px;}
+  .srs-toggle button{font-family:inherit;border:1px solid var(--line);background:var(--chip);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;}
+  .srs-toggle button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .spk-btn{border:none;background:var(--accent2);color:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:1rem;margin-left:8px;}
+  .notiz-box textarea{width:100%;font-family:inherit;font-size:.95rem;padding:10px;border:1.5px solid var(--line);border-radius:8px;min-height:90px;background:#fffef9;color:var(--ink);resize:vertical;}
+  .notiz-saved{font-size:.8rem;color:var(--muted);margin-top:6px;font-style:italic;}
+  table.vtable{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem;}
+  table.vtable th, table.vtable td{border:1px solid var(--line);padding:8px;text-align:left;}
+  table.vtable th{background:var(--chip);}
+  table.vtable input[type=text]{min-width:70px;padding:5px 7px;font-size:.9rem;}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px;}
+  .grammar-box{background:#eef7f2;border:1.5px solid var(--ok);border-radius:10px;padding:14px 16px;margin:10px 0;font-size:.9rem;}
+  .rf-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dotted var(--line);gap:10px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Kursbuch — Kapitel 5</h1>
+  <p>Berliner Platz 1 · Was darf's sein? · Interaktive Übungen mit echtem Audio</p>
+</header>
+
+<nav id="tabs">
+  <button data-tab="uebungen" class="active">📝 Übungen</button>
+  <button data-tab="grammatik">📖 Grammatik & Aussprache</button>
+  <button data-tab="vokabeln">🃏 Vokabeln</button>
+  <button data-tab="notizen">✏️ Notizen</button>
+</nav>
+
+<main>
+
+<!-- ================= ÜBUNGEN ================= -->
+<section id="uebungen" class="active">
+
+  <div class="card">
+    <h2>1a Lebensmittel — Ordnen Sie die Wörter den Fotos zu</h2>
+    <p class="instr">Bäckerei (A): Brot, Brötchen, Kuchen • Supermarkt (B): Milch, Käse, Joghurt • Markt (C): Apfel, Banane, Kartoffel, Salat, Tomate • Metzgerei (D): Fleisch, Schinken, Wurst • Getränkemarkt (E): Bier, Mineralwasser</p>
+    <div class="word-bank">der Apfel • die Banane • das Bier • das Brot • das Brötchen • die Butter • das Fleisch • der Joghurt • die Kartoffel • der Käse • der Kuchen • die Milch • das Mineralwasser • der Salat • der Schinken • die Tomate • der Zucker • die Wurst</div>
+  </div>
+
+  <div class="card">
+    <h2>1b Welche Lebensmittel kennen Sie auf Deutsch? Ordnen Sie nach Farben</h2>
+    <div class="notiz-box"><textarea id="notiz1b" placeholder="weiß: Milch, Zucker, ...&#10;rot: Tomate, Apfel, ...&#10;grün: Salat, ...&#10;gelb: Banane, Käse, ...&#10;blau: ...&#10;braun: Brot, Kaffee, ...&#10;schwarz: Pfeffer, ..."></textarea><div class="notiz-saved" id="saved1b"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>2b Wo kaufen Herr Podolski und Frau Schmidt ein? — Hören Sie und notieren Sie</h2>
+    <audio controls src="audio_kb5/track1_41.mp3"></audio>
+    <div class="row"><span class="label">Herr Podolski —</span>Fleisch: <input type="text" class="fill wide" data-group="ex2b" data-ans="Metzgerei"></div>
+    <div class="row"><span class="label"></span>Brot/Brötchen: <input type="text" class="fill wide" data-group="ex2b" data-ans="Supermarkt"></div>
+    <div class="row"><span class="label"></span>Wein und Pizza: <input type="text" class="fill wide" data-group="ex2b" data-ans="Supermarkt"></div>
+    <div class="row"><span class="label">Frau Schmidt —</span>Obst (Äpfel, Bananen): <input type="text" class="fill wide" data-group="ex2b" data-ans="Markt"></div>
+    <div class="row"><span class="label"></span>Gemüse (Salat, Kartoffeln, Tomaten, Paprika): <input type="text" class="fill wide" data-group="ex2b" data-ans="Markt"></div>
+    <div class="row"><span class="label"></span>Brot/Brötchen: <input type="text" class="fill wide" data-group="ex2b" data-ans="beim Bäcker"></div>
+    <div class="row"><span class="label"></span>Nudeln, Reis, Müsli: <input type="text" class="fill wide" data-group="ex2b" data-ans="Bioladen"></div>
+    <div class="row"><span class="label"></span>Saft und Wasser: <input type="text" class="fill wide" data-group="ex2b" data-ans="Getränkemarkt"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex2b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex2b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex2b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex2b"></div>
+  </div>
+
+  <div class="card">
+    <h2>2c Schreiben Sie einen Einkaufszettel für diese Leute</h2>
+    <p class="instr">Für Lukas Bucher (Kapitel 4), eine Familie mit fünf Personen, ein Senioren-Ehepaar. Freie Übung.</p>
+    <div class="notiz-box"><textarea id="notiz2c" placeholder="Lukas Bucher: Kaffee, Brötchen, Pizza, ...&#10;Familie (5 Personen): ...&#10;Senioren-Ehepaar: ..."></textarea><div class="notiz-saved" id="saved2c"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>3. Packung – Dose – Kasten – Kilo — Wie kauft man was? Ergänzen Sie die Listen</h2>
+    <div class="row"><span class="label">Stück:</span><input type="text" class="wide" placeholder="Äpfel, Birnen, ..."></div>
+    <div class="row"><span class="label">Kästen:</span><input type="text" class="wide" placeholder="Bier, Apfelsaft, ..."></div>
+    <div class="row"><span class="label">Flaschen:</span><input type="text" class="wide" placeholder="Bier, Öl, Essig, ..."></div>
+    <div class="row"><span class="label">Dosen:</span><input type="text" class="wide" placeholder="Salami, Tomaten, ..."></div>
+    <div class="row"><span class="label">Gläser:</span><input type="text" class="wide" placeholder="Marmelade, Salz, ..."></div>
+    <div class="row"><span class="label">Packungen:</span><input type="text" class="wide" placeholder="Butter, Nudeln, Reis, ..."></div>
+    <div class="row"><span class="label">Kilo/Pfund/Gramm:</span><input type="text" class="wide" placeholder="Bananen, Kartoffeln, Rindfleisch, ..."></div>
+    <div class="row"><span class="label">Liter:</span><input type="text" class="wide" placeholder="Milch, Apfelsaft, ..."></div>
+    <p class="instr">Freie Zuordnung — vergleichen Sie im Kurs, mehrere Antworten sind möglich.</p>
+  </div>
+
+  <div class="card">
+    <h2>4a Lebensmittel weltweit — Wie heißen die Lebensmittel auf Deutsch?</h2>
+    <div class="dialog-box">
+      ● Was ist denn das? Eine Birne?<br>○ Nein, eine Mango. Das heißt auf Deutsch auch Mango.<br><br>
+      ● Was heißt „berenjena" auf Deutsch?<br>○ Äh, ich glaube, Aubergine!
+    </div>
+    <div class="notiz-box"><textarea id="notiz4a" placeholder="Welche Lebensmittel sind für Sie wichtig? Wie heißen sie auf Deutsch?"></textarea><div class="notiz-saved" id="saved4a"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>4b Schreiben Sie Ihren Einkaufszettel für das Wochenende</h2>
+    <div class="notiz-box"><textarea id="notiz4b" placeholder="Frühstück: ...&#10;Mittagessen: ...&#10;Abendessen: ..."></textarea><div class="notiz-saved" id="saved4b"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>5a Was mögen Sie? — Ergänzen Sie die Sprechblasen</h2>
+    <div class="row"><span class="label">1.</span><input type="text" class="fill wide" data-group="ex5a" data-ans="Magst"> du Reis und Bohnen?</div>
+    <div class="row"><span class="label">2.</span>Ja, ich <input type="text" class="fill narrow" data-group="ex5a" data-ans="mag"> Reis und Bohnen. <input type="text" class="fill wide" data-group="ex5a" data-ans="Magst"> du Schnitzel?</div>
+    <div class="row"><span class="label">3.</span>Nein, Schnitzel <input type="text" class="fill narrow" data-group="ex5a" data-ans="mag"> ich nicht. <input type="text" class="fill wide" data-group="ex5a" data-ans="Mögen"> deine Kinder ...?</div>
+    <div class="row"><span class="label">4.</span>Keine Ahnung. <input type="text" class="fill wide" data-group="ex5a" data-ans="Mögt"> ihr ...?</div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex5a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex5a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex5a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex5a"></div>
+  </div>
+
+  <div class="card">
+    <h2>6a Nomen im Plural — Schreiben Sie die Pluralformen</h2>
+    <div class="row"><span class="label">das Glas</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Gläser"></div>
+    <div class="row"><span class="label">der Verkäufer</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Verkäufer"></div>
+    <div class="row"><span class="label">das Steak</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Steaks"></div>
+    <div class="row"><span class="label">das Brot</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Brote"></div>
+    <div class="row"><span class="label">das Ei</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Eier"></div>
+    <div class="row"><span class="label">die Mango</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Mangos"></div>
+    <div class="row"><span class="label">der Saft</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Säfte"></div>
+    <div class="row"><span class="label">die Kartoffel</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Kartoffeln"></div>
+    <div class="row"><span class="label">das Schnitzel</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Schnitzel"></div>
+    <div class="row"><span class="label">die Packung</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Packungen"></div>
+    <div class="row"><span class="label">die Nudel</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Nudeln"></div>
+    <div class="row"><span class="label">der Apfel</span>→ <input type="text" class="fill wide" data-group="ex6a" data-ans="die Äpfel"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex6a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex6a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex6a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex6a"></div>
+  </div>
+
+  <div class="card">
+    <h2>6b Notieren Sie zehn Nomen aus Kapitel 1 bis 4 auf Lernkarten</h2>
+    <p class="instr">Arbeiten Sie mit dem Wörterbuch. Freie Übung — nutzen Sie die Notizen.</p>
+    <div class="notiz-box"><textarea id="notiz6b" placeholder="das Heft, -e&#10;der Kuli, -s&#10;..."></textarea><div class="notiz-saved" id="saved6b"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>6d Ein Spiel — Hören Sie das Beispiel und spielen Sie im Kurs</h2>
+    <audio controls src="audio_kb5/track1_42.mp3"></audio>
+    <div class="dialog-box">
+      ● Ich möchte zwei Flaschen Bier.<br>
+      ○ Ich möchte zwei Flaschen Bier und drei Pfund Tomaten.<br>
+      ■ Ich möchte zwei Flaschen Bier, drei Pfund Tomaten und eine Packung Nudeln.<br>
+      □ Ich möchte zwei Flaschen Bier und eine Packung Nudeln.<br>
+      ► Falsch! Ich möchte vier Äpfel.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>7a ü-Laute — Hören Sie zu und sprechen Sie nach</h2>
+    <audio controls src="audio_kb5/track1_43.mp3"></audio>
+    <div class="dialog-box">
+      üben • fünf • Gemüse • mit Gemüse • frühstücken • in München frühstücken • ein Menü kochen<br>
+      Üben Sie das „Ü"! • In München und Zürich? • Natürlich! • Fünf Minuten?
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>7b ö-Laute — Hören Sie zu und sprechen Sie nach</h2>
+    <audio controls src="audio_kb5/track1_44.mp3"></audio>
+    <div class="dialog-box">
+      schön • danke schön • möchten • Öl • mit Öl • Brötchen • zwölf Brötchen<br>
+      Möchten Sie Brötchen? – Ja, zwölf Brötchen, bitte. • Salat mit Öl? – Mit Zitrone und Öl.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>8a Matis Laden — Was kauft Frau Beimer? Hören Sie und kreuzen Sie an</h2>
+    <audio controls src="audio_kb5/track1_45.mp3"></audio>
+    <div class="row"><span class="label">Sie kauft:</span><input type="text" class="fill wide" data-group="ex8a" data-ans="Tomaten, Butter, Eier, Käse (Emmentaler)"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex8a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex8a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex8a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex8a"></div>
+  </div>
+
+  <div class="card">
+    <h2>8b Hören Sie noch einmal und ordnen Sie die Preise den Lebensmitteln zu</h2>
+    <div class="row"><span class="label">Butter</span>→ <input type="text" class="fill narrow" data-group="ex8b" data-ans="1,70;1.70"></div>
+    <div class="row"><span class="label">Eier (6 Stück)</span>→ <input type="text" class="fill narrow" data-group="ex8b" data-ans="1,50;1.50"></div>
+    <div class="row"><span class="label">Käse</span>→ <input type="text" class="fill narrow" data-group="ex8b" data-ans="2,20;2.20"></div>
+    <div class="row"><span class="label">Tomaten</span>→ <input type="text" class="fill narrow" data-group="ex8b" data-ans="2,50;2.50"></div>
+    <div class="row"><span class="label">Mango (nicht gekauft)</span>→ <input type="text" class="fill narrow" data-group="ex8b" data-ans="3;3,00"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex8b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex8b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex8b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex8b"></div>
+  </div>
+
+  <div class="card">
+    <h2>8c Was ist das Problem?</h2>
+    <p class="instr">Sie kauft: Butter (2€50), Eier (1€50), Käse (2€20), Tomaten (1€70) — Summe 7€90. Sie zahlt 10€ und bekommt 3€10 zurück.</p>
+    <div class="abc-options" data-q="matis">
+      <button class="abc-btn" onclick="selectABC(this,'matis','a')">keine Tomaten</button>
+      <button class="abc-btn" onclick="selectABC(this,'matis','b')">zu viel Geld zurück</button>
+      <button class="abc-btn" onclick="selectABC(this,'matis','c')">keine Mangos</button>
+      <button class="abc-btn" onclick="selectABC(this,'matis','d')">zu wenig Geld zurück</button>
+    </div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkMatis()">Проверить</button>
+      <button class="revealbtn" onclick="revealMatis()">Показать ответ</button>
+      <button class="clearbtn" onclick="clearMatis()">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-matis"></div>
+  </div>
+
+  <div class="card">
+    <h2>9. Einkaufsdialoge — Spielen Sie im Kurs</h2>
+    <div class="grammar-box">
+      <b>Kunde/Kundin:</b> Ich möchte ... / Ich hätte gern ... / Geben Sie mir bitte ... / Haben Sie ... da? / Ich nehme 100 Gramm ... / Ja, ich brauche noch ... / Nein, danke, nichts mehr. / Ja, das ist alles. / Danke schön. Auf Wiedersehen.<br>
+      <b>Verkäufer/in:</b> Sie wünschen? / Ja, bitte? / Wer kommt dran? / Wie viel? / In Scheiben oder am Stück? / Noch etwas? / Ist das alles? / ... Euro zusammen. Und ... zurück. / Danke schön. Auf Wiedersehen.
+    </div>
+    <div class="notiz-box"><textarea id="notiz9" placeholder="Schreiben Sie hier Ihren Dialog..."></textarea><div class="notiz-saved" id="saved9"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>10a Was kochen wir? Das Menü — Hören Sie und notieren Sie das Menü</h2>
+    <audio controls src="audio_kb5/track1_46.mp3"></audio>
+    <div class="row"><span class="label">Vorspeise 1:</span><input type="text" class="fill wide" data-group="ex10a" data-ans="Salat"></div>
+    <div class="row"><span class="label">Vorspeise 2:</span><input type="text" class="fill wide" data-group="ex10a" data-ans="Suppe"></div>
+    <div class="row"><span class="label">Hauptspeise:</span><input type="text" class="fill wide" data-group="ex10a" data-ans="Pizza"></div>
+    <div class="row"><span class="label">Nachtisch:</span><input type="text" class="fill wide" data-group="ex10a" data-ans="Obstsalat"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex10a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex10a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex10a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex10a"></div>
+  </div>
+
+  <div class="card">
+    <h2>10b Die Zubereitung — Hören Sie. Was fehlt?</h2>
+    <audio controls src="audio_kb5/track1_47.mp3"></audio>
+    <div class="row"><span class="label">Sie haben nicht:</span><input type="text" class="fill wide" data-group="ex10b" data-ans="Brokkoli, Möhre (Karotte)"></div>
+    <div class="row"><span class="label">Inge mag kein:</span><input type="text" class="fill wide" data-group="ex10b" data-ans="Fleisch"></div>
+    <div class="row"><span class="label">Für den Obstsalat fehlt:</span><input type="text" class="fill wide" data-group="ex10b" data-ans="Bananen, Orangen"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex10b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex10b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex10b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex10b"></div>
+  </div>
+
+  <div class="card">
+    <h2>11a/11c Nomen: Akkusativ — Markieren Sie die Verben und Artikel im Dialog</h2>
+    <div class="dialog-box">
+      ○ Ich mache den Salat und eine Soße mit Olivenöl, Zitronensaft und Knoblauch.<br>
+      ● Ich koche dann die Gemüsesuppe. Haben wir alles?<br>
+      ○ Wir haben noch eine Tomate, eine Zwiebel, zwei Paprika und drei Kartoffeln. Aber keinen Brokkoli und keine Möhre.<br>
+      ● Macht nichts! Das reicht ja. Ich schneide das Gemüse.<br>
+      ○ Für die Pizza nehme ich ein Pfund Mehl, ein Päckchen Hefe, etwas Öl und Wasser.<br>
+      ● Sonst nichts?<br>
+      ○ Doch! Für den Belag brauche ich eine Dose Tomaten, sechs Scheiben Salami ...
+    </div>
+    <p class="instr">Maskulinum (der): den Salat • Neutrum (das): das Gemüse • Femininum (die): eine Soße, die Gemüsesuppe, eine Tomate, eine Zwiebel, eine Dose Tomaten</p>
+  </div>
+
+  <div class="card">
+    <h2>12a Ein Essen planen: einkaufen, kochen — Schreiben Sie Sätze</h2>
+    <div class="word-bank">suchen (A) • machen (A) • haben (A) • schneiden (A) • brauchen (A) • nehmen (A) • essen (A) • holen (A) • kaufen (A) • finden (A) • möchten (A)</div>
+    <div class="notiz-box"><textarea id="notiz12a" placeholder="Ich mache eine Pizza.&#10;Wir haben keine Tomaten.&#10;Ich kaufe ...&#10;Ich schneide ...&#10;Ich koche ..."></textarea><div class="notiz-saved" id="saved12a"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>13a/13b Ein Kochrezept — Kartoffel-Zucchini-Auflauf</h2>
+    <p class="instr">Zutaten für 4 Personen: 750 g Kartoffeln, 400 g Zucchini, 1 Zwiebel, 1 Apfel, 4 Eier, 200 g süße Sahne, 3 EL Butter, Salz, Pfeffer, Muskatnuss, Estragon.</p>
+    <div class="dialog-box">
+      Vorbereitung: Zwiebel schälen, schneiden und anbraten, in eine Auflaufform füllen. Kartoffeln waschen, schälen, in dünne Scheiben schneiden. Zucchini in dünne Scheiben schneiden. Apfel schälen und in Scheiben schneiden.<br><br>
+      Zubereitung: Die Kartoffel-, Zucchini- und Apfelscheiben in die Auflaufform legen. Den Backofen auf 200°C vorheizen. Die Eier und die Sahne verrühren, mit Salz, Pfeffer und Muskatnuss würzen. Estragon in feine Streifen schneiden und mit der Eiersahne verrühren. Das Ganze gleichmäßig über die Gemüse- und Apfelscheiben gießen. Auflaufform mit Deckel für ca. 20 Minuten in den Backofen stellen (mittlere Schiene). Danach Deckel wegnehmen. Nach ca. 30 Minuten ist der Auflauf fertig.
+    </div>
+    <p class="instr">Welche vier Fotos passen zum Rezept, in welcher Reihenfolge? (A: Gemüse schneiden, D: Zucchini anbraten, F: Eier/Sahne verquirlen, C: Backofen einstellen). Freie Übung — vergleichen Sie im Kurs.</p>
+  </div>
+
+  <div class="card">
+    <h2>14. Omas Tipps — Welche Tipps bekommt Felix? Richtig oder falsch?</h2>
+    <audio controls src="audio_kb5/track1_48.mp3"></audio>
+    <div class="row"><span class="label">Für 7 Personen alle Zutaten x2 nehmen (doppelte Menge).</span><input type="text" class="fill narrow" data-group="ex14" data-ans="R"></div>
+    <div class="row"><span class="label">Nina mag Zucchini.</span><input type="text" class="fill narrow" data-group="ex14" data-ans="F"></div>
+    <div class="row"><span class="label">Fisch oder Fleisch passen dazu.</span><input type="text" class="fill narrow" data-group="ex14" data-ans="R"></div>
+    <div class="row"><span class="label">Käse ist nicht so gut.</span><input type="text" class="fill narrow" data-group="ex14" data-ans="F"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex14')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex14')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex14')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex14"></div>
+    <p class="instr">(R = Richtig, F = Falsch)</p>
+  </div>
+
+</section>
+
+<!-- ================= GRAMMATIK & AUSSPRACHE ================= -->
+<section id="grammatik">
+  <div class="card">
+    <h2>📖 Auf einen Blick — Grammatik</h2>
+
+    <div class="grammar-box">
+      <b>1. Verbformen: mögen, nehmen, essen, lesen</b><br>
+      <table class="vtable">
+        <tr><th></th><th>mögen</th><th>nehmen</th><th>essen</th><th>lesen</th></tr>
+        <tr><td>ich</td><td>mag</td><td>nehme</td><td>esse</td><td>lese</td></tr>
+        <tr><td>du</td><td>magst</td><td>nimmst</td><td>isst</td><td>liest</td></tr>
+        <tr><td>er/es/sie</td><td>mag</td><td>nimmt</td><td>isst</td><td>liest</td></tr>
+        <tr><td>wir</td><td>mögen</td><td>nehmen</td><td>essen</td><td>lesen</td></tr>
+        <tr><td>ihr</td><td>mögt</td><td>nehmt</td><td>esst</td><td>lest</td></tr>
+        <tr><td>sie/Sie</td><td>mögen</td><td>nehmen</td><td>essen</td><td>lesen</td></tr>
+      </table>
+    </div>
+
+    <div class="grammar-box">
+      <b>2. Verben mit Akkusativ</b><br>
+      Ich nehme einen Salat, ein Ei und eine Tomate. Ich brauche keine Zwiebeln.<br>
+      Ich mag keinen Salat, keine Eier und keine Tomaten. Ich esse gerne Äpfel.
+    </div>
+
+    <div class="grammar-box">
+      <b>3. Artikel und Nomen: Akkusativformen</b><br>
+      <table class="vtable">
+        <tr><th></th><th>Maskulinum (der)</th><th>Neutrum (das)</th><th>Femininum (die)</th><th>Plural (die)</th></tr>
+        <tr><td>Ich mag</td><td>den Apfel</td><td>das Brot</td><td>die Tomate</td><td>die Äpfel/Brote</td></tr>
+        <tr><td></td><td>einen Apfel</td><td>ein Brot</td><td>eine Tomate</td><td>– Äpfel/Brote</td></tr>
+        <tr><td></td><td>keinen Apfel</td><td>kein Brot</td><td>keine Tomate</td><td>keine Äpfel/Brote</td></tr>
+      </table>
+      <b>TIPP:</b> Den Akkusativ einfach lernen — Maskulinum Singular -en.
+    </div>
+
+    <div class="grammar-box">
+      <b>4. Nomen: Plural</b><br>
+      ¨-/-: der Apfel → die Äpfel, der Computer → die Computer<br>
+      ¨-e/-e: die Wurst → die Würste<br>
+      ¨-er/-er: das Glas → die Gläser<br>
+      -n/-en: die Tomate → die Tomaten, die Frau → die Frauen<br>
+      -s: das Kilo → die Kilos, der Park → die Parks<br><br>
+      <b>TIPP:</b> Nomen immer mit Artikel und Plural lernen.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🗣️ Aussprache</h2>
+    <div class="grammar-box">
+      <b>ü- und ö-Laute</b><br>
+      [i] + Kuss → [ü]: Bitte, üben Sie! Natürlich. Fünf Minuten.<br>
+      [e] + Kuss → [ö]: Was möchten Sie? Zehn Brötchen.<br>
+      <b>TIPP:</b> [ü] und [ö] sind Laute mit Kuss (Lippen gerundet).
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💬 Im Alltag — Nützliche Sätze</h2>
+    <div class="grammar-box">
+      <b>1. Ich hätte gern ...</b><br>
+      <b>Verkäufer/in:</b> Guten Tag. Sie wünschen? Was hätten Sie gern? Wer ist der Nächste, bitte? / Wer ist dran? Darf es noch etwas sein? / Noch etwas? Wie viel? In Scheiben oder am Stück? Darf es ein bisschen mehr sein? War's das? / Ist das alles? Das macht 25 Euro zusammen.<br>
+      <b>Kunde/Kundin:</b> Guten Tag. Ich hätte gern ... / Geben Sie mir bitte ... Haben Sie (auch) ...? Was kostet ...? Was ist heute im Angebot? Ja, ich brauche noch ... / Geben Sie mir noch ... 100 g / 1 kg / 1 Glas ... bitte! In Scheiben. Am Stück, bitte. Ja, ist o.k. / Nein, bitte nur ... Ja, das war's. / Nein, ich brauche noch ... Nehmen Sie Kreditkarte? Nein, nur EC-Karte. Eine Tüte, bitte.
+    </div>
+    <div class="grammar-box">
+      <b>2. Wo ...?</b><br>
+      Wo finde ich ...? Wo haben Sie ...?<br>
+      links / rechts / davorne / dahinten
+    </div>
+    <div class="grammar-box">
+      <b>3. Was kochen wir?</b><br>
+      Ich mache den Salat. Ich koche die Gemüsesuppe. Ich schneide das Gemüse.<br>
+      Ich nehme ein Pfund Mehl, etwas Öl und Wasser. Ich brauche noch Tomaten und Salami.
+    </div>
+  </div>
+</section>
+
+<!-- ================= VOKABELN (SRS) ================= -->
+<section id="vokabeln">
+  <div class="card">
+    <h2>🃏 Vokabeltrainer</h2>
+    <div class="srs-toggle">
+      <button id="dirDE" class="active" onclick="setDirection('de')">DE → RU</button>
+      <button id="dirRU" onclick="setDirection('ru')">RU → DE</button>
+    </div>
+    <div class="srs-meta" id="srsMeta"></div>
+    <div class="srs-card" id="srsCard" onclick="flipCard()"></div>
+    <div class="srs-controls" id="srsControls" style="display:none;">
+      <button style="background:var(--bad);" onclick="srsAnswer(0)">Забыл(а)</button>
+      <button style="background:#c98a2f;" onclick="srsAnswer(1)">Трудно</button>
+      <button style="background:var(--ok);" onclick="srsAnswer(2)">Легко</button>
+    </div>
+    <div class="btn-group" style="justify-content:center;">
+      <button class="clearbtn" onclick="resetSRS()">Сбросить прогресс карточек</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NOTIZEN ================= -->
+<section id="notizen">
+  <div class="card">
+    <h2>✏️ Notizen — freie / mündliche Übungen</h2>
+    <p class="instr">Diese Aufgaben haben keine feste Lösung. Ihre Antworten werden automatisch gespeichert.</p>
+
+    <h3 style="font-size:1rem;">Projekt: Öffnungszeiten in Ihrer Region</h3>
+    <div class="notiz-box"><textarea id="notiz1" placeholder="Machen Sie ein Informationsplakat: Metzgerei, Bäckerei, Supermärkte, Kaufhäuser, Kioske, Tankstellen, Wochenmärkte, Ämter ..."></textarea><div class="notiz-saved" id="saved1"></div></div>
+
+    <h3 style="font-size:1rem;">11c Nominativ – Akkusativ: Was ist anders?</h3>
+    <div class="notiz-box"><textarea id="notiz2" placeholder="der Salat — den Salat&#10;..."></textarea><div class="notiz-saved" id="saved2"></div></div>
+
+    <h3 style="font-size:1rem;">12b Sprechen Sie im Kurs</h3>
+    <div class="notiz-box"><textarea id="notiz3" placeholder="Ich kaufe ...&#10;Ich schneide ...&#10;Ich koche ...&#10;Ich mache ..."></textarea><div class="notiz-saved" id="saved3"></div></div>
+
+    <h3 style="font-size:1rem;">Projekt: Rezepte sammeln</h3>
+    <div class="notiz-box"><textarea id="notiz4" placeholder="Bringen Sie Rezepte mit. Finden Sie gemeinsam die deutschen Wörter."></textarea><div class="notiz-saved" id="saved4"></div></div>
+  </div>
+</section>
+
+</main>
+
+<footer>Berliner Platz 1 · Kursbuch · Kapitel 5 — Was darf's sein? · echtes Audio aus dem Lehrwerk</footer>
+
+<script>
+/* ---------- TAB NAVIGATION ---------- */
+document.querySelectorAll('#tabs button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+function normalize(s){
+  return s.trim().toLowerCase().replace(/\s+/g,' ').replace(/[.,!?]/g,'').replace(/ß/g,'ss');
+}
+
+/* ---------- GENERIC FILL-IN CHECKER ---------- */
+function checkGroup(cls){
+  const inputs = document.querySelectorAll(`.fill[data-group="${cls}"]`);
+  let correct=0;
+  inputs.forEach(inp=>{
+    const answers = inp.dataset.ans.split(';').map(a=>normalize(a));
+    const val = normalize(inp.value);
+    if(answers.includes(val) && val.length>0){
+      inp.classList.add('correct'); inp.classList.remove('incorrect');
+      correct++;
+    } else {
+      inp.classList.add('incorrect'); inp.classList.remove('correct');
+    }
+  });
+  showResult(cls, correct, inputs.length);
+}
+function showResult(cls, correct, total){
+  const fb = document.getElementById('fb-'+cls);
+  if(!fb) return;
+  fb.textContent = `${correct} von ${total} richtig.` + (correct===total?' 🎉':'');
+  fb.className = 'feedback ' + (correct===total?'ok':'bad');
+}
+function revealGroup(cls){
+  const inputs = document.querySelectorAll(`.fill[data-group="${cls}"]`);
+  inputs.forEach(inp=>{
+    inp.value = inp.dataset.ans.split(';')[0];
+    inp.classList.add('correct'); inp.classList.remove('incorrect');
+  });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent = 'Ответы показаны.'; fb.className = 'feedback'; }
+}
+function clearGroup(cls){
+  const inputs = document.querySelectorAll(`.fill[data-group="${cls}"]`);
+  inputs.forEach(inp=>{ inp.value=''; inp.classList.remove('correct','incorrect'); });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent=''; fb.className='feedback'; }
+}
+
+/* ---------- ABC SELECT ---------- */
+const abcAnswers = {};
+function selectABC(btn, qId, val){
+  abcAnswers[qId] = val;
+  const group = document.querySelector(`.abc-options[data-q="${qId}"]`);
+  group.querySelectorAll('button').forEach(b=>{ b.classList.remove('selected'); b.style.outline=''; });
+  btn.classList.add('selected');
+}
+
+/* --- 8c Matis Laden Problem --- */
+const matisCorrect = 'd';
+function checkMatis(){
+  const group = document.querySelector('.abc-options[data-q="matis"]');
+  const btns = group.querySelectorAll('button');
+  btns.forEach(b=>b.style.outline='');
+  const selBtn = group.querySelector('button.selected');
+  const fb = document.getElementById('fb-matis');
+  if(abcAnswers['matis'] === matisCorrect){
+    if(selBtn) selBtn.style.outline = '2px solid var(--ok)';
+    fb.textContent = 'Richtig! 🎉'; fb.className='feedback ok';
+  } else if(abcAnswers['matis']){
+    if(selBtn) selBtn.style.outline = '2px solid var(--bad)';
+    fb.textContent = 'Leider falsch.'; fb.className='feedback bad';
+  }
+}
+function revealMatis(){
+  abcAnswers['matis'] = matisCorrect;
+  const group = document.querySelector('.abc-options[data-q="matis"]');
+  const btns = group.querySelectorAll('button');
+  btns.forEach(b=>{ b.classList.remove('selected'); b.style.outline=''; });
+  btns[3].classList.add('selected');
+  document.getElementById('fb-matis').textContent = 'Ответ показан.';
+  document.getElementById('fb-matis').className = 'feedback';
+}
+function clearMatis(){
+  delete abcAnswers['matis'];
+  document.querySelectorAll('.abc-options[data-q="matis"] button').forEach(b=>{ b.classList.remove('selected'); b.style.outline=''; });
+  document.getElementById('fb-matis').textContent=''; document.getElementById('fb-matis').className='feedback';
+}
+
+/* ---------- SRS VOCAB TRAINER ---------- */
+const vocabData = [
+  {de:"der Apfel / die Banane", ru:"яблоко / банан"},
+  {de:"das Brot / das Brötchen", ru:"хлеб / булочка"},
+  {de:"die Butter / der Käse", ru:"масло / сыр"},
+  {de:"die Milch / der Joghurt", ru:"молоко / йогурт"},
+  {de:"das Fleisch / der Schinken / die Wurst", ru:"мясо / ветчина / колбаса"},
+  {de:"die Kartoffel / die Tomate / der Salat", ru:"картофель / помидор / салат"},
+  {de:"das Bier / das Mineralwasser", ru:"пиво / минеральная вода"},
+  {de:"der Zucker", ru:"сахар"},
+  {de:"die Packung / die Dose / das Glas", ru:"пачка / банка (консерв.) / банка (стекл.)"},
+  {de:"der Kasten / die Flasche", ru:"ящик / бутылка"},
+  {de:"ein Kilo / ein Pfund / 100 Gramm", ru:"килограмм / полкило / 100 грамм"},
+  {de:"ein Liter", ru:"литр"},
+  {de:"mögen (ich mag)", ru:"нравиться / любить"},
+  {de:"nehmen (ich nehme)", ru:"брать"},
+  {de:"essen (ich esse)", ru:"есть, кушать"},
+  {de:"Ich hätte gern ...", ru:"я хотел(а) бы..."},
+  {de:"Was kostet das?", ru:"сколько это стоит?"},
+  {de:"im Angebot", ru:"по акции/спецпредложение"},
+  {de:"noch etwas?", ru:"что-нибудь ещё?"},
+  {de:"das ist alles / das war's", ru:"это всё"},
+  {de:"in Scheiben / am Stück", ru:"ломтиками / целым куском"},
+  {de:"kochen / schneiden", ru:"варить/готовить / резать"},
+  {de:"brauchen", ru:"нуждаться, требовать(ся)"},
+  {de:"die Vorspeise / die Hauptspeise / der Nachtisch", ru:"закуска / основное блюдо / десерт"},
+  {de:"der Markt / die Bäckerei / die Metzgerei", ru:"рынок / пекарня / мясная лавка"}
+];
+
+const SRS_INTERVALS=[0,1,3,7,14,30];
+let srsDirection = 'de';
+let srsState = JSON.parse(localStorage.getItem('kb5_srsState') || '{}');
+let srsQueue = [];
+let srsCurrent = null;
+let srsFlipped = false;
+
+function getCardState(idx){
+  if(!srsState[idx]) srsState[idx] = {level:0, due:0};
+  return srsState[idx];
+}
+function saveSRS(){ localStorage.setItem('kb5_srsState', JSON.stringify(srsState)); }
+
+function buildQueue(){
+  const now = Date.now();
+  srsQueue = vocabData.map((v,i)=>i).filter(i=>{
+    const st = getCardState(i);
+    return st.due <= now;
+  });
+  if(srsQueue.length===0){
+    srsQueue = vocabData.map((v,i)=>i);
+  }
+  srsQueue.sort(()=>Math.random()-0.5);
+}
+function setDirection(dir){
+  srsDirection = dir;
+  document.getElementById('dirDE').classList.toggle('active', dir==='de');
+  document.getElementById('dirRU').classList.toggle('active', dir==='ru');
+  nextCard();
+}
+function nextCard(){
+  if(srsQueue.length===0) buildQueue();
+  srsCurrent = srsQueue.pop();
+  srsFlipped = false;
+  renderCard();
+}
+function renderCard(){
+  const card = document.getElementById('srsCard');
+  const v = vocabData[srsCurrent];
+  const front = srsDirection==='de' ? v.de : v.ru;
+  card.innerHTML = front + (srsDirection==='de' ? ` <button class="spk-btn" onclick="event.stopPropagation();speak('${v.de.replace(/'/g,"\\'")}')">🔊</button>` : '');
+  document.getElementById('srsControls').style.display = 'none';
+  const total = vocabData.length;
+  const due = vocabData.filter((v,i)=>getCardState(i).due<=Date.now()).length;
+  document.getElementById('srsMeta').textContent = `Карточек к повторению: ${due} / ${total}`;
+}
+function flipCard(){
+  if(srsFlipped) return;
+  srsFlipped = true;
+  const card = document.getElementById('srsCard');
+  const v = vocabData[srsCurrent];
+  const back = srsDirection==='de' ? v.ru : v.de;
+  card.innerHTML = back + (srsDirection==='ru' ? ` <button class="spk-btn" onclick="event.stopPropagation();speak('${v.de.replace(/'/g,"\\'")}')">🔊</button>` : '');
+  document.getElementById('srsControls').style.display = 'flex';
+}
+function srsAnswer(quality){
+  const st = getCardState(srsCurrent);
+  if(quality===0){ st.level = 0; }
+  else if(quality===1){ st.level = Math.max(0, st.level); }
+  else { st.level = Math.min(SRS_INTERVALS.length-1, st.level+1); }
+  const days = SRS_INTERVALS[st.level];
+  st.due = Date.now() + days*24*60*60*1000;
+  saveSRS();
+  nextCard();
+}
+function resetSRS(){
+  srsState = {};
+  saveSRS();
+  buildQueue();
+  nextCard();
+}
+function speak(text){
+  if(!window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  speechSynthesis.speak(u);
+}
+buildQueue();
+nextCard();
+
+/* ---------- NOTIZEN AUTOSAVE ---------- */
+['notiz1','notiz2','notiz3','notiz4','notiz1b','notiz2c','notiz4a','notiz4b','notiz6b','notiz9','notiz12a'].forEach(id=>{
+  const ta = document.getElementById(id);
+  if(!ta) return;
+  const savedId = 'saved'+id.replace('notiz','');
+  const saved = document.getElementById(savedId);
+  const key = 'kb5_'+id;
+  ta.value = localStorage.getItem(key) || '';
+  if(ta.value) saved.textContent = 'Сохранено.';
+  ta.addEventListener('input', ()=>{
+    localStorage.setItem(key, ta.value);
+    saved.textContent = 'Сохранено ✓';
+  });
+});
+</script>
+</body>
+</html>

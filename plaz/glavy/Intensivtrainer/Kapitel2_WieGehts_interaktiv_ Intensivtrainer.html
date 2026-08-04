@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 2 — Wie geht's? Interaktiver Trainer</title>
+<style>
+  :root{
+    --bg:#f6f4ef;
+    --card:#ffffff;
+    --ink:#2b2a28;
+    --muted:#767268;
+    --accent:#c0392b;
+    --accent2:#1f6f5c;
+    --line:#e3ddd0;
+    --ok:#1f6f5c;
+    --bad:#c0392b;
+    --chip:#efe9db;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.5;
+  }
+  header{
+    background:var(--ink);
+    color:#fdfaf3;
+    padding:28px 20px 22px;
+    text-align:center;
+  }
+  header h1{
+    margin:0 0 4px;
+    font-size:2.1rem;
+    letter-spacing:.5px;
+  }
+  header p{
+    margin:0;
+    color:#cfc8b8;
+    font-size:.95rem;
+  }
+  nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:#fffdf8;
+    border-bottom:2px solid var(--line);
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding:10px 16px;
+    justify-content:center;
+  }
+  nav button{
+    font-family:inherit;
+    border:1px solid var(--line);
+    background:var(--chip);
+    color:var(--ink);
+    padding:7px 14px;
+    border-radius:20px;
+    cursor:pointer;
+    font-size:.85rem;
+    transition:.15s;
+  }
+  nav button:hover{background:#e4dcc7;}
+  nav button.active{
+    background:var(--accent);
+    color:#fff;
+    border-color:var(--accent);
+  }
+  main{
+    max-width:840px;
+    margin:0 auto;
+    padding:24px 16px 80px;
+  }
+  section{display:none;}
+  section.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 22px 24px;
+    margin-bottom:22px;
+    box-shadow:0 2px 6px rgba(0,0,0,.04);
+  }
+  .card h2{
+    margin-top:0;
+    font-size:1.3rem;
+    color:var(--accent);
+    border-bottom:2px dotted var(--line);
+    padding-bottom:8px;
+  }
+  .card h3{
+    font-size:1.02rem;
+    color:var(--ink);
+    margin-bottom:10px;
+  }
+  .instr{
+    color:var(--muted);
+    font-style:italic;
+    margin-bottom:14px;
+    font-size:.95rem;
+  }
+  .row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:10px 0;
+    flex-wrap:wrap;
+  }
+  .row .label{min-width:26px;color:var(--muted);font-size:.9rem;}
+  input[type=text]{
+    font-family:inherit;
+    font-size:1rem;
+    padding:7px 10px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    background:#fffef9;
+    color:var(--ink);
+    min-width:120px;
+    flex:1;
+  }
+  input[type=text].wide{min-width:260px;}
+  input[type=text]:focus{outline:none;border-color:var(--accent2);}
+  input.correct{border-color:var(--ok);background:#eef7f2;}
+  input.incorrect{border-color:var(--bad);background:#fbeceb;}
+  .btn-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+  }
+  .checkbtn, .revealbtn, .shufflebtn, .clearbtn{
+    font-family:inherit;
+    border:none;
+    padding:9px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:.92rem;
+    font-weight:bold;
+  }
+  .checkbtn{
+    background:var(--ink);
+    color:#fdfaf3;
+  }
+  .revealbtn, .clearbtn, .shufflebtn{
+    background:var(--chip);
+    color:var(--ink);
+  }
+  .checkbtn:hover{opacity:.88;}
+  .revealbtn:hover, .clearbtn:hover, .shufflebtn:hover{background:#e4dcc7;}
+  .feedback{
+    margin-top:10px;
+    font-size:.9rem;
+    font-weight:bold;
+  }
+  .feedback.ok{color:var(--ok);}
+  .feedback.bad{color:var(--bad);}
+  .word-bank{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:10px;
+  }
+  .word-chip{
+    background:var(--chip);
+    border:1px solid var(--line);
+    padding:5px 10px;
+    border-radius:16px;
+    font-size:.9rem;
+  }
+  select{
+    font-family:inherit;
+    font-size:.95rem;
+    padding:6px 8px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+  }
+  table{width:100%;border-collapse:collapse;margin:10px 0;}
+  table td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  /* Flashcards */
+  .fc-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+  }
+  .fc-controls{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-bottom:6px;
+  }
+  .fc-controls button{
+    font-family:inherit;
+    background:var(--chip);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:16px;
+    cursor:pointer;
+    font-size:.85rem;
+  }
+  .fc-controls button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .flashcard{
+    width:100%;
+    max-width:420px;
+    height:230px;
+    perspective:1200px;
+    cursor:pointer;
+  }
+  .flashcard-inner{
+    position:relative;
+    width:100%;
+    height:100%;
+    transition:transform .5s;
+    transform-style:preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner{transform:rotateY(180deg);}
+  .fc-face{
+    position:absolute;
+    width:100%;
+    height:100%;
+    backface-visibility:hidden;
+    border-radius:16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    text-align:center;
+    border:2px solid var(--line);
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .fc-front{background:#fffdf8;}
+  .fc-back{
+    background:var(--ink);
+    color:#fdfaf3;
+    transform:rotateY(180deg);
+  }
+  .fc-cat{
+    font-size:.75rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--muted);
+    margin-bottom:10px;
+  }
+  .fc-back .fc-cat{color:#cfc8b8;}
+  .fc-word{font-size:1.55rem;font-weight:bold;}
+  .fc-translation{font-size:1.35rem;}
+  .fc-hint{margin-top:14px;font-size:.8rem;color:var(--muted);}
+  .fc-nav{
+    display:flex;
+    gap:14px;
+    align-items:center;
+  }
+  .fc-nav button{
+    font-family:inherit;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:1.1rem;
+  }
+  .fc-count{color:var(--muted);font-size:.9rem;}
+  .fc-know-btns{display:flex;gap:10px;margin-top:4px;}
+  .fc-know-btns button{
+    font-family:inherit;
+    border:none;
+    padding:8px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:.85rem;
+    color:#fff;
+  }
+  .btn-no{background:var(--bad);}
+  .btn-mid{background:#c8862c;}
+  .btn-yes{background:var(--ok);}
+  .fc-audio-btn{
+    position:absolute;
+    top:14px;
+    right:16px;
+    background:none;
+    border:1.5px solid var(--line);
+    border-radius:50%;
+    width:34px;
+    height:34px;
+    font-size:1rem;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .fc-back .fc-audio-btn{border-color:#4a473f;color:#fdfaf3;}
+  .fc-audio-btn:hover{background:var(--chip);}
+  .fc-back .fc-audio-btn:hover{background:#4a473f;}
+  .fc-status{
+    margin-top:6px;
+    font-size:.78rem;
+    color:var(--muted);
+  }
+  .srs-legend{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:6px;
+    font-size:.78rem;
+  }
+  .srs-pill{
+    padding:3px 10px;
+    border-radius:12px;
+    background:var(--chip);
+    color:var(--muted);
+  }
+  .progress-bar{
+    width:100%;
+    max-width:420px;
+    height:6px;
+    background:var(--line);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent2);
+    width:0%;
+    transition:width .3s;
+  }
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:.8rem;
+    padding:20px;
+  }
+  .final-summary{
+    text-align:center;
+    padding:30px 10px;
+  }
+  .final-summary .big{font-size:2.2rem;color:var(--accent);font-weight:bold;}
+  /* Notes section */
+  .mindmap{
+    display:flex;
+    flex-wrap:wrap;
+    gap:24px;
+    justify-content:center;
+    margin:16px 0 8px;
+  }
+  .mindmap-bubble{
+    border:2px solid var(--ink);
+    border-radius:50%;
+    width:170px;
+    height:170px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:10px;
+    font-weight:bold;
+    background:#fbf9f3;
+  }
+  textarea{
+    font-family:inherit;
+    font-size:.95rem;
+    padding:8px 10px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    background:#fffef9;
+    color:var(--ink);
+    width:100%;
+    resize:vertical;
+    min-height:38px;
+  }
+  textarea:focus{outline:none;border-color:var(--accent2);}
+  .notes-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    align-items:center;
+    margin:10px 0;
+  }
+  .notes-row .de-label{color:var(--muted);font-style:italic;}
+  .autosave-note{
+    font-size:.8rem;
+    color:var(--muted);
+    margin-top:10px;
+  }
+  /* Exam-style test */
+  .exam-header{
+    background:#fbf9f3;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:20px;
+  }
+  .exam-header h3{margin:0 0 6px;color:var(--accent);}
+  .teil-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:8px;
+    margin-bottom:14px;
+  }
+  .teil-header h2{margin:0;border:none;padding:0;}
+  .teil-points{
+    font-size:.85rem;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .exam-text{
+    background:#fbf9f3;
+    border-left:4px solid var(--accent2);
+    padding:14px 16px;
+    border-radius:6px;
+    margin-bottom:16px;
+    font-size:.98rem;
+  }
+  .rf-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:8px 0;
+    flex-wrap:wrap;
+  }
+  .rf-row .rf-text{flex:1;min-width:200px;}
+  .rf-choice{display:flex;gap:6px;}
+  .rf-choice button{
+    font-family:inherit;
+    border:1.5px solid var(--line);
+    background:#fffef9;
+    padding:6px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:.85rem;
+  }
+  .rf-choice button.selected-r{background:var(--ok);color:#fff;border-color:var(--ok);}
+  .rf-choice button.selected-f{background:var(--bad);color:#fff;border-color:var(--bad);}
+  .listen-btn{
+    font-family:inherit;
+    background:var(--accent2);
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:.92rem;
+    margin-bottom:14px;
+  }
+  .listen-btn:hover{opacity:.88;}
+  .schreiben-box{
+    margin-top:10px;
+  }
+  .schreiben-box textarea{min-height:120px;}
+  .exam-final{
+    text-align:center;
+    padding:26px 16px;
+    border-radius:14px;
+    margin-top:10px;
+  }
+  .exam-final.pass{background:#eef7f2;border:2px solid var(--ok);}
+  .exam-final.fail{background:#fbeceb;border:2px solid var(--bad);}
+  .exam-final .big{font-size:2.6rem;font-weight:bold;}
+  .exam-final.pass .big{color:var(--ok);}
+  .exam-final.fail .big{color:var(--bad);}
+  .exam-final .verdict{font-size:1.2rem;font-weight:bold;margin-top:6px;}
+  .exam-breakdown{
+    margin-top:16px;
+    text-align:left;
+    max-width:400px;
+    margin-left:auto;
+    margin-right:auto;
+    font-size:.9rem;
+  }
+  .exam-breakdown div{
+    display:flex;
+    justify-content:space-between;
+    padding:5px 0;
+    border-bottom:1px dotted var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>2 · Wie geht's?</h1>
+  <p>Berliner Platz 1 — Intensivtrainer · Interaktive Übungen &amp; Wortschatz-Karten</p>
+</header>
+
+<nav id="tabs">
+  <button data-tab="ex1" class="active">1–2 Wie geht's</button>
+  <button data-tab="ex3">3–4 Fragen &amp; Verben</button>
+  <button data-tab="ex5">5–7 Zahlen</button>
+  <button data-tab="notes">8–11 Meine Notizen</button>
+  <button data-tab="cards">🗂 Wortschatzkarten</button>
+  <button data-tab="quiz">✅ Abschlusstest</button>
+</nav>
+
+<main>
+
+<!-- ================= EXERCISE 1 ================= -->
+<section id="ex1" class="active">
+
+  <div class="card">
+    <h2>1a · Fragen und Antworten — Ergänzen Sie</h2>
+    <p class="instr">Wie geht's? Ergänzen Sie die Antworten 1–5.</p>
+
+    <div class="row"><span>😊😊</span> S<input type="text" data-ans="uper" size="6" class="g1a">.</div>
+    <div class="row"><span>😊</span> <input type="text" data-ans="Danke" size="8" class="g1a">, <input type="text" data-ans="gut" size="6" class="g1a">.</div>
+    <div class="row"><span>😐</span> E<input type="text" data-ans="s" size="4" class="g1a"> g<input type="text" data-ans="eht" size="6" class="g1a">.</div>
+    <div class="row"><span>☹️</span> N<input type="text" data-ans="icht" size="6" class="g1a"> s<input type="text" data-ans="o" size="4" class="g1a"> g<input type="text" data-ans="ut" size="6" class="g1a">.</div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g1a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g1a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g1a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g1a"></div>
+  </div>
+
+  <div class="card">
+    <h2>1b · Schreiben Sie die Fragen und Antworten</h2>
+    <p class="instr">Trennen Sie die Wörter und schreiben Sie richtige Sätze/Fragen.</p>
+
+    <div class="row"><span class="label">1.</span> wiegehtesihnen? / esgeht,undihnen?<br>
+    <input type="text" class="wide g1b" data-ans="Wie geht es Ihnen?/Es geht, und Ihnen?"></div>
+    <div class="row"><span class="label">2.</span> gutentagherrsánchez. / gutentagfraukim.<br>
+    <input type="text" class="wide g1b" data-ans="Guten Tag, Herr Sánchez./Guten Tag, Frau Kim."></div>
+    <div class="row"><span class="label">3.</span> wiegeht'sdirmônica? / nichtsogut.<br>
+    <input type="text" class="wide g1b" data-ans="Wie geht's dir, Mônica?/Nicht so gut."></div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g1b', true)">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g1b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g1b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g1b"></div>
+    <p class="instr" style="margin-top:8px;">Tipp: Schreiben Sie beide Sätze zusammen mit „/" dazwischen — Groß-/Kleinschreibung wird ignoriert.</p>
+  </div>
+
+  <div class="card">
+    <h2>2 · Dialog — Ergänzen Sie</h2>
+    <p class="instr">Füllen Sie die fehlenden Buchstaben ein.</p>
+
+    <div class="row">😊 Gut<input type="text" data-ans="en" size="4" class="g2"> T<input type="text" data-ans="ag" size="4" class="g2">, w<input type="text" data-ans="ie" size="4" class="g2"> ge<input type="text" data-ans="ht" size="4" class="g2"> es Ihn<input type="text" data-ans="en" size="4" class="g2">?</div>
+    <div class="row">○ Dan<input type="text" data-ans="ke" size="4" class="g2">, g<input type="text" data-ans="ut" size="4" class="g2">. U<input type="text" data-ans="nd" size="4" class="g2"> Ihn<input type="text" data-ans="en" size="4" class="g2">?</div>
+    <div class="row">😊 Trink<input type="text" data-ans="en" size="4" class="g2"> S<input type="text" data-ans="ie" size="4" class="g2"> Kaff<input type="text" data-ans="ee" size="4" class="g2">?</div>
+    <div class="row">○ Ne<input type="text" data-ans="in" size="4" class="g2">, lieb<input type="text" data-ans="er" size="4" class="g2"> T<input type="text" data-ans="ee" size="4" class="g2">.</div>
+    <div class="row">😊 Nehm<input type="text" data-ans="en" size="4" class="g2"> S<input type="text" data-ans="ie" size="4" class="g2"> Mil<input type="text" data-ans="ch" size="4" class="g2">?</div>
+    <div class="row">○ Ja, ge<input type="text" data-ans="rn" size="4" class="g2">. U<input type="text" data-ans="nd" size="4" class="g2"> S<input type="text" data-ans="ie" size="4" class="g2">?</div>
+    <div class="row">😊 I<input type="text" data-ans="ch" size="4" class="g2"> neh<input type="text" data-ans="me" size="4" class="g2"> Mil<input type="text" data-ans="ch" size="4" class="g2"> u<input type="text" data-ans="nd" size="4" class="g2"> Zuck<input type="text" data-ans="er" size="4" class="g2">.</div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g2')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g2')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g2')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g2"></div>
+  </div>
+</section>
+
+<!-- ================= EXERCISE 3-4 ================= -->
+<section id="ex3">
+
+  <div class="card">
+    <h2>3 · Ja/Nein-Fragen — Schreiben Sie</h2>
+    <p class="instr">Bilden Sie Fragen aus den Wörtern.</p>
+
+    <div class="row"><span class="label">1.</span> Romano / Heißen / Sie / ? <input type="text" class="wide g3" data-ans="Heißen Sie Romano?"></div>
+    <div class="row"><span class="label">2.</span> aus / Kommen / Italien / Sie / ? <input type="text" class="wide g3" data-ans="Kommen Sie aus Italien?"></div>
+    <div class="row"><span class="label">3.</span> Milch / Nehmen / und / Sie / Zucker / ? <input type="text" class="wide g3" data-ans="Nehmen Sie Milch und Zucker?"></div>
+    <div class="row"><span class="label">4.</span> Kaffee / Möchtest / Tee / ? / oder / du <input type="text" class="wide g3" data-ans="Möchtest du Tee oder Kaffee?"></div>
+    <div class="row"><span class="label">5.</span> du / Bist / Yong-Min / ? <input type="text" class="wide g3" data-ans="Bist du Yong-Min?"></div>
+    <div class="row"><span class="label">6.</span> Tee / du / Trinkst / ? <input type="text" class="wide g3" data-ans="Trinkst du Tee?"></div>
+    <div class="row"><span class="label">7.</span> Englisch / du / Sprichst / ? <input type="text" class="wide g3" data-ans="Sprichst du Englisch?"></div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g3', true)">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g3')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g3')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g3"></div>
+  </div>
+
+  <div class="card">
+    <h2>4c · Verben — Ergänzen Sie die Sätze</h2>
+    <p class="instr">Wortschatz: bin · möchte · nehme · nehmen · sind · spricht · sprechen · trinkst · wohne · wohnst</p>
+
+    <div class="row"><span class="label">1.</span> <input type="text" data-ans="Trinkst" class="wide g4c"> du Kaffee?</div>
+    <div class="row"><span class="label">2.</span> <input type="text" data-ans="Nehmen" class="wide g4c"> Sie Milch?</div>
+    <div class="row"><span class="label">3.</span> Ich <input type="text" data-ans="nehme" class="wide g4c"> nur Zucker.</div>
+    <div class="row"><span class="label">4.</span> Ich <input type="text" data-ans="wohne" class="wide g4c"> in der Mainstraße.</div>
+    <div class="row"><span class="label">5.</span> <input type="text" data-ans="Sprechen" class="wide g4c"> Sie Deutsch?</div>
+    <div class="row"><span class="label">6.</span> Ja, ich <input type="text" data-ans="bin" class="wide g4c"> aus Rom.</div>
+    <div class="row"><span class="label">7.</span> <input type="text" data-ans="Spricht" class="wide g4c"> er Deutsch?</div>
+    <div class="row"><span class="label">8.</span> Ich <input type="text" data-ans="möchte/nehme" class="wide g4c"> Orangensaft, bitte.</div>
+    <div class="row"><span class="label">9.</span> <input type="text" data-ans="Sind" class="wide g4c"> Sie aus Italien?</div>
+    <div class="row"><span class="label">10.</span> <input type="text" data-ans="Wohnst" class="wide g4c"> du in Berlin?</div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g4c')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g4c')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g4c')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g4c"></div>
+  </div>
+
+  <div class="card">
+    <h2>4d · Dialog 1 — Ergänzen Sie die Verbformen</h2>
+    <p class="instr">Kasimir trifft Carlos, Beata und Maria.</p>
+    <div class="row"><b>Kasimir:</b> Hallo, <input type="text" data-ans="ist" class="wide g4d1"> hier frei? (sein)</div>
+    <div class="row"><b>Carlos:</b> Ja, klar. Das <input type="text" data-ans="sind" class="wide g4d1"> Beata und Maria. (sein)</div>
+    <div class="row"><b>Kasimir:</b> Hallo. Ich <input type="text" data-ans="heiße" class="wide g4d1"> Kasimir. (heißen)</div>
+    <div class="row"><input type="text" data-ans="Seid" class="wide g4d1"> ihr im Deutschkurs B? (sein)</div>
+    <div class="row"><b>Maria:</b> Nein, wir <input type="text" data-ans="sind" class="wide g4d1"> im Kurs C. (sein)</div>
+    <div class="row"><b>Kasimir:</b> Und was <input type="text" data-ans="macht" class="wide g4d1"> ihr in Deutschland? (machen)</div>
+    <div class="row"><b>Maria:</b> Deutsch lernen! Wir <input type="text" data-ans="sind" class="wide g4d1"> Au-pair-Mädchen. (sein)</div>
+    <div class="row"><b>Carlos:</b> Toll, dann <input type="text" data-ans="sprecht" class="wide g4d1"> ihr viel Deutsch zu Hause. (sprechen)</div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g4d1')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g4d1')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g4d1')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g4d1"></div>
+  </div>
+
+  <div class="card">
+    <h2>4d · Dialog 2 — Ergänzen Sie die Verbformen</h2>
+    <div class="row"><b>Kasimir:</b> Woher <input type="text" data-ans="kommt" class="wide g4d2"> ihr? (kommen)</div>
+    <div class="row"><b>Beata:</b> Aus Polen. Wir <input type="text" data-ans="kommen" class="wide g4d2"> aus Warschau. Und ihr?</div>
+    <div class="row"><b>Carlos:</b> Ich <input type="text" data-ans="komme" class="wide g4d2"> aus Spanien, aus Valencia. (kommen)</div>
+    <div class="row">Und Kasimir <input type="text" data-ans="kommt" class="wide g4d2"> aus der Ukraine. (kommen)</div>
+    <div class="row"><b>Kasimir:</b> Ja, aus Kiew. Was <input type="text" data-ans="möchtet" class="wide g4d2"> ihr trinken? (möchten)</div>
+    <div class="row"><input type="text" data-ans="Trinkt" class="wide g4d2"> ihr Tee? (trinken)</div>
+    <div class="row"><b>Beata:</b> Ich <input type="text" data-ans="nehme" class="wide g4d2"> lieber Mineralwasser. (nehmen)</div>
+    <div class="row">Was <input type="text" data-ans="trinkst" class="wide g4d2"> du, Maria? (trinken)</div>
+    <div class="row"><b>Maria:</b> Kaffee natürlich. Mit viel Milch und Zucker bitte.</div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g4d2')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g4d2')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g4d2')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g4d2"></div>
+  </div>
+</section>
+
+<!-- ================= EXERCISE 5-7 ================= -->
+<section id="ex5">
+
+  <div class="card">
+    <h2>5a · Null bis zwölf</h2>
+    <p class="instr">Schreiben Sie die Zahlen zu den Ziffern.</p>
+    <div class="row"><span class="label">1</span><input type="text" data-ans="eins" class="g5a" size="8"></div>
+    <div class="row"><span class="label">2</span><input type="text" data-ans="zwei" class="g5a" size="8"></div>
+    <div class="row"><span class="label">3</span><input type="text" data-ans="drei" class="g5a" size="8"></div>
+    <div class="row"><span class="label">4</span><input type="text" data-ans="vier" class="g5a" size="8"></div>
+    <div class="row"><span class="label">5</span><input type="text" data-ans="fünf" class="g5a" size="8"></div>
+    <div class="row"><span class="label">6</span><input type="text" data-ans="sechs" class="g5a" size="8"></div>
+    <div class="row"><span class="label">7</span><input type="text" data-ans="sieben" class="g5a" size="8"></div>
+    <div class="row"><span class="label">8</span><input type="text" data-ans="acht" class="g5a" size="8"></div>
+    <div class="row"><span class="label">9</span><input type="text" data-ans="neun" class="g5a" size="8"></div>
+    <div class="row"><span class="label">10</span><input type="text" data-ans="zehn" class="g5a" size="8"></div>
+    <div class="row"><span class="label">11</span><input type="text" data-ans="elf" class="g5a" size="8"></div>
+    <div class="row"><span class="label">12</span><input type="text" data-ans="zwölf" class="g5a" size="8"></div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g5a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g5a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g5a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g5a"></div>
+  </div>
+
+  <div class="card">
+    <h2>6a · W-Fragen wiederholen</h2>
+    <p class="instr">Ergänzen Sie die Fragewörter.</p>
+    <div class="row"><span class="label">1.</span> <input type="text" data-ans="Wie" class="g6a" size="8"> ist deine Adresse?</div>
+    <div class="row"><span class="label">2.</span> <input type="text" data-ans="Wo" class="g6a" size="8"> wohnst du?</div>
+    <div class="row"><span class="label">3.</span> <input type="text" data-ans="Wie" class="g6a" size="8"> ist deine Telefonnummer?</div>
+    <div class="row"><span class="label">4.</span> <input type="text" data-ans="Woher" class="g6a" size="8"> kommst du?</div>
+    <div class="row"><span class="label">5.</span> <input type="text" data-ans="Wie" class="g6a" size="8"> geht es dir?</div>
+    <div class="row"><span class="label">6.</span> <input type="text" data-ans="Was" class="g6a" size="8"> trinkst du?</div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g6a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g6a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g6a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g6a"></div>
+  </div>
+
+  <div class="card">
+    <h2>6b · In der Sie-Form — Schreiben Sie die Sätze um</h2>
+    <p class="instr">Schreiben Sie die Fragen aus 6a in der Sie-Form.</p>
+    <div class="row"><span class="label">1.</span> Wie ist deine Adresse? → <input type="text" class="wide g6b" data-ans="Wie ist Ihre Adresse?"></div>
+    <div class="row"><span class="label">2.</span> Wo wohnst du? → <input type="text" class="wide g6b" data-ans="Wo wohnen Sie?"></div>
+    <div class="row"><span class="label">3.</span> Wie ist deine Telefonnummer? → <input type="text" class="wide g6b" data-ans="Wie ist Ihre Telefonnummer?"></div>
+    <div class="row"><span class="label">4.</span> Woher kommst du? → <input type="text" class="wide g6b" data-ans="Woher kommen Sie?"></div>
+    <div class="row"><span class="label">5.</span> Wie geht es dir? → <input type="text" class="wide g6b" data-ans="Wie geht es Ihnen?"></div>
+    <div class="row"><span class="label">6.</span> Was trinkst du? → <input type="text" class="wide g6b" data-ans="Was trinken Sie?"></div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g6b', true)">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g6b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g6b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g6b"></div>
+  </div>
+
+  <div class="card">
+    <h2>7a · Zahlen von 13 bis 200</h2>
+    <p class="instr">Schreiben Sie die Zahl in Ziffern und in Worten (wie im Beispiel: 13 → eins/drei – dreizehn).</p>
+    <div class="row"><span class="label">24</span><input type="text" class="wide g7a" data-ans="zwei/vier – vierundzwanzig/vierundzwanzig"></div>
+    <div class="row"><span class="label">57</span><input type="text" class="wide g7a" data-ans="sieben/fünf – siebenundfünfzig/siebenundfünfzig"></div>
+    <div class="row"><span class="label">136</span><input type="text" class="wide g7a" data-ans="eins/drei/sechs – einhundertsechsunddreißig/einhundertsechsunddreißig"></div>
+    <div class="row"><span class="label">287</span><input type="text" class="wide g7a" data-ans="zwei/acht/sieben – zweihundertsiebenundachtzig/zweihundertsiebenundachtzig"></div>
+    <div class="row"><span class="label">130</span><input type="text" class="wide g7a" data-ans="eins/drei/null – einhundertdreißig/einhundertdreißig"></div>
+    <div class="row"><span class="label">217</span><input type="text" class="wide g7a" data-ans="zwei/eins/sieben – zweihundertsiebzehn/zweihundertsiebzehn"></div>
+    <div class="row"><span class="label">499</span><input type="text" class="wide g7a" data-ans="vier/neun/neun – vierhundertneunundneunzig/vierhundertneunundneunzig"></div>
+    <p class="instr" style="margin-top:8px;">Tipp: Diese Aufgabe ist frei formuliert — nutzen Sie „Показать ответ", um Ihre Lösung zu vergleichen.</p>
+    <div class="btn-group">
+      <button class="revealbtn" onclick="revealGroup('g7a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g7a')">Очистить</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>7b · Rechnen und schreiben Sie</h2>
+    <div class="row"><span class="label">1.</span> sechsundzwanzig + siebzehn = <input type="text" data-ans="43/dreiundvierzig" class="wide g7b"></div>
+    <div class="row"><span class="label">2.</span> neunzehn + zweiundzwanzig = <input type="text" data-ans="41/einundvierzig" class="wide g7b"></div>
+    <div class="row"><span class="label">3.</span> vierzig + dreiunddreißig = <input type="text" data-ans="73/dreiundsiebzig" class="wide g7b"></div>
+    <div class="row"><span class="label">4.</span> neunundsechzig + elf = <input type="text" data-ans="80/achtzig" class="wide g7b"></div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g7b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g7b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g7b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g7b"></div>
+  </div>
+
+  <div class="card">
+    <h2>7c · An der Kasse — Dialog 1</h2>
+    <p class="instr">Reihenfolge herstellen: Wählen Sie für jeden Satz die richtige Position.</p>
+    <div id="dlgKasse1"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkOrder('dlgKasse1')">Проверить</button>
+      <button class="revealbtn" onclick="revealOrder('dlgKasse1')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearOrder('dlgKasse1')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-dlgKasse1"></div>
+  </div>
+
+  <div class="card">
+    <h2>7c · An der Kasse — Dialog 2</h2>
+    <div id="dlgKasse2"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkOrder('dlgKasse2')">Проверить</button>
+      <button class="revealbtn" onclick="revealOrder('dlgKasse2')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearOrder('dlgKasse2')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-dlgKasse2"></div>
+  </div>
+</section>
+
+<!-- ================= NOTES: Aufgaben 8-11 ================= -->
+<section id="notes">
+
+  <div class="card">
+    <h2>8 · Wörter thematisch — Sammeln Sie Wörter</h2>
+    <p class="instr">Die Wortschatz-Hitparade hilft. Schreiben Sie eigene Wörter zu jedem Thema (frei, ohne Prüfung).</p>
+    <div class="mindmap">
+      <div class="mindmap-bubble">trinken<br><small>(Getränk, ...)</small></div>
+      <div class="mindmap-bubble">Adresse<br><small>(Telefonnummer, ...)</small></div>
+    </div>
+    <div class="row"><span style="min-width:140px;">trinken:</span><textarea data-note="n8-1" placeholder="z. B. Kaffee, Tee, Mineralwasser, Saft ..."></textarea></div>
+    <div class="row"><span style="min-width:140px;">Adresse:</span><textarea data-note="n8-2" placeholder="z. B. Telefonnummer, Postleitzahl, E-Mail-Adresse ..."></textarea></div>
+    <div class="row"><span style="min-width:140px;">Im Deutschkurs — 5 Verben:</span><textarea data-note="n8-3" placeholder="Ich arbeite, ..."></textarea></div>
+  </div>
+
+  <div class="card">
+    <h2>9 · Wichtige Wörter und Sätze — Schreiben Sie in Ihrer Sprache</h2>
+    <div class="notes-row"><span class="de-label">Wie geht es dir?</span><textarea data-note="n9-1"></textarea></div>
+    <div class="notes-row"><span class="de-label">Wie geht es Ihnen?</span><textarea data-note="n9-2"></textarea></div>
+    <div class="notes-row"><span class="de-label">Danke gut. ☺</span><textarea data-note="n9-3"></textarea></div>
+    <div class="notes-row"><span class="de-label">Es geht. ☹</span><textarea data-note="n9-4"></textarea></div>
+    <div class="notes-row"><span class="de-label">Schlecht. ☹</span><textarea data-note="n9-5"></textarea></div>
+    <div class="notes-row"><span class="de-label">Wie ist deine/Ihre Adresse?</span><textarea data-note="n9-6"></textarea></div>
+    <div class="notes-row"><span class="de-label">Hast du Telefon?</span><textarea data-note="n9-7"></textarea></div>
+    <div class="notes-row"><span class="de-label">Haben Sie eine Handynummer?</span><textarea data-note="n9-8"></textarea></div>
+    <div class="notes-row"><span class="de-label">Was trinkst du?</span><textarea data-note="n9-9"></textarea></div>
+    <div class="notes-row"><span class="de-label">Möchten Sie Tee mit Milch?</span><textarea data-note="n9-10"></textarea></div>
+    <div class="notes-row"><span class="de-label">Was kostet das?</span><textarea data-note="n9-11"></textarea></div>
+  </div>
+
+  <div class="card">
+    <h2>10 · Wichtige Wörter und Sätze für Sie — Schreiben Sie</h2>
+    <div class="notes-row"><textarea data-note="n10-ru-1" placeholder="Ihre Sprache"></textarea><textarea data-note="n10-de-1" placeholder="Deutsch"></textarea></div>
+    <div class="notes-row"><textarea data-note="n10-ru-2" placeholder="Ihre Sprache"></textarea><textarea data-note="n10-de-2" placeholder="Deutsch"></textarea></div>
+    <div class="notes-row"><textarea data-note="n10-ru-3" placeholder="Ihre Sprache"></textarea><textarea data-note="n10-de-3" placeholder="Deutsch"></textarea></div>
+    <div class="notes-row"><textarea data-note="n10-ru-4" placeholder="Ihre Sprache"></textarea><textarea data-note="n10-de-4" placeholder="Deutsch"></textarea></div>
+  </div>
+
+  <div class="card">
+    <h2>11 · Ich über mich — Ergänzen Sie</h2>
+    <div class="row"><span style="min-width:170px;">Telefon:</span><input type="text" class="wide" data-note="n11-1"></div>
+    <div class="row"><span style="min-width:170px;">Handy:</span><input type="text" class="wide" data-note="n11-2"></div>
+    <div class="row"><span style="min-width:170px;">E-Mail-Adresse:</span><input type="text" class="wide" data-note="n11-3"></div>
+    <div class="row"><span style="min-width:170px;">Meine Adresse:</span><input type="text" class="wide" data-note="n11-4"></div>
+    <div class="row"><span style="min-width:170px;">Ich trinke gern</span><input type="text" class="wide" data-note="n11-5"></div>
+  </div>
+
+  <div class="card">
+    <div class="btn-group">
+      <button class="clearbtn" onclick="clearAllNotes()">Очистить все заметки (8–11)</button>
+    </div>
+    <p class="autosave-note">Заметки сохраняются автоматически в этом браузере (localStorage) — при следующем открытии файла на этом же компьютере они останутся на месте.</p>
+  </div>
+</section>
+
+<!-- ================= FLASHCARDS ================= -->
+<section id="cards">
+  <div class="card">
+    <h2>🗂 Die Wortschatz-Hitparade — Karteikarten</h2>
+    <p class="instr">Klicken Sie auf die Karte, um die Übersetzung zu sehen. Mit den Pfeilen wechseln Sie die Karte. Wählen Sie unten die Richtung: Deutsch→Russisch oder Russisch→Deutsch.</p>
+
+    <div class="fc-controls" id="fc-filters">
+      <button class="active" data-cat="all">Alle (53)</button>
+      <button data-cat="Nomen">Nomen</button>
+      <button data-cat="Verben">Verben</button>
+      <button data-cat="Adjektive">Adjektive</button>
+      <button data-cat="Andere Wörter">Andere Wörter</button>
+    </div>
+
+    <div class="fc-controls" id="fc-mode">
+      <button class="active" data-mode="all">Alle Karten</button>
+      <button data-mode="due">📅 Nur heute fällig</button>
+    </div>
+
+    <div class="fc-controls" id="fc-direction">
+      <button class="active" data-dir="de-ru">🇩🇪 → 🇷🇺 Deutsch → Russisch</button>
+      <button data-dir="ru-de">🇷🇺 → 🇩🇪 Russisch → Deutsch</button>
+    </div>
+
+    <div class="srs-legend">
+      <span class="srs-pill srs-new">🆕 neu</span>
+      <span class="srs-pill srs-learning">🔄 wiederholen</span>
+      <span class="srs-pill srs-learned">✅ gelernt</span>
+    </div>
+
+    <div class="fc-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="fc-progress"></div></div>
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flashcard-inner" id="flashcardInner">
+          <div class="fc-face fc-front">
+            <div class="fc-cat" id="fc-cat-front">Nomen</div>
+            <button class="fc-audio-btn" onclick="speakWord(event)" title="Aussprache anhören">🔊</button>
+            <div class="fc-word" id="fc-word">die Adresse</div>
+            <div class="fc-status" id="fc-status-front"></div>
+            <div class="fc-hint">Klicken zum Umdrehen</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-cat" id="fc-cat-back">Nomen</div>
+            <button class="fc-audio-btn" onclick="speakWord(event)" title="Aussprache anhören">🔊</button>
+            <div class="fc-translation" id="fc-translation">адрес</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-know-btns">
+        <button class="btn-no" onclick="markCard('again')">😕 Noch nicht</button>
+        <button class="btn-mid" onclick="markCard('hard')">🤔 Schwer</button>
+        <button class="btn-yes" onclick="markCard('easy')">😊 Weiß ich</button>
+      </div>
+      <div class="fc-nav">
+        <button onclick="prevCard()">‹</button>
+        <span class="fc-count" id="fc-count">1 / 53</span>
+        <button onclick="nextCard()">›</button>
+      </div>
+      <button class="shufflebtn" onclick="shuffleCards()">🔀 Mischen</button>
+      <button class="shufflebtn" onclick="resetProgress()" style="background:var(--muted);color:#fff;">↺ Fortschritt zurücksetzen</button>
+      <div id="fc-summary" style="text-align:center;color:var(--muted);font-size:.9rem;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EXAM-STYLE FINAL TEST ================= -->
+<section id="quiz">
+
+  <div class="exam-header">
+    <h3>✅ Abschlusstest — Kapitel 2 „Wie geht's?"</h3>
+    <p class="instr" style="margin-bottom:0;">Dieser Test ist wie eine echte Sprachkurs-Prüfung aufgebaut: Wortschatz &amp; Grammatik, Leseverstehen, Hörverstehen und Schreiben. Bearbeiten Sie alle vier Teile und klicken Sie dann auf „Gesamtergebnis auswerten".</p>
+  </div>
+
+  <!-- TEIL 1: Wortschatz & Grammatik -->
+  <div class="card">
+    <div class="teil-header">
+      <h2>Teil 1 · Wortschatz &amp; Grammatik</h2>
+      <span class="teil-points" id="t1-points">0 / 10 Punkte</span>
+    </div>
+    <div id="teil1"></div>
+    <div class="btn-group">
+      <button class="revealbtn" onclick="revealTeil1()">Показать ответы (Teil 1)</button>
+      <button class="clearbtn" onclick="clearTeil1()">Очистить (Teil 1)</button>
+    </div>
+  </div>
+
+  <!-- TEIL 2: Leseverstehen -->
+  <div class="card">
+    <div class="teil-header">
+      <h2>Teil 2 · Leseverstehen</h2>
+      <span class="teil-points" id="t2-points">0 / 4 Punkte</span>
+    </div>
+    <p class="instr">Lesen Sie den Text und entscheiden Sie: richtig (R) oder falsch (F).</p>
+    <div class="exam-text">
+      Ich heiße Julia und bin Studentin. Meine Adresse ist Bahnhofstraße 12 in Köln.
+      Meine Telefonnummer ist 0221 55 43 21. Ich trinke gern Tee, aber keinen Kaffee.
+      Am Wochenende gehe ich oft ins Café mit meiner Freundin. Wir sprechen dort Deutsch und Englisch.
+    </div>
+    <div id="teil2"></div>
+    <div class="btn-group">
+      <button class="revealbtn" onclick="revealTeil2()">Показать ответы (Teil 2)</button>
+      <button class="clearbtn" onclick="clearTeil2()">Очистить (Teil 2)</button>
+    </div>
+  </div>
+
+  <!-- TEIL 3: Hörverstehen-style -->
+  <div class="card">
+    <div class="teil-header">
+      <h2>Teil 3 · Hörverstehen</h2>
+      <span class="teil-points" id="t3-points">0 / 4 Punkte</span>
+    </div>
+    <p class="instr">Hören Sie sich den Dialog an (Button „Anhören") und beantworten Sie die Fragen.</p>
+    <button class="listen-btn" onclick="playHoertext()">🔊 Dialog anhören</button>
+    <div id="teil3"></div>
+    <div class="btn-group">
+      <button class="revealbtn" onclick="revealTeil3()">Показать ответы (Teil 3)</button>
+      <button class="clearbtn" onclick="clearTeil3()">Очистить (Teil 3)</button>
+    </div>
+  </div>
+
+  <!-- TEIL 4: Schreiben -->
+  <div class="card">
+    <div class="teil-header">
+      <h2>Teil 4 · Schreiben</h2>
+      <span class="teil-points">ohne automatische Bewertung</span>
+    </div>
+    <p class="instr">Schreiben Sie 3–4 Sätze: Wie geht es Ihnen? Was trinken Sie gern? Wie ist Ihre Adresse/Telefonnummer?</p>
+    <div class="schreiben-box">
+      <textarea id="schreibenText" data-note="quiz-schreiben" placeholder="Mir geht es ... Ich trinke gern ... Meine Adresse ist ... Meine Telefonnummer ist ..."></textarea>
+    </div>
+    <p class="autosave-note">Ihr Text wird automatisch gespeichert. Vergleichen Sie ihn selbst mit Aufgabe 11 („Ich über mich").</p>
+  </div>
+
+  <div class="card">
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkFullExam()" style="font-size:1rem;padding:12px 24px;">📊 Gesamtergebnis auswerten</button>
+      <button class="clearbtn" onclick="clearFullExam()">Alles zurücksetzen</button>
+    </div>
+    <div id="examResult"></div>
+  </div>
+
+</section>
+
+</main>
+
+<footer>Berliner Platz 1 · Intensivtrainer · Kapitel 2 „Wie geht's?" — erstellt zum Selbststudium</footer>
+
+<script>
+/* ---------- TAB NAVIGATION ---------- */
+document.querySelectorAll('#tabs button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ---------- GENERIC FILL-IN CHECKER ---------- */
+function normalize(s){
+  return s.trim().toLowerCase()
+    .replace(/\s+/g,' ')
+    .replace(/[.,!?]/g,'')
+    .replace(/ß/g,'ss');
+}
+function checkGroup(cls, sentenceMode){
+  const inputs = document.querySelectorAll('input.'+cls);
+  let correct=0, total=inputs.length;
+  inputs.forEach(inp=>{
+    const answers = inp.dataset.ans.split('/').map(a=>normalize(a));
+    const val = normalize(inp.value);
+    if(answers.includes(val) && val.length>0){
+      inp.classList.add('correct');
+      inp.classList.remove('incorrect');
+      correct++;
+    } else {
+      inp.classList.add('incorrect');
+      inp.classList.remove('correct');
+    }
+  });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){
+    fb.textContent = `${correct} von ${total} richtig.` + (correct===total ? ' 🎉 Sehr gut!' : ' Versuchen Sie es noch einmal.');
+    fb.className = 'feedback ' + (correct===total ? 'ok' : 'bad');
+  }
+}
+function revealGroup(cls){
+  const inputs = document.querySelectorAll('input.'+cls);
+  inputs.forEach(inp=>{
+    inp.value = inp.dataset.ans.split('/')[0];
+    inp.classList.remove('incorrect');
+    inp.classList.add('correct');
+  });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent = 'Ответы показаны.'; fb.className = 'feedback'; }
+}
+function clearGroup(cls){
+  const inputs = document.querySelectorAll('input.'+cls);
+  inputs.forEach(inp=>{
+    inp.value = '';
+    inp.classList.remove('correct','incorrect');
+  });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent = ''; fb.className = 'feedback'; }
+}
+
+/* ---------- Dialog ordering (reusable engine) ---------- */
+const dialogData = {
+  dlgKasse1: {
+    speakers: ["○","○","○","○","○"],
+    lines: ["Zwei Espresso und ein Wasser – das macht vier Euro achtzig.","Wie viel?","Oh, Entschuldigung, drei Euro achtzig.","Hier bitte, vier Euro. Ist o. k. so.","Danke."],
+    correctOrder: [1,2,3,4,5],
+    fixedFirst: true
+  },
+  dlgKasse2: {
+    speakers: ["○","○","○"],
+    lines: ["Das sind ein Mineralwasser, ein Kaffee, ein Tee und zwei Espresso.","Sechs Euro achtzig.","Zwei, vier, sechs … fünfzig … Mist! Hast du 30 Cent?"],
+    correctOrder: [1,2,3],
+    fixedFirst: true
+  },
+};
+const dialogDisplay = {};
+function initDialog(id){
+  const d = dialogData[id];
+  const idxs = d.lines.map((_,i)=>i);
+  const rest = idxs.slice(1);
+  for(let i=rest.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [rest[i],rest[j]] = [rest[j],rest[i]];
+  }
+  dialogDisplay[id] = [0, ...rest];
+}
+function renderDialog(id){
+  initDialog(id);
+  const d = dialogData[id];
+  const order = dialogDisplay[id];
+  const c = document.getElementById(id);
+  c.innerHTML = order.map((origIdx, pos)=>{
+    const isFixed = pos===0;
+    const opts = d.lines.map((_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');
+    return `<div class="row">
+      <span style="min-width:26px;">${d.speakers[origIdx]}</span>
+      <span style="flex:2;">${isFixed?'<i>':''}${d.lines[origIdx]}${isFixed?'</i>':''}</span>
+      <select class="order-select" data-dialog="${id}" data-orig="${origIdx}" ${isFixed?'disabled':''}>
+        <option value="">–</option>${opts}
+      </select>
+    </div>`;
+  }).join('');
+  if(order.length>0){
+    const firstSelect = c.querySelector(`select[data-orig="${order[0]}"]`);
+    if(firstSelect){ firstSelect.innerHTML = '<option value="1" selected>1</option>'; }
+  }
+}
+renderDialog('dlgKasse1');
+renderDialog('dlgKasse2');
+function checkOrder(id){
+  const d = dialogData[id];
+  const selects = document.querySelectorAll(`#${id} select.order-select`);
+  let correct=0, total=selects.length;
+  selects.forEach(s=>{
+    const origIdx = parseInt(s.dataset.orig);
+    const correctPos = d.correctOrder[origIdx];
+    const chosen = parseInt(s.value);
+    if(chosen === correctPos){
+      s.style.borderColor='var(--ok)'; s.style.background='#eef7f2';
+      correct++;
+    } else {
+      s.style.borderColor='var(--bad)'; s.style.background='#fbeceb';
+    }
+  });
+  const fb = document.getElementById('fb-'+id);
+  if(fb){
+    fb.textContent = `${correct} von ${total} richtig.` + (correct===total ? ' 🎉 Perfekt!' : ' Versuchen Sie es noch einmal.');
+    fb.className = 'feedback ' + (correct===total ? 'ok':'bad');
+  }
+}
+function revealOrder(id){
+  const d = dialogData[id];
+  const selects = document.querySelectorAll(`#${id} select.order-select`);
+  selects.forEach(s=>{
+    const origIdx = parseInt(s.dataset.orig);
+    s.value = d.correctOrder[origIdx];
+    s.style.borderColor='var(--ok)'; s.style.background='#eef7f2';
+  });
+  const fb = document.getElementById('fb-'+id);
+  if(fb){ fb.textContent = 'Ответы показаны.'; fb.className='feedback'; }
+}
+function clearOrder(id){
+  const selects = document.querySelectorAll(`#${id} select.order-select`);
+  selects.forEach(s=>{
+    if(!s.disabled){ s.value=''; }
+    s.style.borderColor=''; s.style.background='';
+  });
+  const fb = document.getElementById('fb-'+id);
+  if(fb){ fb.textContent=''; fb.className='feedback'; }
+}
+
+/* ---------- FLASHCARDS DATA (Die Wortschatz-Hitparade Kapitel 2) ---------- */
+const vocab = [
+  {cat:"Nomen", de:"die Adresse, -n", ru:"адрес"},
+  {cat:"Nomen", de:"die E-Mail-Adresse, -n", ru:"электронный адрес"},
+  {cat:"Nomen", de:"das Café, -s", ru:"кафе"},
+  {cat:"Nomen", de:"das Getränk, -e", ru:"напиток"},
+  {cat:"Nomen", de:"der Kaffee, -s", ru:"кофе"},
+  {cat:"Nomen", de:"die Kasse, -n", ru:"касса"},
+  {cat:"Nomen", de:"der Lehrer, –", ru:"учитель"},
+  {cat:"Nomen", de:"die Lehrerin, -nen", ru:"учительница"},
+  {cat:"Nomen", de:"die Milch", ru:"молоко"},
+  {cat:"Nomen", de:"das Mineralwasser, –", ru:"минеральная вода"},
+  {cat:"Nomen", de:"die Nummer, -n", ru:"номер"},
+  {cat:"Nomen", de:"die Postleitzahl, -en", ru:"почтовый индекс"},
+  {cat:"Nomen", de:"der Student, -en", ru:"студент"},
+  {cat:"Nomen", de:"die Studentin, -nen", ru:"студентка"},
+  {cat:"Nomen", de:"die Stunde, -n", ru:"час, урок"},
+  {cat:"Nomen", de:"der Saft, ¨-e", ru:"сок"},
+  {cat:"Nomen", de:"der Tee", ru:"чай"},
+  {cat:"Nomen", de:"das Telefon, -e", ru:"телефон"},
+  {cat:"Nomen", de:"die Telefonnummer, -n", ru:"номер телефона"},
+  {cat:"Nomen", de:"die Vorwahl, -en", ru:"код (телефонный)"},
+  {cat:"Nomen", de:"das Wasser", ru:"вода"},
+  {cat:"Nomen", de:"das Wochenende, -n", ru:"выходные"},
+  {cat:"Nomen", de:"das Wort, ¨-er", ru:"слово"},
+  {cat:"Nomen", de:"der Zucker", ru:"сахар"},
+
+  {cat:"Verben", de:"anrufen", ru:"звонить (по телефону)"},
+  {cat:"Verben", de:"arbeiten", ru:"работать"},
+  {cat:"Verben", de:"erreichen", ru:"дозвониться, достичь"},
+  {cat:"Verben", de:"fahren", ru:"ехать"},
+  {cat:"Verben", de:"gehen", ru:"идти"},
+  {cat:"Verben", de:"können", ru:"мочь, уметь"},
+  {cat:"Verben", de:"kosten", ru:"стоить"},
+  {cat:"Verben", de:"markieren", ru:"отмечать"},
+  {cat:"Verben", de:"nehmen", ru:"брать"},
+  {cat:"Verben", de:"sagen", ru:"говорить, сказать"},
+  {cat:"Verben", de:"trinken", ru:"пить"},
+
+  {cat:"Adjektive", de:"frei", ru:"свободный"},
+  {cat:"Adjektive", de:"gut", ru:"хороший"},
+  {cat:"Adjektive", de:"müde", ru:"усталый"},
+  {cat:"Adjektive", de:"richtig", ru:"правильный"},
+  {cat:"Adjektive", de:"schwarz", ru:"чёрный"},
+  {cat:"Adjektive", de:"sehr gut", ru:"очень хорошо"},
+  {cat:"Adjektive", de:"super", ru:"супер, отлично"},
+  {cat:"Adjektive", de:"toll", ru:"классно, здорово"},
+
+  {cat:"Andere Wörter", de:"aber", ru:"но"},
+  {cat:"Andere Wörter", de:"danke", ru:"спасибо"},
+  {cat:"Andere Wörter", de:"gern(e) / lieber", ru:"охотно / охотнее (предпочтительно)"},
+  {cat:"Andere Wörter", de:"hier", ru:"здесь"},
+  {cat:"Andere Wörter", de:"bis", ru:"до"},
+  {cat:"Andere Wörter", de:"ja", ru:"да"},
+  {cat:"Andere Wörter", de:"jetzt", ru:"сейчас"},
+  {cat:"Andere Wörter", de:"nicht", ru:"не"},
+  {cat:"Andere Wörter", de:"viel", ru:"много"},
+  {cat:"Andere Wörter", de:"von", ru:"от, из"}
+];
+
+/* ---------- SRS (simple 3-level spaced repetition) ---------- */
+const SRS_KEY = 'kapitel2-srs-v1';
+const SRS_INTERVALS = [0, 1, 3, 7, 14, 30];
+
+function loadSRS(){
+  try{ return JSON.parse(localStorage.getItem(SRS_KEY) || '{}'); }catch(e){ return {}; }
+}
+function saveSRS(data){
+  localStorage.setItem(SRS_KEY, JSON.stringify(data));
+}
+let srsData = loadSRS();
+
+function getCardState(de){
+  return srsData[de] || {level:0, due: todayStr(), seen:0};
+}
+function todayStr(){
+  return new Date().toISOString().slice(0,10);
+}
+function addDays(dateStr, days){
+  const d = new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate()+days);
+  return d.toISOString().slice(0,10);
+}
+function isDue(de){
+  const st = getCardState(de);
+  return st.due <= todayStr();
+}
+function statusLabel(de){
+  const st = getCardState(de);
+  if(st.seen===0) return {text:'🆕 neu', cls:'srs-new'};
+  if(st.level>=3) return {text:'✅ gelernt', cls:'srs-learned'};
+  return {text:'🔄 wiederholen', cls:'srs-learning'};
+}
+
+let currentDeck = [...vocab];
+let cardIndex = 0;
+let currentMode = 'all';
+let currentCat = 'all';
+let currentDirection = 'de-ru';
+
+function applyDeckFilter(){
+  let deck = currentCat==='all' ? [...vocab] : vocab.filter(v=>v.cat===currentCat);
+  if(currentMode==='due'){
+    deck = deck.filter(v=>isDue(v.de));
+  }
+  currentDeck = deck;
+  cardIndex = 0;
+}
+
+function renderCard(){
+  if(currentDeck.length===0){
+    document.getElementById('fc-word').textContent="—";
+    document.getElementById('fc-translation').textContent = currentMode==='due' ? "Für heute ist nichts fällig 🎉" : "Keine Karten in dieser Kategorie";
+    document.getElementById('fc-count').textContent="0 / 0";
+    document.getElementById('fc-status-front').textContent="";
+    updateProgress();
+    return;
+  }
+  const item = currentDeck[cardIndex];
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('fc-cat-front').textContent = item.cat;
+  document.getElementById('fc-cat-back').textContent = item.cat;
+  const frontText = currentDirection==='de-ru' ? item.de : item.ru;
+  const backText = currentDirection==='de-ru' ? item.ru : item.de;
+  document.getElementById('fc-word').textContent = frontText;
+  document.getElementById('fc-translation').textContent = backText;
+  document.getElementById('fc-count').textContent = `${cardIndex+1} / ${currentDeck.length}`;
+  const st = statusLabel(item.de);
+  document.getElementById('fc-status-front').innerHTML = `<span class="srs-pill ${st.cls}">${st.text}</span>`;
+  updateProgress();
+}
+function flipCard(){
+  document.getElementById('flashcard').classList.toggle('flipped');
+}
+function speakWord(evt){
+  evt.stopPropagation();
+  if(currentDeck.length===0) return;
+  const word = currentDeck[cardIndex].de.replace(/,.*$/,'').replace(/^\(sich\)\s*/,'').trim();
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.lang = 'de-DE';
+    utter.rate = 0.9;
+    window.speechSynthesis.speak(utter);
+  }
+}
+function nextCard(){
+  if(currentDeck.length===0) return;
+  cardIndex = (cardIndex+1) % currentDeck.length;
+  renderCard();
+}
+function prevCard(){
+  if(currentDeck.length===0) return;
+  cardIndex = (cardIndex-1+currentDeck.length) % currentDeck.length;
+  renderCard();
+}
+function markCard(result){
+  if(currentDeck.length===0) return;
+  const de = currentDeck[cardIndex].de;
+  const st = getCardState(de);
+  let newLevel;
+  if(result==='again'){
+    newLevel = 0;
+  } else if(result==='hard'){
+    newLevel = Math.max(1, st.level);
+  } else {
+    newLevel = Math.min(SRS_INTERVALS.length-1, st.level+1);
+  }
+  const days = SRS_INTERVALS[newLevel];
+  srsData[de] = { level:newLevel, due: addDays(todayStr(), days), seen:(st.seen||0)+1 };
+  saveSRS(srsData);
+
+  if(currentMode==='due'){
+    currentDeck.splice(cardIndex,1);
+    if(cardIndex>=currentDeck.length) cardIndex=0;
+    renderCard();
+  } else {
+    updateProgress();
+    nextCard();
+  }
+}
+function updateProgress(){
+  const total = currentDeck.length || 1;
+  const learnedInDeck = currentDeck.filter(c=>{
+    const st = getCardState(c.de);
+    return st.level>=3;
+  }).length;
+  document.getElementById('fc-progress').style.width = (learnedInDeck/total*100)+'%';
+  const dueCount = (currentCat==='all'?[...vocab]:vocab.filter(v=>v.cat===currentCat)).filter(v=>isDue(v.de)).length;
+  document.getElementById('fc-summary').textContent = `${learnedInDeck} von ${total} Karten gelernt · ${dueCount} heute fällig.`;
+}
+function shuffleCards(){
+  for(let i=currentDeck.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [currentDeck[i],currentDeck[j]] = [currentDeck[j],currentDeck[i]];
+  }
+  cardIndex=0;
+  renderCard();
+}
+function resetProgress(){
+  if(!confirm('Den gesamten Lernfortschritt (SRS) zurücksetzen?')) return;
+  srsData = {};
+  saveSRS(srsData);
+  applyDeckFilter();
+  renderCard();
+}
+document.querySelectorAll('#fc-filters button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#fc-filters button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = btn.dataset.cat;
+    applyDeckFilter();
+    renderCard();
+  });
+});
+document.querySelectorAll('#fc-mode button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#fc-mode button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = btn.dataset.mode;
+    applyDeckFilter();
+    renderCard();
+  });
+});
+document.querySelectorAll('#fc-direction button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#fc-direction button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentDirection = btn.dataset.dir;
+    renderCard();
+  });
+});
+applyDeckFilter();
+renderCard();
+
+/* ---------- NOTES with localStorage autosave ---------- */
+const NOTES_KEY = 'kapitel2-notes-v1';
+function loadNotes(){
+  let data = {};
+  try{ data = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}'); }catch(e){ data = {}; }
+  document.querySelectorAll('[data-note]').forEach(el=>{
+    const key = el.dataset.note;
+    if(data[key]) el.value = data[key];
+    el.addEventListener('input', ()=>{
+      const current = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+      current[key] = el.value;
+      localStorage.setItem(NOTES_KEY, JSON.stringify(current));
+    });
+  });
+}
+function clearAllNotes(){
+  if(!confirm('Alle Notizen (Aufgaben 8–11) löschen?')) return;
+  localStorage.removeItem(NOTES_KEY);
+  document.querySelectorAll('[data-note]').forEach(el=>{ el.value=''; });
+}
+loadNotes();
+
+/* ================= EXAM-STYLE FINAL TEST ================= */
+
+/* ---- Teil 1: Wortschatz & Grammatik (10 Punkte) ---- */
+const teil1Data = [
+  {type:"text", q:"___ Sie Kaffee? (trinken)", ans:["trinken"]},
+  {type:"text", q:"Ich ___ Milch und Zucker. (nehmen)", ans:["nehme"]},
+  {type:"text", q:"Wie geht ___ dir?", ans:["es"]},
+  {type:"text", q:"___ du Deutsch? (sprechen)", ans:["sprichst"]},
+  {type:"mc", q:"Was ist die richtige Antwort auf «Wie geht's?» (positiv)", options:["Nicht so gut.","Super!","Schlecht."], ans:"Super!"},
+  {type:"mc", q:"«die Telefonnummer» bedeutet auf Russisch:", options:["адрес","номер телефона","почтовый индекс"], ans:"номер телефона"},
+  {type:"mc", q:"«der Zucker» bedeutet:", options:["молоко","сахар","вода"], ans:"сахар"},
+  {type:"text", q:"26 + 17 = ? (in Worten)", ans:["dreiundvierzig","43"]},
+  {type:"text", q:"Woher ___ ihr? (kommen)", ans:["kommt"]},
+  {type:"transform", q:"Schreiben Sie in der Sie-Form: «Wo wohnst du?»", ans:["Wo wohnen Sie?"]}
+];
+function renderTeil1(){
+  const c = document.getElementById('teil1');
+  c.innerHTML = teil1Data.map((item,i)=>{
+    if(item.type==='mc'){
+      const opts = item.options.map(o=>`<option value="${o}">${o}</option>`).join('');
+      return `<div class="row"><span class="label">${i+1}.</span> ${item.q}
+        <select class="t1-field" data-idx="${i}"><option value="">— wählen —</option>${opts}</select></div>`;
+    }
+    return `<div class="row"><span class="label">${i+1}.</span> ${item.q}
+      <input type="text" class="t1-field wide" data-idx="${i}"></div>`;
+  }).join('');
+}
+renderTeil1();
+function scoreTeil1(){
+  const fields = document.querySelectorAll('.t1-field');
+  let correct=0;
+  fields.forEach(f=>{
+    const idx = f.dataset.idx;
+    const item = teil1Data[idx];
+    const ans = item.ans.map(a=>normalize(a));
+    const isCorrect = ans.includes(normalize(f.value));
+    if(isCorrect){
+      f.style.borderColor='var(--ok)'; f.style.background='#eef7f2';
+      correct++;
+    } else {
+      f.style.borderColor='var(--bad)'; f.style.background='#fbeceb';
+    }
+  });
+  document.getElementById('t1-points').textContent = `${correct} / ${teil1Data.length} Punkte`;
+  return {correct, total: teil1Data.length};
+}
+function revealTeil1(){
+  document.querySelectorAll('.t1-field').forEach(f=>{
+    const item = teil1Data[f.dataset.idx];
+    f.value = item.ans[0];
+    f.style.borderColor='var(--ok)'; f.style.background='#eef7f2';
+  });
+  document.getElementById('t1-points').textContent = `${teil1Data.length} / ${teil1Data.length} Punkte (показано)`;
+}
+function clearTeil1(){
+  document.querySelectorAll('.t1-field').forEach(f=>{
+    f.value=''; f.style.borderColor=''; f.style.background='';
+  });
+  document.getElementById('t1-points').textContent = `0 / ${teil1Data.length} Punkte`;
+}
+
+/* ---- Teil 2: Leseverstehen (richtig/falsch, 4 Punkte) ---- */
+const teil2Data = [
+  {q:"Julia trinkt gern Kaffee.", ans:false},
+  {q:"Julias Adresse ist in Köln.", ans:true},
+  {q:"Julia ist Studentin.", ans:true},
+  {q:"Julia geht am Wochenende nie ins Café.", ans:false}
+];
+function renderTeil2(){
+  const c = document.getElementById('teil2');
+  c.innerHTML = teil2Data.map((item,i)=>{
+    return `<div class="rf-row">
+      <span class="rf-text">${i+1}. ${item.q}</span>
+      <div class="rf-choice" data-idx="${i}">
+        <button type="button" onclick="selectRF(this,'teil2',${i},true)">R</button>
+        <button type="button" onclick="selectRF(this,'teil2',${i},false)">F</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+renderTeil2();
+const rfAnswers = { teil2:{}, teil3:{} };
+function selectRF(btn, teilId, idx, value){
+  rfAnswers[teilId][idx] = value;
+  const group = btn.parentElement;
+  group.querySelectorAll('button').forEach(b=>b.classList.remove('selected-r','selected-f'));
+  btn.classList.add(value ? 'selected-r' : 'selected-f');
+}
+function scoreTeil2(){
+  let correct=0;
+  teil2Data.forEach((item,i)=>{
+    const chosen = rfAnswers.teil2[i];
+    const group = document.querySelector(`#teil2 .rf-choice[data-idx="${i}"]`);
+    const btns = group.querySelectorAll('button');
+    if(chosen === item.ans){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--ok)'; });
+      correct++;
+    } else if(chosen !== undefined){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--bad)'; });
+    }
+  });
+  document.getElementById('t2-points').textContent = `${correct} / ${teil2Data.length} Punkte`;
+  return {correct, total: teil2Data.length};
+}
+function revealTeil2(){
+  teil2Data.forEach((item,i)=>{
+    rfAnswers.teil2[i] = item.ans;
+    const group = document.querySelector(`#teil2 .rf-choice[data-idx="${i}"]`);
+    const btns = group.querySelectorAll('button');
+    btns.forEach(b=>b.classList.remove('selected-r','selected-f'));
+    btns[item.ans?0:1].classList.add(item.ans?'selected-r':'selected-f');
+  });
+  document.getElementById('t2-points').textContent = `${teil2Data.length} / ${teil2Data.length} Punkte (показано)`;
+}
+function clearTeil2(){
+  rfAnswers.teil2 = {};
+  document.querySelectorAll('#teil2 .rf-choice button').forEach(b=>{ b.classList.remove('selected-r','selected-f'); b.style.outline=''; });
+  document.getElementById('t2-points').textContent = `0 / ${teil2Data.length} Punkte`;
+}
+
+/* ---- Teil 3: Hörverstehen-style (4 Punkte) ---- */
+const hoertext = "Guten Tag! Ich möchte einen Kaffee und ein Mineralwasser, bitte. Und was möchten Sie trinken? Ich nehme lieber Tee mit Zucker. Das macht dann fünf Euro fünfzig. Hier bitte, sechs Euro. Danke schön!";
+function playHoertext(){
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(hoertext);
+    utter.lang = 'de-DE';
+    utter.rate = 0.85;
+    window.speechSynthesis.speak(utter);
+  } else {
+    alert('Ihr Browser unterstützt leider keine Sprachausgabe.');
+  }
+}
+const teil3Data = [
+  {q:"Die Person möchte Kaffee und Mineralwasser.", ans:true},
+  {q:"Die zweite Person nimmt lieber Kaffee.", ans:false},
+  {q:"Das macht fünf Euro fünfzig.", ans:true},
+  {q:"Die Person bezahlt mit fünf Euro.", ans:false}
+];
+function renderTeil3(){
+  const c = document.getElementById('teil3');
+  c.innerHTML = teil3Data.map((item,i)=>{
+    return `<div class="rf-row">
+      <span class="rf-text">${i+1}. ${item.q}</span>
+      <div class="rf-choice" data-idx="${i}">
+        <button type="button" onclick="selectRF(this,'teil3',${i},true)">R</button>
+        <button type="button" onclick="selectRF(this,'teil3',${i},false)">F</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+renderTeil3();
+function scoreTeil3(){
+  let correct=0;
+  teil3Data.forEach((item,i)=>{
+    const chosen = rfAnswers.teil3[i];
+    const group = document.querySelector(`#teil3 .rf-choice[data-idx="${i}"]`);
+    const btns = group.querySelectorAll('button');
+    if(chosen === item.ans){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--ok)'; });
+      correct++;
+    } else if(chosen !== undefined){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--bad)'; });
+    }
+  });
+  document.getElementById('t3-points').textContent = `${correct} / ${teil3Data.length} Punkte`;
+  return {correct, total: teil3Data.length};
+}
+function revealTeil3(){
+  teil3Data.forEach((item,i)=>{
+    rfAnswers.teil3[i] = item.ans;
+    const group = document.querySelector(`#teil3 .rf-choice[data-idx="${i}"]`);
+    const btns = group.querySelectorAll('button');
+    btns.forEach(b=>b.classList.remove('selected-r','selected-f'));
+    btns[item.ans?0:1].classList.add(item.ans?'selected-r':'selected-f');
+  });
+  document.getElementById('t3-points').textContent = `${teil3Data.length} / ${teil3Data.length} Punkte (показано)`;
+}
+function clearTeil3(){
+  rfAnswers.teil3 = {};
+  document.querySelectorAll('#teil3 .rf-choice button').forEach(b=>{ b.classList.remove('selected-r','selected-f'); b.style.outline=''; });
+  document.getElementById('t3-points').textContent = `0 / ${teil3Data.length} Punkte`;
+}
+
+/* ---- Full exam scoring ---- */
+function checkFullExam(){
+  const r1 = scoreTeil1();
+  const r2 = scoreTeil2();
+  const r3 = scoreTeil3();
+  const totalCorrect = r1.correct + r2.correct + r3.correct;
+  const totalPoints = r1.total + r2.total + r3.total;
+  const pct = Math.round(totalCorrect/totalPoints*100);
+  const passed = pct >= 60;
+
+  const result = document.getElementById('examResult');
+  result.innerHTML = `
+    <div class="exam-final ${passed?'pass':'fail'}">
+      <div class="big">${pct}%</div>
+      <div class="verdict">${passed ? '✅ BESTANDEN' : '❌ NICHT BESTANDEN'}</div>
+      <div class="exam-breakdown">
+        <div><span>Teil 1 · Wortschatz &amp; Grammatik</span><span>${r1.correct} / ${r1.total}</span></div>
+        <div><span>Teil 2 · Leseverstehen</span><span>${r2.correct} / ${r2.total}</span></div>
+        <div><span>Teil 3 · Hörverstehen</span><span>${r3.correct} / ${r3.total}</span></div>
+        <div><span><b>Gesamt</b></span><span><b>${totalCorrect} / ${totalPoints}</b></span></div>
+      </div>
+      <p style="margin-top:14px;font-size:.85rem;color:var(--muted);">Teil 4 (Schreiben) wird nicht automatisch bewertet — bitte selbst mit Aufgabe 11 vergleichen. Bestehensgrenze: 60%.</p>
+    </div>
+  `;
+  result.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function clearFullExam(){
+  clearTeil1();
+  clearTeil2();
+  clearTeil3();
+  document.getElementById('examResult').innerHTML = '';
+}
+</script>
+</body>
+</html>

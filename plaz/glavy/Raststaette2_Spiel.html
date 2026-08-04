@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raststätte 2 — Kopf oder Zahl (Spiel)</title>
+<style>
+  :root{
+    --bg:#f6f4ef;
+    --card:#ffffff;
+    --ink:#2b2a28;
+    --muted:#767268;
+    --accent:#c0392b;
+    --accent2:#1f6f5c;
+    --line:#e3ddd0;
+    --yellowA:#fff6cf;
+    --orangeB:#ffe0c2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Georgia','Iowan Old Style',serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.5;
+  }
+  header{
+    background:var(--ink);
+    color:#fdfaf3;
+    padding:24px 20px 20px;
+    text-align:center;
+  }
+  header h1{margin:0 0 4px;font-size:1.8rem;}
+  header p{margin:0;color:#cfc8b8;font-size:.9rem;}
+  main{max-width:760px;margin:0 auto;padding:24px 16px 80px;}
+  .rules{
+    background:#fbf9f3;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:20px;
+    font-size:.92rem;
+  }
+  .rules b{color:var(--accent);}
+  .game-panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:24px;
+    text-align:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.05);
+  }
+  .players{
+    display:flex;
+    justify-content:center;
+    gap:24px;
+    margin-bottom:18px;
+    font-size:1rem;
+  }
+  .player-pos{
+    background:var(--chip,#efe9db);
+    border-radius:12px;
+    padding:8px 16px;
+  }
+  .player-a{color:#b8860b;font-weight:bold;}
+  .player-b{color:#c0392b;font-weight:bold;}
+  .coin-area{margin:20px 0;}
+  .coin{
+    width:90px;height:90px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #ffe27a, #d9a521);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.6rem;font-weight:bold;color:#5a4200;
+    margin:0 auto 14px;
+    box-shadow:0 3px 8px rgba(0,0,0,.25);
+    transition:transform .5s;
+  }
+  .coin.flipping{animation:flip .5s;}
+  @keyframes flip{
+    0%{transform:rotateY(0);}
+    50%{transform:rotateY(360deg) scale(1.1);}
+    100%{transform:rotateY(720deg);}
+  }
+  .flip-btn{
+    font-family:inherit;
+    background:var(--accent2);
+    color:#fff;
+    border:none;
+    padding:12px 28px;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:1rem;
+    font-weight:bold;
+  }
+  .flip-btn:hover{opacity:.88;}
+  .flip-btn:disabled{opacity:.5;cursor:not-allowed;}
+  .turn-indicator{
+    font-size:1.05rem;
+    margin:14px 0;
+    font-weight:bold;
+  }
+  .current-question{
+    margin-top:20px;
+    padding:18px;
+    border-radius:12px;
+    font-size:1.05rem;
+    min-height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  .current-question.colA{background:var(--yellowA);}
+  .current-question.colB{background:var(--orangeB);}
+  .current-question.neutral{background:var(--chip,#efe9db);color:var(--muted);}
+  .action-btns{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-top:16px;
+    flex-wrap:wrap;
+  }
+  .action-btns button{
+    font-family:inherit;
+    border:none;
+    padding:9px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:.9rem;
+    font-weight:bold;
+  }
+  .btn-ok{background:var(--accent2);color:#fff;}
+  .btn-fail{background:var(--accent);color:#fff;}
+  .btn-reset{background:var(--chip,#efe9db);color:var(--ink);}
+  .board{
+    margin-top:26px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    justify-content:center;
+  }
+  .field{
+    width:38px;height:38px;
+    border-radius:50%;
+    background:#e8f5ef;
+    border:2px solid var(--accent2);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.8rem;
+    font-weight:bold;
+    color:var(--accent2);
+    position:relative;
+  }
+  .field.hasA::before{
+    content:"A";
+    position:absolute;top:-8px;left:-8px;
+    background:#d9a521;color:#fff;
+    border-radius:50%;width:18px;height:18px;
+    font-size:.65rem;display:flex;align-items:center;justify-content:center;
+  }
+  .field.hasB::after{
+    content:"B";
+    position:absolute;bottom:-8px;right:-8px;
+    background:var(--accent);color:#fff;
+    border-radius:50%;width:18px;height:18px;
+    font-size:.65rem;display:flex;align-items:center;justify-content:center;
+  }
+  .field.start, .field.ziel{
+    background:var(--ink);color:#fff;border-color:var(--ink);
+    width:auto;padding:0 10px;border-radius:16px;
+  }
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎲 Raststätte 2 — Kopf oder Zahl</h1>
+  <p>Berliner Platz 1 · Wiederholungsspiel nach Kapitel 3–4</p>
+</header>
+
+<main>
+  <div class="rules">
+    <b>Spielregeln:</b> Zwei Spieler (A und B). Klicken Sie „Münze werfen": Zahl = 1 Schritt, Kopf = 2 Schritte.
+    Wer am Feld ankommt, beantwortet die Aufgabe seiner Spalte (A = gelb, B = orange) — mündlich, mit einem Partner oder für sich selbst.
+    „Richtig" → Sie bleiben auf dem Feld. „Falsch" → Sie gehen zurück zum vorherigen Feld. Wer zuerst „Ziel" erreicht, gewinnt!
+  </div>
+
+  <div class="game-panel">
+    <div class="players">
+      <div class="player-pos player-a">🟡 Spieler A: Feld <span id="posA">Start</span></div>
+      <div class="player-pos player-b">🟠 Spieler B: Feld <span id="posB">Start</span></div>
+    </div>
+
+    <div class="turn-indicator" id="turnIndicator">Am Zug: <b>Spieler A</b></div>
+
+    <div class="coin-area">
+      <div class="coin" id="coin">🪙</div>
+      <button class="flip-btn" id="flipBtn" onclick="flipCoin()">Münze werfen</button>
+    </div>
+
+    <div class="current-question neutral" id="questionBox">Klicken Sie „Münze werfen", um zu starten.</div>
+
+    <div class="action-btns" id="actionBtns" style="display:none;">
+      <button class="btn-ok" onclick="answerResult(true)">✅ Richtig — ich bleibe</button>
+      <button class="btn-fail" onclick="answerResult(false)">❌ Falsch — ich gehe zurück</button>
+    </div>
+
+    <div class="action-btns">
+      <button class="btn-reset" onclick="resetGame()">🔄 Neues Spiel</button>
+    </div>
+
+    <div class="board" id="board"></div>
+  </div>
+</main>
+
+<footer>Berliner Platz 1 · Kursbuch · Raststätte 2 (nach Kapitel 3–4)</footer>
+
+<script>
+const questionsA = {
+  1:"Buchstabieren Sie Ihren Namen.",
+  2:"Wie heißen die Artikel von: Liter • Glas • Dose?",
+  3:"Antworten Sie. ● Hast du Geschwister? ○ …",
+  4:"Antworten Sie. ● Wie geht es Ihnen? ○ …",
+  5:"Antworten Sie. ● Was trinkst du? ○ …",
+  6:"Zählen Sie rückwärts von 20 bis 10.",
+  7:"Nennen Sie Ihre Adresse mit Postleitzahl.",
+  8:"Wie heißt die Frage? ● … ○ Nein, meine Eltern wohnen in Stuttgart.",
+  9:"Wie heißt das auf Deutsch? (Brot, Apfel, Tomate)",
+  10:"Lesen Sie die Zahlen laut. 223 • 678 • 1245 • 3985",
+  11:"Ergänzen Sie. ● Das ist … Waschmaschine. ○ Wie viel kostet … Waschmaschine?",
+  12:"Wie heißt die Frage? ● … ○ Eine Digitalkamera.",
+  13:"Wie heißt das Gegenteil? neu – …, billig – …",
+  14:"Nennen Sie die Uhrzeiten. (3 Uhren)",
+  15:"Wie heißt die Frage? ● … ○ Es ist Viertel vor neun.",
+  16:"Nennen Sie die Wochentage. MODIMIDOFRSASO",
+  17:"Nennen Sie zwei Milchprodukte.",
+  18:"Wie kaufen Sie das? Milch – Liter • Bier – … • Käse – …",
+  19:"Wie heißt die Pluralform? Nudel • Schnitzel • Birne",
+  20:"In der Bäckerei. Antworten Sie. ● Sie wünschen? ○ Ich hätte …",
+  21:"Wie heißt die Frage? ● …? ○ Am Freitag kann ich nicht.",
+  22:"Familie: Nennen Sie drei Verwandte.",
+  23:"Matis Laden. Was fragt Mati? (2 Beispiele)",
+  24:"Was essen Sie gerne? Ich mag …",
+  25:"Gratulieren Sie zum Geburtstag."
+};
+const questionsB = {
+  1:"Nennen Sie Ihre Telefonnummer.",
+  2:"Nennen Sie je ein Nomen mit der, das und die.",
+  3:"Wie heißt die Frage? ● … ○ Marie ist 10 Jahre und Kevin ist bald 6.",
+  4:"Antworten Sie. ● Sind Sie Frau Kraus? ○ …",
+  5:"Ist der Satz richtig oder falsch: Möchten Sie Tee?",
+  6:"Nennen Sie die Preise. € 1,20 • € 8,80 • € 0,60",
+  7:"Ihre Stadt: Nennen Sie die Postleitzahl und die Vorwahl.",
+  8:"Antworten Sie. ● Wann bist du geboren? ○ …",
+  9:"Wie heißt das auf Deutsch? (Käse, Banane, Brot)",
+  10:"Welche Zahl fehlt in der Reihe? 2500 • 5000 • ? • 10000",
+  11:"Ergänzen Sie. ● Das ist … Wörterbuch. ○ Wie viel kostet … Wörterbuch?",
+  12:"Wie heißt die Frage? ● … ○ 999 Euro.",
+  13:"Wie heißt das Gegenteil? Es funktioniert. – Es ist …",
+  14:"Nennen Sie die Uhrzeiten. (3 Uhren)",
+  15:"Wann beginnt Ihr Deutschunterricht und wann ist er zu Ende?",
+  16:"Wie heißt der Satz? Paul / aufstehen / um sechs Uhr.",
+  17:"Nennen Sie zwei Obstsorten.",
+  18:"Wie kaufen Sie das? Milch – Liter • Bananen – … • Marmelade – …",
+  19:"Wie heißt die Pluralform? Glas • Kartoffel • Ei",
+  20:"Gemüse kaufen. Antworten Sie. ● Ja, bitte? ○ Geben Sie …",
+  21:"Wie heißt die Frage? ● …? ○ Gerne. Wann beginnt der Film?",
+  22:"Familie: Nennen Sie drei Verwandte.",
+  23:"Matis Laden. Was fragen Sie? (2 Beispiele)",
+  24:"Was essen Sie nicht gerne? Ich mag kein/keine/keinen …",
+  25:"Danken Sie für das Geschenk."
+};
+
+let posA = 0, posB = 0;
+let currentPlayer = 'A';
+let pendingField = 0;
+let waitingForAnswer = false;
+
+function renderBoard(){
+  const board = document.getElementById('board');
+  let html = `<div class="field start">Start</div>`;
+  for(let i=1;i<=25;i++){
+    let cls = 'field';
+    if(posA===i) cls += ' hasA';
+    if(posB===i) cls += ' hasB';
+    html += `<div class="${cls}">${i}</div>`;
+  }
+  html += `<div class="field ziel">Ziel</div>`;
+  board.innerHTML = html;
+  document.getElementById('posA').textContent = posA===0 ? 'Start' : (posA>25 ? 'Ziel' : posA);
+  document.getElementById('posB').textContent = posB===0 ? 'Start' : (posB>25 ? 'Ziel' : posB);
+}
+renderBoard();
+
+function updateTurnIndicator(){
+  document.getElementById('turnIndicator').innerHTML = `Am Zug: <b>Spieler ${currentPlayer}</b>`;
+}
+
+function flipCoin(){
+  if(waitingForAnswer) return;
+  const coin = document.getElementById('coin');
+  const flipBtn = document.getElementById('flipBtn');
+  flipBtn.disabled = true;
+  coin.classList.add('flipping');
+
+  setTimeout(()=>{
+    coin.classList.remove('flipping');
+    const isZahl = Math.random() < 0.5;
+    const steps = isZahl ? 1 : 2;
+    coin.textContent = isZahl ? 'Zahl' : 'Kopf';
+
+    let newPos;
+    if(currentPlayer==='A'){
+      newPos = Math.min(posA + steps, 26);
+      posA = newPos;
+    } else {
+      newPos = Math.min(posB + steps, 26);
+      posB = newPos;
+    }
+    renderBoard();
+
+    const qBox = document.getElementById('questionBox');
+    if(newPos > 25){
+      qBox.className = 'current-question neutral';
+      qBox.textContent = `🏆 Spieler ${currentPlayer} erreicht das Ziel! Herzlichen Glückwunsch!`;
+      document.getElementById('actionBtns').style.display = 'none';
+      flipBtn.disabled = true;
+      return;
+    }
+
+    pendingField = newPos;
+    const colLetter = currentPlayer; // player A answers column A question, B answers column B
+    const q = colLetter === 'A' ? questionsA[newPos] : questionsB[newPos];
+    qBox.className = 'current-question ' + (colLetter==='A' ? 'colA' : 'colB');
+    qBox.innerHTML = `<b>Feld ${newPos} (${isZahl?'Zahl · 1 Schritt':'Kopf · 2 Schritte'}):</b><br>${q}`;
+    document.getElementById('actionBtns').style.display = 'flex';
+    waitingForAnswer = true;
+  }, 550);
+}
+
+function answerResult(correct){
+  if(!waitingForAnswer) return;
+  if(!correct){
+    // go back one field
+    if(currentPlayer==='A'){ posA = Math.max(0, posA-1); }
+    else { posB = Math.max(0, posB-1); }
+    renderBoard();
+  }
+  waitingForAnswer = false;
+  document.getElementById('actionBtns').style.display = 'none';
+  document.getElementById('questionBox').className = 'current-question neutral';
+  document.getElementById('questionBox').textContent = correct ? '✅ Bleiben Sie auf dem Feld!' : '❌ Zurück zum vorherigen Feld!';
+
+  currentPlayer = currentPlayer==='A' ? 'B' : 'A';
+  updateTurnIndicator();
+  document.getElementById('flipBtn').disabled = false;
+}
+
+function resetGame(){
+  posA=0; posB=0; currentPlayer='A'; waitingForAnswer=false;
+  renderBoard();
+  updateTurnIndicator();
+  document.getElementById('questionBox').className='current-question neutral';
+  document.getElementById('questionBox').textContent = 'Klicken Sie „Münze werfen", um zu starten.';
+  document.getElementById('actionBtns').style.display='none';
+  document.getElementById('flipBtn').disabled=false;
+  document.getElementById('coin').textContent='🪙';
+}
+</script>
+</body>
+</html>

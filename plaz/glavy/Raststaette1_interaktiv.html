@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Raststätte 1 – Interaktiv</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --blue:#1d5c9e; --lightblue:#eaf2fb; --green:#2e8b57; --red:#c0392b;
+  --grey:#666; --border:#ccd6e0; --yellow:#fdf6d8; --lgreen:#e3f0da;
+}
+*{box-sizing:border-box;}
+body{font-family:'Segoe UI',Arial,sans-serif;margin:0;background:#f4f7fb;color:#222;}
+header{background:var(--blue);color:#fff;padding:18px 20px;text-align:center;}
+header h1{margin:0;font-size:1.5em;}
+header p{margin:6px 0 0;font-size:.95em;opacity:.9;}
+nav{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:50;}
+nav button{flex:1;min-width:110px;padding:12px 6px;border:none;background:#fff;cursor:pointer;font-size:.9em;color:var(--blue);border-bottom:3px solid transparent;}
+nav button.active{border-bottom:3px solid var(--blue);font-weight:bold;background:var(--lightblue);}
+main{max-width:900px;margin:0 auto;padding:16px;}
+.tab{display:none;}
+.tab.active{display:block;}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.card h2{margin-top:0;color:var(--blue);font-size:1.15em;border-bottom:2px solid var(--lightblue);padding-bottom:8px;}
+.hint{color:var(--grey);font-size:.87em;margin-bottom:10px;}
+input[type=text]{border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:1em;margin:2px;min-width:70px;}
+input.correct{background:#e3f6e8;border-color:var(--green);}
+input.incorrect{background:#fdeaea;border-color:var(--red);}
+textarea{width:100%;min-height:70px;border:1px solid var(--border);border-radius:5px;padding:8px;font-size:1em;font-family:inherit;}
+select{border:1px solid var(--border);border-radius:5px;padding:4px;font-size:.95em;}
+button.act{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:8px 14px;margin:4px 6px 4px 0;cursor:pointer;font-size:.9em;}
+button.act.secondary{background:#8296ab;}
+button.act.clear{background:#b0392b;}
+button.act:hover{opacity:.88;}
+.result-box{margin-top:8px;font-weight:bold;padding:8px;border-radius:6px;display:none;}
+.result-box.show{display:block;}
+.result-box.ok{background:#e3f6e8;color:var(--green);}
+.result-box.bad{background:#fdeaea;color:var(--red);}
+.sentence-line{margin:10px 0;line-height:2.3;}
+.notes-area label{display:block;font-weight:bold;margin:10px 0 4px;color:#333;}
+.autosave-note{color:var(--grey);font-size:.85em;font-style:italic;}
+.word-col{display:flex;gap:16px;}
+.word-box{flex:1;padding:12px;border-radius:8px;}
+.word-box.a{background:var(--yellow);}
+.word-box.b{background:var(--lgreen);}
+.word-box div{padding:4px 0;font-weight:600;}
+.dice-word{display:inline-block;background:var(--lightblue);padding:5px 10px;border-radius:14px;margin:3px;font-size:.9em;}
+.dice-row{display:flex;gap:20px;justify-content:center;margin:16px 0;flex-wrap:wrap;}
+.dice-btn{width:70px;height:70px;background:#fff;border:2px solid var(--blue);border-radius:10px;font-size:1em;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.dice-btn:hover{background:var(--lightblue);}
+.game-result{text-align:center;font-size:1.1em;margin-top:10px;font-weight:bold;color:var(--blue);}
+.dlg{background:#fafcff;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;}
+.dlg-line{display:flex;align-items:center;gap:8px;margin:6px 0;}
+.dlg-line select{width:55px;}
+.dlg-speaker{font-weight:bold;color:var(--blue);min-width:24px;}
+table.artikel{width:100%;border-collapse:collapse;}
+table.artikel td{border:1px solid var(--border);padding:8px;vertical-align:top;min-height:100px;}
+table.artikel th{background:var(--lightblue);padding:8px;border:1px solid var(--border);}
+.pool-word{display:inline-block;background:var(--lightblue);padding:5px 10px;border-radius:14px;margin:3px;cursor:pointer;font-size:.9em;}
+.self-check{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.self-check .box{padding:14px;border-radius:8px;}
+.self-check .box.y{background:var(--yellow);}
+.self-check .box.g{background:var(--lgreen);}
+.self-check .box h3{margin-top:0;font-size:.95em;}
+.smiley-row button{font-size:1.4em;background:none;border:2px solid var(--border);border-radius:50%;width:44px;height:44px;cursor:pointer;margin:3px;}
+.smiley-row button.sel{border-color:var(--blue);background:var(--lightblue);}
+footer{text-align:center;padding:20px;color:var(--grey);font-size:.85em;}
+</style>
+</head>
+<body>
+<header>
+<h1>Raststätte (nach Kapitel 1)</h1>
+<p>Berliner Platz 1 · Kursbuch · Interaktive Wiederholung</p>
+</header>
+<nav id="tabnav"></nav>
+<main id="mainArea"></main>
+<footer>Erstellt für dein Deutschlernen · Fortschritt wird lokal in deinem Browser gespeichert</footer>
+
+<script>
+const tabs = [
+  {id:'ex1', label:'1. Wörter & Sätze'},
+  {id:'ex2', label:'2. Dialoge'},
+  {id:'ex3', label:'3. Bilder'},
+  {id:'ex4', label:'4. Würfelspiel'},
+  {id:'ex5', label:'5. Wortschatz-Bild'},
+  {id:'check', label:'Was kann ich?'},
+  {id:'me', label:'Ich über mich'}
+];
+const nav = document.getElementById('tabnav');
+tabs.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.textContent=t.label;
+  b.onclick=()=>showTab(t.id);
+  b.id='navbtn-'+t.id;
+  if(i===0) b.className='active';
+  nav.appendChild(b);
+});
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('navbtn-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function normalize(s){
+  return (s||'').toString().trim().toLowerCase().replace(/ß/g,'ss').replace(/[.,!?]/g,'').replace(/\s+/g,' ');
+}
+function speak(text){
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='de-DE'; u.rate=0.9;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+}
+</script>
+
+<!-- ============ TAB 1: Zehn Wörter und viele Sätze ============ -->
+<div class="tab active" id="tab-ex1">
+<div class="card">
+<h2>1. Zehn Wörter und viele Sätze – Solo-Version</h2>
+<p class="hint">Spielregel im Buch: A sagt ein Wort aus Spalte A, B bildet in 30 Sekunden Sätze dazu (ein Punkt pro Satz). Hier spielst du beide Rollen selbst: Klicke auf ein Wort, dann schreibe so viele Sätze wie möglich in 30 Sekunden.</p>
+<div class="word-col">
+<div class="word-box a">
+<b>Spalte A</b>
+<div id="wordsA"></div>
+</div>
+<div class="word-box b">
+<b>Spalte B</b>
+<div id="wordsB"></div>
+</div>
+</div>
+<div class="game-result" id="chosenWord"></div>
+<div style="text-align:center;margin:14px 0;">
+<button class="act" id="startTimerBtn" onclick="startWordTimer()">Timer starten (30 Sek.)</button>
+<span id="timerDisplay" style="font-size:1.3em;font-weight:bold;color:var(--blue);margin-left:10px;"></span>
+</div>
+<textarea id="sentencesArea" placeholder="Schreibe hier deine Sätze, einen pro Zeile..." data-note="rast1-sentences"></textarea>
+<div class="hint" style="margin-top:8px;">Tipp: Beispielsatz für "Deutschlehrerin" – "Wo ist die Deutschlehrerin?" / "Wie heißt die Deutschlehrerin?"</div>
+</div>
+</div>
+
+<!-- ============ TAB 2: Dialoge (ordering) ============ -->
+<div class="tab" id="tab-ex2">
+<div class="card">
+<h2>2. Dialoge – Ordnen Sie und lesen Sie vor</h2>
+<p class="hint">Original hat Audio (Track 1.36); hier hörst du eine synthetische Stimme. Ordne die Repliken in die richtige Reihenfolge.</p>
+<h3 style="color:var(--blue);">Dialog 1</h3>
+<button class="act secondary" onclick="playDialog('dlg1')">▶ Dialog anhören</button>
+<div class="dlg" id="dlgBox-dlg1"></div>
+<button class="act" onclick="checkOrder('dlg1')">Проверить</button>
+<button class="act secondary" onclick="revealOrder('dlg1')">Показать ответ</button>
+<button class="act clear" onclick="clearOrder('dlg1')">Очистить</button>
+<div class="result-box" id="res-dlg1"></div>
+
+<h3 style="color:var(--blue);margin-top:24px;">Dialog 2</h3>
+<button class="act secondary" onclick="playDialog('dlg2')">▶ Dialog anhören</button>
+<div class="dlg" id="dlgBox-dlg2"></div>
+<button class="act" onclick="checkOrder('dlg2')">Проверить</button>
+<button class="act secondary" onclick="revealOrder('dlg2')">Показать ответ</button>
+<button class="act clear" onclick="clearOrder('dlg2')">Очистить</button>
+<div class="result-box" id="res-dlg2"></div>
+</div>
+</div>
+
+<!-- ============ TAB 3: Bilder und Dialoge ============ -->
+<div class="tab" id="tab-ex3">
+<div class="card">
+<h2>3. Bilder und Dialoge – Schreiben Sie Dialoge</h2>
+<p class="hint">Sieh dir die drei Situationen an und schreibe passende Dialoge. Kein "eine" richtige Antwort – wird automatisch gespeichert.</p>
+<div class="notes-area">
+<label>Bild 1: Zwei Kollegen begrüßen sich vor einem Bürogebäude und geben sich die Hand.</label>
+<textarea data-note="rast1-bild1" placeholder="A: Guten Tag, mein Name ist... / B: ..."></textarea>
+</div>
+<div class="notes-area">
+<label>Bild 2: Ein Mann und eine Frau bereiten gemeinsam einen Tisch mit Frühstück vor (Orangensaft, Marmelade).</label>
+<textarea data-note="rast1-bild2" placeholder="A: Möchtest du...? / B: ..."></textarea>
+</div>
+<div class="notes-area">
+<label>Bild 3: Auf einem Flohmarkt – ein Mann zeigt einer Frau einen gelben Toaster.</label>
+<textarea data-note="rast1-bild3" placeholder="A: Was kostet der Toaster? / B: ..."></textarea>
+</div>
+</div>
+</div>
+
+<!-- ============ TAB 4: Würfelspiel ============ -->
+<div class="tab" id="tab-ex4">
+<div class="card">
+<h2>4. Würfelspiel – Verben konjugieren</h2>
+<p class="hint">Verbliste: brauchen, lesen, ordnen, ergänzen, heißen, machen, sprechen, haben, trinken, kosten, nehmen, wohnen, lernen, möchten, schreiben, suchen, hören, kaufen, kommen, spielen, sein, liegen</p>
+<p class="hint">Klicke auf einen Würfel, um ein zufälliges Pronomen zu bekommen. Wähle dann selbst ein Verb aus der Liste und bilde einen Satz.</p>
+<div id="verbPool" style="margin-bottom:14px;"></div>
+<div class="dice-row">
+<button class="dice-btn" onclick="rollDice('ich')">🎲<br>ich</button>
+<button class="dice-btn" onclick="rollDice('du')">🎲🎲<br>du</button>
+<button class="dice-btn" onclick="rollDice('er/es/sie')">🎲🎲🎲<br>er/es/sie</button>
+<button class="dice-btn" onclick="rollDice('wir')">🎲<br>wir</button>
+<button class="dice-btn" onclick="rollDice('ihr')">🎲🎲<br>ihr</button>
+<button class="dice-btn" onclick="rollDice('sie/Sie')">🎲🎲🎲<br>sie/Sie</button>
+</div>
+<div class="game-result" id="diceResult">Klicke auf einen Würfel!</div>
+<textarea id="diceSentences" placeholder="Schreibe hier deine Sätze mit dem gewählten Pronomen und Verb..." data-note="rast1-dice-sentences" style="margin-top:10px;"></textarea>
+</div>
+</div>
+
+<!-- ============ TAB 5: Wortschatz-Bild ============ -->
+<div class="tab" id="tab-ex5">
+<div class="card">
+<h2>5a Das Wortschatz-Bild – Raten Sie</h2>
+<p class="hint">Wie viele Gegenstände zeigt das Bild auf dem Flohmarkt (Kapitel-1-Wortschatz)?</p>
+<div style="text-align:center;">
+<button class="act" onclick="guess28()">28</button>
+<button class="act" onclick="guess36()">36</button>
+<button class="act" onclick="guess44()">44</button>
+</div>
+<div class="result-box" id="resGuess"></div>
+</div>
+
+<div class="card">
+<h2>5b Nomen und Artikel – Sortiere die Wörter</h2>
+<p class="hint">Wortliste (vom Bild): das Auto, das Bild, der Bleistift, die Brille, das Buch, das Bügeleisen, die CD, der Computer, die Digitalkamera, der Drucker, das DVD, der Fernseher, das Fahrrad, der Fußball, das Handy, das Heft, der Herd, die Kaffeemaschine, der Kinderwagen, der Kuli, der Kühlschrank, die Lampe, der MP3-Player, der Papierkorb, das Radio, die Schere, der Spülmaschine, der Staubsauger, der Stuhl, die Tasche, die Tasse, der Tisch, die Uhr, der Wasserkocher, die Waschmaschine, das Wörterbuch</p>
+<p class="hint">Klicke auf ein Wort, um es der richtigen Spalte zuzuordnen (der / das / die).</p>
+<div id="artikelPool" style="margin-bottom:10px;"></div>
+<table class="artikel">
+<tr><th>der</th><th>das</th><th>die</th></tr>
+<tr>
+<td id="colDer"></td>
+<td id="colDas"></td>
+<td id="colDie"></td>
+</tr>
+</table>
+<button class="act" onclick="checkArtikel()">Проверить</button>
+<button class="act secondary" onclick="revealArtikel()">Показать ответ</button>
+<button class="act clear" onclick="clearArtikel()">Очистить</button>
+<div class="result-box" id="resArtikel"></div>
+</div>
+</div>
+
+<!-- ============ TAB 6: Was kann ich schon? ============ -->
+<div class="tab" id="tab-check">
+<div class="card">
+<h2>Was kann ich schon? – Selbsttest</h2>
+<p class="hint">Mach die Aufgaben 1-6 und kontrolliere selbst. Kein "eine" richtige Antwort – zur Selbstreflexion.</p>
+<div class="self-check">
+<div class="box y">
+<h3>1. Name und Adresse</h3>
+<textarea data-note="rast1-sk1" placeholder="Wie heißen Sie? Wo wohnen Sie? – Ich..."></textarea>
+</div>
+<div class="box g">
+<h3>2. Buchstabieren</h3>
+<p class="hint">Buchstabiere: A-L-O-I-S L-E-I-N-E-B-E-R-G-E-R</p>
+<button class="act secondary" onclick="speak('A L O I S Leineberger')">🔊 anhören</button>
+</div>
+<div class="box y">
+<h3>3. "Wie geht es Ihnen?" beantworten</h3>
+<textarea data-note="rast1-sk3" placeholder="☺ Danke, gut. / 😐 Es geht. / ☹ Nicht so gut."></textarea>
+</div>
+<div class="box g">
+<h3>4. Nach der Telefonnummer fragen</h3>
+<textarea data-note="rast1-sk4" placeholder="Wie ist Ihre Telefonnummer? – 892187"></textarea>
+</div>
+<div class="box y">
+<h3>5. Preise</h3>
+<textarea data-note="rast1-sk5" placeholder="Wörterbuch Deutsch-Mongolisch: 30,10 Euro → Was kostet das Wörterbuch? – Es kostet..."></textarea>
+</div>
+<div class="box g">
+<h3>6. Im Unterricht</h3>
+<textarea data-note="rast1-sk6" placeholder="Schreiben Sie... / Sprechen Sie... / Wiederholen Sie..."></textarea>
+</div>
+</div>
+<p><b>Mein Ergebnis finde ich:</b></p>
+<div class="smiley-row" id="smileyRow">
+<button data-v="good" onclick="selectSmiley(this)">☺</button>
+<button data-v="ok" onclick="selectSmiley(this)">😐</button>
+<button data-v="bad" onclick="selectSmiley(this)">☹</button>
+</div>
+</div>
+</div>
+
+<!-- ============ TAB 7: Ich über mich ============ -->
+<div class="tab" id="tab-me">
+<div class="card">
+<h2>Ich über mich</h2>
+<p class="hint">Beispieltext (Jana): "Ich heiße Jana Romanova und komme aus Russland, aus Petersburg. Ich bin 26 Jahre alt. Ich wohne jetzt in Ludwigshafen in Rheinland-Pfalz. Meine Adresse ist: Berliner Platz 2, 67059 Ludwigshafen. Meine Handy-Nummer ist 0161/42 899320. Ich spreche Russisch und Englisch. Ich bin im Deutschkurs A1, in der VHS Ludwigshafen. Meine Kursleiterin..."</p>
+<p class="hint">Jetzt du: Stell dich selbst vor.</p>
+<textarea data-note="rast1-ichubermich" style="min-height:200px;" placeholder="Mein Name ist... / Ich bin ... Jahre alt. / Ich komme aus... / Ich wohne (jetzt) in... / (Adresse: Straße, Hausnummer, PLZ, Ort, Bundesland) / Meine Telefonnummer ist... / Ich spreche... (Sprachen) / Ich bin im Deutschkurs... / Mein/e Lehrerin..."></textarea>
+</div>
+</div>
+
+<script>
+/* ============ Tab 1: word lists ============ */
+const wordsA = ["wer","Heft","heißen","Russland","Deutschlehrerin","kommen","wo","kosten","Tee","wohnen"];
+const wordsB = ["wie","Hallo","ist","woher","Telefonnummer","aus","sprechen","Englisch","trinken","Kuli"];
+const colA = document.getElementById('wordsA');
+const colB = document.getElementById('wordsB');
+let chosenWordText = '';
+wordsA.forEach(w=>{
+  const d=document.createElement('div');
+  d.textContent=w; d.style.cursor='pointer';
+  d.onclick=()=>chooseWord(w);
+  colA.appendChild(d);
+});
+wordsB.forEach(w=>{
+  const d=document.createElement('div');
+  d.textContent=w; d.style.cursor='pointer';
+  d.onclick=()=>chooseWord(w);
+  colB.appendChild(d);
+});
+function chooseWord(w){
+  chosenWordText = w;
+  document.getElementById('chosenWord').textContent = 'Gewähltes Wort: ' + w;
+}
+let wordTimerInterval = null;
+function startWordTimer(){
+  let seconds = 30;
+  const display = document.getElementById('timerDisplay');
+  const btn = document.getElementById('startTimerBtn');
+  btn.disabled = true;
+  display.textContent = seconds + ' Sek.';
+  wordTimerInterval = setInterval(()=>{
+    seconds--;
+    display.textContent = seconds + ' Sek.';
+    if(seconds<=0){
+      clearInterval(wordTimerInterval);
+      display.textContent = 'Zeit um!';
+      btn.disabled = false;
+    }
+  }, 1000);
+}
+
+/* ============ Tab 2: dialog ordering ============ */
+const dialogData = {
+  dlg1: {
+    speakers: ['A','B','A','B','A','B'],
+    lines: [
+      "Woher kommen Sie?",
+      "Guten Tag, mein Name ist Nikos Koukidis.",
+      "Ich komme aus Griechenland, aus Athen.",
+      "Und ich bin Boris Bogdanow.",
+      "Ich komme aus der Ukraine, und Sie?",
+      "Und ich bin aus Kiew."
+    ],
+    correctOrder: [1,3,4,0,2,5],
+    fixedFirst: true
+  },
+  dlg2: {
+    speakers: ['A','B','A','B','A','B'],
+    lines: [
+      "In der Blumenstraße 34.",
+      "Nur Handy. Die Nummer ist 0172 5480808.",
+      "Wo wohnst du?",
+      "In der Kaiserstraße, und du?",
+      "Hast du Telefon?"
+    ],
+    correctOrder: [2,3,4,1,0],
+    fixedFirst: true
+  }
+};
+function initDialog(id){
+  const data = dialogData[id];
+  const shuffled = data.lines.map((l,i)=>i);
+  for(let i=shuffled.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
+  }
+  data.displayOrder = shuffled;
+  renderDialog(id);
+}
+function renderDialog(id){
+  const data = dialogData[id];
+  const box = document.getElementById('dlgBox-'+id);
+  box.innerHTML = '';
+  data.displayOrder.forEach(lineIdx=>{
+    const div = document.createElement('div');
+    div.className = 'dlg-line';
+    let opts = '<option value="">-</option>';
+    for(let n=1;n<=data.lines.length;n++){
+      opts += `<option value="${n}">${n}</option>`;
+    }
+    div.innerHTML = `<span class="dlg-speaker">${data.speakers[lineIdx]}</span>
+      <select data-lineidx="${lineIdx}" data-dlg="${id}">${opts}</select>
+      <span>${data.lines[lineIdx]}</span>`;
+    box.appendChild(div);
+  });
+}
+function checkOrder(id){
+  const data = dialogData[id];
+  const selects = document.querySelectorAll(`select[data-dlg="${id}"]`);
+  let correct=0;
+  selects.forEach(sel=>{
+    const lineIdx = parseInt(sel.dataset.lineidx);
+    const correctPos = data.correctOrder.indexOf(lineIdx)+1;
+    const val = parseInt(sel.value);
+    if(val === correctPos){
+      sel.style.background='#e3f6e8'; sel.style.borderColor='#2e8b57';
+      correct++;
+    } else {
+      sel.style.background='#fdeaea'; sel.style.borderColor='#c0392b';
+    }
+  });
+  const box = document.getElementById('res-'+id);
+  box.classList.add('show');
+  if(correct===selects.length){
+    box.className='result-box show ok'; box.textContent='✓ Alles richtig! ('+correct+'/'+selects.length+')';
+  } else {
+    box.className='result-box show bad'; box.textContent='Richtig: '+correct+' von '+selects.length+'. Versuch es noch einmal!';
+  }
+}
+function revealOrder(id){
+  const data = dialogData[id];
+  const selects = document.querySelectorAll(`select[data-dlg="${id}"]`);
+  selects.forEach(sel=>{
+    const lineIdx = parseInt(sel.dataset.lineidx);
+    const correctPos = data.correctOrder.indexOf(lineIdx)+1;
+    sel.value = correctPos;
+    sel.style.background='#e3f6e8'; sel.style.borderColor='#2e8b57';
+  });
+}
+function clearOrder(id){
+  const selects = document.querySelectorAll(`select[data-dlg="${id}"]`);
+  selects.forEach(sel=>{
+    sel.value=''; sel.style.background=''; sel.style.borderColor='';
+  });
+  document.getElementById('res-'+id).classList.remove('show');
+}
+function playDialog(id){
+  const data = dialogData[id];
+  const text = data.correctOrder.map(i=>data.lines[i]).join('. ');
+  speak(text);
+}
+initDialog('dlg1');
+initDialog('dlg2');
+
+/* ============ Tab 4: dice game ============ */
+const verbList = ["brauchen","lesen","ordnen","ergänzen","heißen","machen","sprechen","haben","trinken","kosten","nehmen","wohnen","lernen","möchten","schreiben","suchen","hören","kaufen","kommen","spielen","sein","liegen"];
+const verbPool = document.getElementById('verbPool');
+verbList.forEach(v=>{
+  const span=document.createElement('span');
+  span.className='dice-word';
+  span.textContent=v;
+  verbPool.appendChild(span);
+});
+function rollDice(pronoun){
+  const randomVerb = verbList[Math.floor(Math.random()*verbList.length)];
+  document.getElementById('diceResult').textContent = `Pronomen: ${pronoun} · Vorschlag: ${randomVerb} (du kannst auch ein anderes Verb wählen)`;
+}
+
+/* ============ Tab 5a: guess count ============ */
+function guess28(){ showGuessResult(28); }
+function guess36(){ showGuessResult(36); }
+function guess44(){ showGuessResult(44); }
+function showGuessResult(g){
+  const box = document.getElementById('resGuess');
+  box.classList.add('show');
+  const correctAnswer = 36;
+  if(g===correctAnswer){
+    box.className='result-box show ok'; box.textContent='✓ Richtig! Das Bild zeigt 36 Gegenstände.';
+  } else {
+    box.className='result-box show bad'; box.textContent='Die richtige Antwort ist: 36 Gegenstände.';
+  }
+}
+
+/* ============ Tab 5b: Artikel sortieren ============ */
+const artikelWords = [
+  {w:"Auto", art:"das"}, {w:"Bild", art:"das"}, {w:"Bleistift", art:"der"},
+  {w:"Brille", art:"die"}, {w:"Buch", art:"das"}, {w:"Bügeleisen", art:"das"},
+  {w:"CD", art:"die"}, {w:"Computer", art:"der"}, {w:"Digitalkamera", art:"die"},
+  {w:"Drucker", art:"der"}, {w:"DVD", art:"die"}, {w:"Fernseher", art:"der"},
+  {w:"Fahrrad", art:"das"}, {w:"Fußball", art:"der"}, {w:"Handy", art:"das"},
+  {w:"Heft", art:"das"}, {w:"Herd", art:"der"}, {w:"Kaffeemaschine", art:"die"},
+  {w:"Kinderwagen", art:"der"}, {w:"Kuli", art:"der"}, {w:"Kühlschrank", art:"der"},
+  {w:"Lampe", art:"die"}, {w:"MP3-Player", art:"der"}, {w:"Papierkorb", art:"der"},
+  {w:"Radio", art:"das"}, {w:"Schere", art:"die"}, {w:"Spülmaschine", art:"die"},
+  {w:"Staubsauger", art:"der"}, {w:"Stuhl", art:"der"}, {w:"Tasche", art:"die"},
+  {w:"Tasse", art:"die"}, {w:"Tisch", art:"der"}, {w:"Uhr", art:"die"},
+  {w:"Wasserkocher", art:"der"}, {w:"Waschmaschine", art:"die"}, {w:"Wörterbuch", art:"das"}
+];
+let artikelState = {};
+function renderArtikelPool(){
+  const pool=document.getElementById('artikelPool');
+  const colDer=document.getElementById('colDer');
+  const colDas=document.getElementById('colDas');
+  const colDie=document.getElementById('colDie');
+  pool.innerHTML=''; colDer.innerHTML=''; colDas.innerHTML=''; colDie.innerHTML='';
+  artikelWords.forEach((item,i)=>{
+    if(!(i in artikelState)){
+      const span=document.createElement('span');
+      span.className='pool-word'; span.textContent=item.w;
+      span.onclick=()=>{ artikelState[i]='der'; renderArtikelPool(); };
+      span.oncontextmenu=(e)=>{ e.preventDefault(); artikelState[i]='das'; renderArtikelPool(); };
+      span.ondblclick=()=>{ artikelState[i]='die'; renderArtikelPool(); };
+      pool.appendChild(span);
+    }
+  });
+  if(pool.children.length>0){
+    const hint=document.createElement('p'); hint.className='hint';
+    hint.textContent='Klick = der, Rechtsklick = das, Doppelklick = die';
+    pool.insertBefore(hint, pool.firstChild);
+  }
+  artikelWords.forEach((item,i)=>{
+    if(artikelState[i]==='der'){
+      const span=document.createElement('span'); span.className='pool-word'; span.textContent=item.w;
+      span.onclick=()=>{ delete artikelState[i]; renderArtikelPool(); };
+      colDer.appendChild(span);
+    }
+  });
+  artikelWords.forEach((item,i)=>{
+    if(artikelState[i]==='das'){
+      const span=document.createElement('span'); span.className='pool-word'; span.textContent=item.w;
+      span.onclick=()=>{ delete artikelState[i]; renderArtikelPool(); };
+      colDas.appendChild(span);
+    }
+  });
+  artikelWords.forEach((item,i)=>{
+    if(artikelState[i]==='die'){
+      const span=document.createElement('span'); span.className='pool-word'; span.textContent=item.w;
+      span.onclick=()=>{ delete artikelState[i]; renderArtikelPool(); };
+      colDie.appendChild(span);
+    }
+  });
+}
+function checkArtikel(){
+  let correct=0;
+  artikelWords.forEach((item,i)=>{ if(artikelState[i]===item.art) correct++; });
+  const box=document.getElementById('resArtikel');
+  box.classList.add('show');
+  if(correct===artikelWords.length){
+    box.className='result-box show ok'; box.textContent='✓ Alles richtig! ('+correct+'/'+artikelWords.length+')';
+  } else {
+    box.className='result-box show bad'; box.textContent='Richtig: '+correct+' von '+artikelWords.length+'.';
+  }
+}
+function revealArtikel(){
+  artikelWords.forEach((item,i)=>{ artikelState[i]=item.art; });
+  renderArtikelPool();
+}
+function clearArtikel(){
+  artikelState={};
+  renderArtikelPool();
+  document.getElementById('resArtikel').classList.remove('show');
+}
+renderArtikelPool();
+
+/* ============ Tab 6: smiley select ============ */
+function selectSmiley(btn){
+  document.querySelectorAll('#smileyRow button').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  saveNotes();
+}
+
+/* ============ NOTES autosave (shared function for all textareas) ============ */
+const NOTES_KEY='raststaette1-notes-v1';
+function loadNotes(){
+  const saved = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    const key = ta.dataset.note;
+    if(saved[key]) ta.value = saved[key];
+    ta.addEventListener('input', saveNotes);
+  });
+  if(saved['smiley']){
+    const btn = document.querySelector(`#smileyRow button[data-v="${saved['smiley']}"]`);
+    if(btn) btn.classList.add('sel');
+  }
+}
+function saveNotes(){
+  const data = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    data[ta.dataset.note] = ta.value;
+  });
+  const selSmiley = document.querySelector('#smileyRow button.sel');
+  if(selSmiley) data['smiley'] = selSmiley.dataset.v;
+  localStorage.setItem(NOTES_KEY, JSON.stringify(data));
+}
+loadNotes();
+</script>
+</body>
+</html>

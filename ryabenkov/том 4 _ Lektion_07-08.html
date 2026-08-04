@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рябенков A1 — Том 4 (Lektion 07-08) | Интерактивный учебник</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; }
+        .container { display: flex; height: 100vh; }
+        .sidebar { width: 280px; background: #2c3e50; color: white; overflow-y: auto; padding: 20px; flex-shrink: 0; }
+        .sidebar h2 { font-size: 16px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #3498db; }
+        .lesson-btn { display: block; width: 100%; padding: 12px; margin-bottom: 8px; background: #34495e; color: white; border: none; border-radius: 6px; cursor: pointer; text-align: left; font-size: 14px; font-weight: bold; transition: all 0.3s; border-left: 4px solid transparent; }
+        .lesson-btn:hover { background: #3d5a73; border-left-color: #3498db; }
+        .lesson-btn.active { background: #3498db; border-left-color: #2ecc71; }
+        .main { flex: 1; overflow-y: auto; padding: 40px; }
+        .header { margin-bottom: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 20px; }
+        .header h1 { font-size: 32px; color: #2c3e50; margin-bottom: 5px; }
+        .header .subtitle { color: #7f8c8d; }
+        .section { background: white; padding: 25px; margin-bottom: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 20px; color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #3498db; display: flex; justify-content: space-between; align-items: center; }
+        .section h3 { font-size: 16px; color: #2c3e50; margin-top: 20px; margin-bottom: 10px; font-weight: bold; }
+        .toggle-btn { background: #3498db; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .toggle-btn:hover { background: #2980b9; }
+        .toggle-btn.show::after { content: ' ▼'; }
+        .toggle-btn.hide::after { content: ' ▲'; }
+        .content { display: none; margin-top: 15px; }
+        .content.visible { display: block; }
+        .theory-block { background: #f9f9f9; padding: 15px; border-left: 4px solid #3498db; border-radius: 4px; margin-bottom: 15px; }
+        
+        .example { background: #ecf0f1; padding: 12px; margin: 10px 0; border-radius: 4px; border-left: 3px solid #e67e22; }
+        .translation { color: #7f8c8d; font-size: 14px; margin-top: 4px; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
+        table th, table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        table th { background: #3498db; color: white; font-weight: bold; }
+        table tr:nth-child(even) { background: #f9f9f9; }
+        
+        .dialog { background: #fef5e7; padding: 20px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #f39c12; line-height: 1.8; }
+        .dialog p { margin-bottom: 10px; }
+        .dialog-person { font-weight: bold; color: #e67e22; margin-right: 8px; }
+        
+        .exercise { background: #f0f8ff; padding: 20px; margin-bottom: 20px; border-radius: 6px; border-left: 4px solid #3498db; }
+        .exercise-instruction { font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #2c3e50; line-height: 1.4; }
+        .exercise-card { background: white; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; margin-bottom: 15px; }
+        .exercise-card p { margin-bottom: 10px; }
+        .exercise-item { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #e0e0e0; }
+        .exercise-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .exercise-label { font-weight: bold; margin-bottom: 8px; color: #2c3e50; }
+        
+        input[type="text"], textarea { width: 100%; padding: 10px 12px; border: 1px solid #bdc3c7; border-radius: 4px; font-family: inherit; font-size: 14px; margin-bottom: 10px; }
+        textarea { resize: vertical; min-height: 80px; }
+        
+        .btn-group { display: flex; gap: 10px; }
+        .check-btn { background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 13px; margin-top: 5px; }
+        .check-btn:hover { background: #229954; }
+        
+        .result { margin-top: 10px; padding: 12px; border-radius: 4px; font-weight: bold; display: none; }
+        .result.show { display: block; }
+        .result.correct { background: #d5f4e6; color: #27ae60; border-left: 4px solid #27ae60; }
+        .result.incorrect { background: #fadbd8; color: #c0392b; border-left: 4px solid #c0392b; }
+        
+        .keys { background: #fffacd; padding: 15px; border-radius: 6px; border-left: 4px solid #f1c40f; margin-top: 15px; }
+        .keys h3 { margin-top: 0; margin-bottom: 10px; }
+        .keys ol, .keys ul { margin-left: 20px; line-height: 1.6; }
+        .keys li { margin-bottom: 8px; }
+        
+        .goals { background: #e8f8f5; padding: 15px; border-radius: 6px; border-left: 4px solid #16a085; margin-bottom: 15px; }
+        .goals ul { list-style: none; padding-left: 0; }
+        .goals li { padding: 6px 0; color: #2c3e50; }
+        .goals li::before { content: "✓ "; color: #27ae60; font-weight: bold; margin-right: 8px; }
+        
+        .note { background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 12px; margin: 10px 0; color: #856404; }
+        
+        ul, ol { margin-left: 20px; margin-bottom: 10px; line-height: 1.6; }
+        li { margin-bottom: 6px; }
+
+        /* ОЗВУЧКА */
+        .speak-sentence, .speak-vocab { position: relative; display: inline-block; padding-right: 30px; margin-right: 5px; margin-bottom: 4px; }
+        .speak-vocab { font-weight: bold; color: #2c3e50; }
+        .play-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: #e8f4f8; border: none; cursor: pointer; font-size: 14px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; color: #2c3e50; }
+        .play-btn:hover { background: #d1f2eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>📚 Том 4</h2>
+            <button class="lesson-btn active" onclick="loadLesson(7)">Lektion 07<br><small>Imperativ(Sie), müssen/sollen</small></button>
+            <button class="lesson-btn" onclick="loadLesson(8)">Lektion 08<br><small>Imperativ(du), man, wollen</small></button>
+        </div>
+        
+        <div class="main">
+            <div class="header">
+                <h1 id="lessonTitle">Lektion 07</h1>
+                <p class="subtitle" id="lessonSubtitle">Imperativ(Sie), müssen/sollen</p>
+            </div>
+            <div id="content"></div>
+        </div>
+    </div>
+
+    <script>
+        const lessons = [
+            // ================= Lektion 07 =================
+            {
+                id: 7,
+                title: 'Lektion 07',
+                subtitle: 'Imperativ (Sie), müssen/sollen, es gibt',
+                goals: [
+                    'научитесь определять наклонение глагола',
+                    'использовать глаголы в уважительной форме «Sie» повелительного наклонения Imperativ',
+                    'употреблять модальные глаголы müssen и sollen в настоящем времени Präsens',
+                    'вводить конструкцию es gibt',
+                    'спрашивать дорогу'
+                ],
+                sections: [
+                    {
+                        title: 'Наклонения глагола',
+                        content: `
+                            <div class="theory-block">
+                                <p>В немецком языке, как и в русском языке, у глагола три наклонения:</p>
+                                <ul>
+                                    <li>изъявительное <strong>Indikativ</strong></li>
+                                    <li>повелительное <strong>Imperativ</strong></li>
+                                    <li>сослагательное <strong>Konjunktiv</strong></li>
+                                </ul>
+                                <p style="margin-top: 10px;">В этой лекции мы рассмотрим повелительное наклонение глагола <strong>Imperativ</strong>. Глагол в повелительном наклонении выражает призыв к действию, например:</p>
+                                <ul>
+                                    <li>Иди!</li>
+                                    <li>Покажи!</li>
+                                    <li>Подскажите, пожалуйста!</li>
+                                    <li>Пойдем в кино!</li>
+                                    <li>Давайте споем!</li>
+                                </ul>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Повелительное наклонение (Imperativ) для «Sie»',
+                        content: `
+                            <div class="theory-block">
+                                <p>В этой лекции мы рассмотрим тот случай, когда вы обращаетесь к человеку на «Вы», то есть глаголы в уважительной форме <strong>«Sie»</strong> повелительного наклонения Imperativ.</p>
+                                <p style="margin-top: 10px;">Сначала вспомним уважительную форму «Sie» в изъявительном наклонении Indikativ:</p>
+                                <ul>
+                                    <li><span class="speak-sentence">Sie gehen.</span> (Вы идете.)</li>
+                                    <li><span class="speak-sentence">Sie fahren geradeaus.</span> (Вы едете прямо.)</li>
+                                    <li><span class="speak-sentence">Sie helfen mir.</span> (Вы мне помогаете.)</li>
+                                </ul>
+                                <p style="margin-top: 10px;">Для того, чтобы преобразовать уважительную форму «Sie» изъявительного наклонения Indikativ в уважительную форму «Sie» повелительного наклонения Imperativ, нужно <strong>поменять местами местоимение и глагол и поставить в конце восклицательный знак</strong>.</p>
+                            </div>
+                            
+                            <h3 style="margin-top: 20px;">Примеры:</h3>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Sie sagen ➔ Sagen Sie!</span></div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Gehen Sie!</span></div><div class="translation">Идите!</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Fahren Sie geradeaus!</span></div><div class="translation">Поезжайте прямо!</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Biegen Sie rechts ab!</span></div><div class="translation">Поверните направо!</div>
+                            </div>
+                            
+                            <h3 style="margin-top: 20px;">Использование слова «bitte»</h3>
+                            <p>Желательно сразу после местоимения «Sie» дополнительно добавлять «пожалуйста» - «bitte».</p>
+                            <ul>
+                                <li><span class="speak-sentence">Helfen Sie mir bitte!</span> (Помогите мне, пожалуйста!)</li>
+                                <li><span class="speak-sentence">Sagen Sie mir bitte!</span> (Подскажите мне, пожалуйста!)</li>
+                                <li><span class="speak-sentence">Folgen Sie mir bitte!</span> (Следуйте за мной, пожалуйста!)</li>
+                                <li><span class="speak-sentence">Begleiten Sie mich bitte!</span> (Проводите меня, пожалуйста!)</li>
+                                <li><span class="speak-sentence">Beschreiben Sie bitte den Weg!</span> (Подскажите, пожалуйста, как пройти!)</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: 'Модальные глаголы müssen и sollen',
+                        content: `
+                            <div class="theory-block">
+                                <p>На прошлом занятии вы начали изучать модальные глаголы и уже знаете, что модальные глаголы — это слова, как «хотеть», «мочь». Они отображают не само действие, а модальность, то есть отношение к этому действию. На этом занятии вы изучите модальные глаголы <strong>müssen</strong> и <strong>sollen</strong>.</p>
+                            </div>
+                            
+                            <h3>müssen (долженствовать, быть вынужденным)</h3>
+                            <p>Обозначает долженствование, осознанную необходимость (я сам ощущаю потребность, меня никто не будет ругать, если я не сделаю, я сам понимаю, что должен, я вынужден, мне приходится).</p>
+                            <table>
+                                <tr><th>Лицо</th><th>müssen в Präsens</th><th>Перевод</th></tr>
+                                <tr><td>ich</td><td><strong>muss</strong></td><td>я должен</td></tr>
+                                <tr><td>du</td><td><strong>musst</strong></td><td>ты должен</td></tr>
+                                <tr><td>er, sie, es</td><td><strong>muss</strong></td><td>он/она/оно должен(на/но)</td></tr>
+                                <tr><td>wir</td><td><strong>müssen</strong></td><td>мы должны</td></tr>
+                                <tr><td>ihr</td><td><strong>müsst</strong></td><td>вы должны</td></tr>
+                                <tr><td>sie / Sie</td><td><strong>müssen</strong></td><td>они / Вы должны</td></tr>
+                            </table>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">- Musst du heute lernen oder können wir ins Kino gegen?</span></div>
+                                <div class="translation">- Тебе нужно сегодня учить или мы можем сходить в кино?</div>
+                                <div class="example-text"><span class="speak-sentence">- Ich muss lernen. Ich bin fleißig.</span></div>
+                                <div class="translation">- Мне нужно учить. Я прилежный ученик. (сам понимаю, что нужно учить)</div>
+                            </div>
+
+                            <h3 style="margin-top: 20px;">sollen (долженствовать, быть обязанным)</h3>
+                            <p>Обозначает долженствование, обязанность, долг, обязательства по службе, по работе, по закону, функции, полномочия, или если это приказ/рекомендация от другого лица.</p>
+                            <table>
+                                <tr><th>Лицо</th><th>sollen в Präsens</th><th>Перевод</th></tr>
+                                <tr><td>ich</td><td><strong>soll</strong></td><td>я должен</td></tr>
+                                <tr><td>du</td><td><strong>sollst</strong></td><td>ты должен</td></tr>
+                                <tr><td>er, sie, es</td><td><strong>soll</strong></td><td>он/она/оно должен(на/но)</td></tr>
+                                <tr><td>wir</td><td><strong>sollen</strong></td><td>мы должны</td></tr>
+                                <tr><td>ihr</td><td><strong>sollt</strong></td><td>вы должны</td></tr>
+                                <tr><td>sie / Sie</td><td><strong>sollen</strong></td><td>они / Вы должны</td></tr>
+                            </table>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">- Sollst du heute in die Bibliothek gehen?</span></div>
+                                <div class="translation">- Тебе нужно сегодня идти в библиотеку?</div>
+                                <div class="example-text"><span class="speak-sentence">- Ich soll heute in die Bibliothek gehen. Das ist meine Arbeitspflicht.</span></div>
+                                <div class="translation">- Мне нужно сегодня идти в библиотеку. Это моя должностная обязанность.</div>
+                            </div>
+                            
+                            <h3 style="margin-top: 20px;">Еще одно важное значение sollen:</h3>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">- Soll ich dir helfen?</span></div>
+                                <div class="translation">- Тебе нужна помощь? (Когда вы спрашиваете у кого-то, нужно ли вам помочь, используется sollen)</div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Конструкция es gibt',
+                        content: `
+                            <div class="theory-block">
+                                <p>В немецком языке есть речевой оборот, который означает «быть», «иметься», или «существовать» (в английском это <em>there is / there are</em>). В немецком языке этой цели служит конструкция <strong>es gibt</strong>.</p>
+                                <p style="margin-top: 10px;">Особенностью является то, что объект, который имеется, то есть слово после конструкции, должно стоять в <strong>винительном падеже Akkusativ</strong>.</p>
+                            </div>
+                            
+                            <h3>Примеры утверждений:</h3>
+                            <ul>
+                                <li><span class="speak-sentence">Es gibt einen Park in der Nähe.</span> (Есть парк поблизости.)</li>
+                                <li><span class="speak-sentence">Es gibt viele Restaurants in dieser Stadt.</span> (В этом городе есть много ресторанов.)</li>
+                            </ul>
+
+                            <h3 style="margin-top: 20px;">Примеры с отрицанием kein (в Akkusativ):</h3>
+                            <ul>
+                                <li><span class="speak-sentence">Es gibt keinen Kaffee mehr.</span> (Больше нет кофе.)</li>
+                                <li><span class="speak-sentence">Es gibt kein Brot im Haus.</span> (В доме нет хлеба.)</li>
+                                <li><span class="speak-sentence">Es gibt keine Apotheke in der Nähe.</span> (Рядом нет аптеки.)</li>
+                            </ul>
+
+                            <h3 style="margin-top: 20px;">Порядок слов в вопросах:</h3>
+                            <p>В вопросах <em>es</em> и <em>gibt</em> меняются местами:</p>
+                            <ul>
+                                <li><span class="speak-sentence">Gibt es Fragen?</span> (Есть вопросы?)</li>
+                                <li><span class="speak-sentence">Gibt es in Berlin ein Museum?</span> (В Берлине есть музей?)</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: 'Практический диалог (Wie komme ich dorthin?)',
+                        content: `
+                            <button class="check-btn pause-btn" onclick="speakFullText(this)" style="margin-bottom: 15px;">🔊 Озвучить весь текст</button>
+                            <div class="dialog">
+                                <h3>Wie komme ich dorthin? (Как мне туда добраться?)</h3>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Guten Tag! Sind Sie fremd in Berlin?</span></p>
+                                <p><span class="dialog-person">Touristin:</span> <span class="speak-sentence">Guten Tag! Ja, ich bin hier fremd.</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Soll ich Ihnen helfen?</span></p>
+                                <p><span class="dialog-person">Touristin:</span> <span class="speak-sentence">Ja, bitte! Gibt es hier Apotheken?</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Ja, es gibt hier eine Apotheke.</span></p>
+                                <p><span class="dialog-person">Touristin:</span> <span class="speak-sentence">Wie komme ich dorthin?</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Sie müssen geradeaus gehen. Dann kommt eine Ampel. Danach müssen Sie links abbiegen.</span></p>
+                                <p><span class="dialog-person">Touristin:</span> <span class="speak-sentence">Entschuldigung, wiederholen Sie bitte nochmal. Soll ich links oder rechts abbiegen?</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Gehen Sie zunächst fünf Meter geradeaus. Dann sehen Sie eine Ampel und eine Kreuzung. Danach kommt ein Kreisverkehr. Biegen Sie links ab.</span></p>
+                                <p><span class="dialog-person">Touristin:</span> <span class="speak-sentence">Und wo sind wir gerade?</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Wir sind gerade in der am Vogelherd-Straße.</span></p>
+                                <p><span class="dialog-person">Touristin:</span> <span class="speak-sentence">Ich kann nicht klarkommen...</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Ich habe Zeit und kann Sie dorthin bringen.</span></p>
+                                <p><span class="dialog-person">Touristin:</span> <span class="speak-sentence">Danke!</span></p>
+                            </div>
+                            
+                            <h3 style="margin-top: 20px;">Запомните слова по теме:</h3>
+                            <ul>
+                                <li><span class="speak-vocab">der Berliner, die Berliner</span> - берлинец</li>
+                                <li><span class="speak-vocab">der Tourist, die Touristin</span> - турист</li>
+                                <li><span class="speak-vocab">fremd sein</span> - быть не местным</li>
+                                <li><span class="speak-vocab">die Apotheke, die Apotheken</span> - аптека</li>
+                                <li><span class="speak-vocab">dorthin</span> - туда</li>
+                                <li><span class="speak-vocab">geradeaus gehen</span> - идти прямо</li>
+                                <li><span class="speak-vocab">links / rechts abbiegen</span> - повернуть налево / направо</li>
+                                <li><span class="speak-vocab">die Entschuldigung</span> - извинение (здесь: Извините!)</li>
+                                <li><span class="speak-vocab">nochmal wiederholen</span> - повторить еще раз</li>
+                                <li><span class="speak-vocab">zunächst</span> - сначала, сперва</li>
+                                <li><span class="speak-vocab">die Ampel, die Ampeln</span> - светофор</li>
+                                <li><span class="speak-vocab">die Kreuzung, die Kreuzungen</span> - перекресток</li>
+                                <li><span class="speak-vocab">der Kreisverkehr, =</span> - перекресток с круговым движением</li>
+                                <li><span class="speak-vocab">gerade</span> - сейчас, в данный момент</li>
+                                <li><span class="speak-vocab">in der am Vogelherd-Straße</span> - на улице Ам-Фогельхерт</li>
+                                <li><span class="speak-vocab">klarkommen</span> - справиться, разобраться, понять</li>
+                                <li><span class="speak-vocab">bringen</span> - отвести, проводить</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: 'Задания',
+                        content: `
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 1: Ответьте на вопросы по диалогу:</div><div id="ex_l7_1"></div></div>
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 2: Преобразуйте формы изъявительного наклонения Indikativ в форму «Sie» повелительного наклонения Imperativ по образцу (Sie gehen. - Gehen Sie bitte!):</div><div id="ex_l7_2"></div></div>
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 3: Составьте и запишите диалог. Используйте формы повелительного наклонения и модальные глаголы:</div><div id="ex_l7_3"></div></div>
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 4: Вставьте правильный глагол (müssen/sollen):</div><div id="ex_l7_4"></div></div>
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 5: Перепишите предложения, используя "es gibt":</div><div id="ex_l7_5"></div></div>
+                        `
+                    },
+                    {
+                        title: 'Ключи (ответы)',
+                        content: `
+                            <div class="keys">
+                                <h3>ЗАДАНИЕ № 1 — По диалогу</h3>
+                                <ol>
+                                    <li>Hier gibt es eine Apotheke.</li>
+                                    <li>Die Touristin muss geradeaus gehen. Dann kommt eine Ampel. Danach muss die Touristin links abbiegen.</li>
+                                    <li>Die Touristin soll links abbiegen.</li>
+                                    <li>Die Touristin soll zunächst fünf Meter geradeaus gehen. Die Touristin sieht dann eine Ampel und eine Kreuzung. Danach kommt ein Kreisverkehr.</li>
+                                    <li>Die Touristin und der Berliner sind gerade in der am Vogelherd-Straße.</li>
+                                    <li>Die Touristin kann nicht klarkommen.</li>
+                                    <li>Der Berliner hat Zeit und kann die Touristin dorthin bringen.</li>
+                                </ol>
+                                
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 2 — Imperativ (Sie)</h3>
+                                <ol>
+                                    <li>Fahren Sie bitte geradeaus!</li><li>Biegen Sie bitte ab!</li><li>Biegen Sie bitte rechts ab!</li>
+                                    <li>Schwimmen Sie bitte!</li><li>Tanzen Sie bitte!</li><li>Singen Sie bitte!</li>
+                                    <li>Kochen Sie bitte!</li><li>Telefonieren Sie bitte mit der Mutter!</li><li>Lesen Sie bitte Bücher!</li>
+                                    <li>Warten Sie es bitte ab!</li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 3 — Диалог (Перевод)</h3>
+                                <p>- Guten Tag! Sind Sie fremd hier?<br>
+                                - Guten Tag! Ja, ich bin hier fremd.<br>
+                                - Soll ich Ihnen helfen?<br>
+                                - Ja, helfen Sie mir bitte! Gibt es hier Kinos?<br>
+                                - Hier gibt es ein Kino.<br>
+                                - Wie komme ich dorthin?<br>
+                                - Sie müssen geradeaus gehen und danach links abbiegen. Dann kommt eine Ampel. Biegen Sie danach rechts ab.<br>
+                                - Ich kann nicht klarkommen... Wo sind wir gerade?<br>
+                                - Gerade sind wir in der Newski-Prospekt-Straße. Ich habe Zeit. Soll ich Sie dorthin bringen?<br>
+                                - Danke!</p>
+                                
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 4 — müssen / sollen</h3>
+                                <p>1. muss, 2. soll, 3. muss, 4. soll, 5. soll, 6. muss, 7. Soll, 8. muss, 9. soll, 10. muss, 11. muss, 12. sollst, 13. sollst, 14. sollst, 15. muss</p>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 5 — es gibt</h3>
+                                <ol>
+                                    <li>Es gibt einen Park in der Nähe.</li>
+                                    <li>Es gibt zwei Apotheken in dieser Straße.</li>
+                                    <li>Es gibt eine Bäckerei neben dem Supermarkt.</li>
+                                    <li>Es gibt viele Restaurants in der Stadt.</li>
+                                    <li>Es gibt ein Kino im Einkaufszentrum.</li>
+                                    <li>Es gibt einen Bahnhof in der Stadtmitte.</li>
+                                    <li>Es gibt viele Bücher in der Bibliothek.</li>
+                                    <li>Es gibt einen Spielplatz im Park.</li>
+                                    <li>Es gibt zwei Museen in dieser Stadt.</li>
+                                </ol>
+                            </div>
+                        `
+                    }
+                ]
+            },
+            // ================= Lektion 08 =================
+            {
+                id: 8,
+                title: 'Lektion 08',
+                subtitle: 'Imperativ (du), man, wollen',
+                goals: [
+                    'научитесь использовать неопределенное местоимение man',
+                    'употреблять модальный глагол wollen в настоящем времени Präsens',
+                    'использовать глаголы в форме «du» повелительного наклонения Imperativ',
+                    'описывать дорогу'
+                ],
+                sections: [
+                    {
+                        title: 'Повторение: Imperativ для «Sie»',
+                        content: `
+                            <div class="theory-block">
+                                <p>В этой лекции продолжим рассмотрение повелительного наклонения глагола Imperativ. На прошлом занятии вы начали изучать повелительное наклонение глаголов Imperativ и уже умеете выражать на немецком языке побуждение к действию в уважительной форме «Sie», например:</p>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Biegen Sie rechts ab!</span></div>
+                                <div class="translation">Поверните направо!</div>
+                                <div class="example-text"><span class="speak-sentence">Gehen Sie geradeaus!</span></div>
+                                <div class="translation">Идите прямо!</div>
+                                <div class="example-text"><span class="speak-sentence">Fahren Sie mit der U-Bahn!</span></div>
+                                <div class="translation">Поезжайте на метро!</div>
+                                <div class="example-text"><span class="speak-sentence">Rufen Sie mich an!</span></div>
+                                <div class="translation">Позвоните мне!</div>
+                                <div class="example-text"><span class="speak-sentence">Unterschreiben Sie hier!</span></div>
+                                <div class="translation">Подпишите здесь!</div>
+                            </div>
+                            <p style="margin-top: 10px;">При этом помните, что отделяемые приставки отделяются и уходят в конец предложения:</p>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Füllen Sie das Formular aus.</span></div>
+                                <div class="translation">Заполните формуляр.</div>
+                                <div class="example-text"><span class="speak-sentence">Schreiben Sie die Adresse auf.</span></div>
+                                <div class="translation">Запишите адрес.</div>
+                                <div class="example-text"><span class="speak-sentence">Passen Sie auf!</span></div>
+                                <div class="translation">Будьте внимательны!</div>
+                                <div class="example-text"><span class="speak-sentence">Rufen Sie mich an!</span></div>
+                                <div class="translation">Позвоните мне!</div>
+                            </div>
+                            <p style="margin-top: 10px;">Уважительную форму «Sie» необходимо использовать, когда вы обращаетесь к малознакомым людям. Но в коммуникации с близким человеком, подругой или другом, коллегой или мужем эта форма обращения не подойдет. В неформальной коммуникации побуждение к действию выглядит иначе.</p>
+                        `
+                    },
+                    {
+                        title: 'Повелительное наклонение (Imperativ) для «du»',
+                        content: `
+                            <div class="theory-block">
+                                <p>Если вы побуждаете к действию, обращаетесь с просьбой или приказом к одному хорошо знакомому человеку, к кому вы в русском языке обращаетесь на «ты», в немецком языке необходимо использовать форму «du» глагола в повелительном наклонении Imperativ.</p>
+                                <p style="margin-top: 10px;">Чтобы разобраться, как в немецком языке выразить побуждение к действию в форме «du» повелительного наклонения Imperativ, сначала вспомним форму «du» в изъявительном наклонении Indikativ:</p>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Du gehst.</span></div>
+                                <div class="translation">Ты идешь.</div>
+                                <div class="example-text"><span class="speak-sentence">Du fährst.</span></div>
+                                <div class="translation">Ты едешь.</div>
+                                <div class="example-text"><span class="speak-sentence">Du biegst rechts ab.</span></div>
+                                <div class="translation">Ты поворачиваешь направо.</div>
+                                <div class="example-text"><span class="speak-sentence">Du siehst die Ampel.</span></div>
+                                <div class="translation">Ты видишь светофор.</div>
+                                <div class="example-text"><span class="speak-sentence">Du begleitest mich.</span></div>
+                                <div class="translation">Ты меня провожаешь.</div>
+                            </div>
+                            <p style="margin-top: 10px;">Вы помните из первых лекций, что при спряжении сильные глаголы в форме «du» меняют корневые гласные a на ä, о на ö, e на i, ie, ieh, а глаголы с основой на d, t, dm, tm, chn, ffn, gn добавляют окончание -est, например:</p>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Du arbeitest.</span></div>
+                                <div class="translation">Ты работаешь.</div>
+                                <div class="example-text"><span class="speak-sentence">Du fährst.</span></div>
+                                <div class="translation">Ты едешь.</div>
+                                <div class="example-text"><span class="speak-sentence">Du öffnest.</span></div>
+                                <div class="translation">Ты открываешь.</div>
+                                <div class="example-text"><span class="speak-sentence">Du läufst.</span></div>
+                                <div class="translation">Ты бежишь.</div>
+                                <div class="example-text"><span class="speak-sentence">Du stößt.</span></div>
+                                <div class="translation">Ты сталкиваешься.</div>
+                                <div class="example-text"><span class="speak-sentence">Du siehst.</span></div>
+                                <div class="translation">Ты видишь.</div>
+                            </div>
+                            <div class="theory-block" style="margin-top: 15px;">
+                                <p>Для того, чтобы образовать форму <strong>«du»</strong> глагола в повелительном наклонении Imperativ, нужно взять глагол в форме «du» из Präsens и <strong>убрать местоимение du и личное окончание (-st)</strong>.</p>
+                            </div>
+
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Du arbeitest ➔ Arbeite!</span></div>
+                                <div class="translation">Работай!</div>
+                                <div class="example-text"><span class="speak-sentence">Du fährst ➔ Fahr!</span></div>
+                                <div class="translation">Поезжай! (умлаут 'ä' убирается)</div>
+                                <div class="example-text"><span class="speak-sentence">Du öffnest ➔ Öffne!</span></div>
+                                <div class="translation">Открой!</div>
+                                <div class="example-text"><span class="speak-sentence">Du läufst ➔ Lauf!</span></div>
+                                <div class="translation">Беги!</div>
+                                <div class="example-text"><span class="speak-sentence">Du stößt ➔ Stoß!</span></div>
+                                <div class="translation">Столкнись!</div>
+                            </div>
+
+                            <h3 style="margin-top: 20px;">Исключение 1:</h3>
+                            <p>Глаголы lassen, gehen, kommen, stehen, sitzen, setzen не приобретают окончание -е:</p>
+                            <ul>
+                                <li><span class="speak-sentence">Lass!</span> (Позволь!)</li>
+                                <li><span class="speak-sentence">Geh!</span> (Иди!)</li>
+                                <li><span class="speak-sentence">Komm!</span> (Приди!)</li>
+                                <li><span class="speak-sentence">Steh!</span> (Стой!)</li>
+                                <li><span class="speak-sentence">Sitz!</span> (Сиди!)</li>
+                                <li><span class="speak-sentence">Setz dich!</span> (Сядь!)</li>
+                            </ul>
+
+                            <h3 style="margin-top: 20px;">Исключение 2:</h3>
+                            <p>Глаголы с основой на d, t, dm, tm, ffn, chn всегда добавляют окончание -е:</p>
+                            <ul>
+                                <li><span class="speak-sentence">Zeichne!</span> (Рисуй!)</li>
+                                <li><span class="speak-sentence">Arbeite!</span> (Работай!)</li>
+                                <li><span class="speak-sentence">Atme!</span> (Дыши!)</li>
+                                <li><span class="speak-sentence">Rede!</span> (Говори!)</li>
+                                <li><span class="speak-sentence">Öffne!</span> (Открой!)</li>
+                            </ul>
+
+                            <h3 style="margin-top: 20px;">Исключение 3:</h3>
+                            <p>Сильные глаголы сохраняют корневые гласные a, o, au, но <strong>меняют e на i, ie, ieh</strong>:</p>
+                            <ul>
+                                <li><span class="speak-sentence">Sieh!</span> (Посмотри!)</li>
+                                <li><span class="speak-sentence">Nimm!</span> (Возьми!)</li>
+                                <li><span class="speak-sentence">Lies!</span> (Читай!)</li>
+                            </ul>
+
+                            <h3 style="margin-top: 20px;">Глагол sein (быть):</h3>
+                            <p>Кроме того, глагол sein образует свои особые формы повелительного наклонения Imperativ.</p>
+                            <ul>
+                                <li>Du bist ruhig ➔ <span class="speak-sentence">Sei ruhig!</span> (Будь спокоен!)</li>
+                                <li>Du bist pünktlich ➔ <span class="speak-sentence">Sei pünktlich!</span> (Будь пунктуальным!)</li>
+                                <li>Du bist vorsichtig ➔ <span class="speak-sentence">Sei vorsichtig!</span> (Будь осторожным!)</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: 'Модальный глагол wollen',
+                        content: `
+                            <div class="theory-block">
+                                <p><strong>wollen</strong> обозначает твердое желание, решительное намерение, готовность что-либо сделать (хотеть, намереваться).</p>
+                            </div>
+                            <table>
+                                <tr><th>Лицо</th><th>wollen в Präsens</th><th>Перевод</th></tr>
+                                <tr><td>ich</td><td><strong>will</strong></td><td>я хочу</td></tr>
+                                <tr><td>du</td><td><strong>willst</strong></td><td>ты хочешь</td></tr>
+                                <tr><td>er, sie, es</td><td><strong>will</strong></td><td>он/она/оно хочет</td></tr>
+                                <tr><td>wir</td><td><strong>wollen</strong></td><td>мы хотим</td></tr>
+                                <tr><td>ihr</td><td><strong>wollt</strong></td><td>вы хотите</td></tr>
+                                <tr><td>sie / Sie</td><td><strong>wollen</strong></td><td>они / Вы хотите</td></tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Примеры:</h3>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Ich will nach Hause gehen.</span></div>
+                                <div class="translation">Я хочу пойти домой. (Помните про рамочную конструкцию: gehen стоит в конце!)</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">- Willst du heute ins Kino gehen?</span></div>
+                                <div class="translation">- Хочешь сегодня пойти в кино?</div>
+                                <div class="example-text"><span class="speak-sentence">- Nein, ich will heute zu Hause bleiben.</span></div>
+                                <div class="translation">- Нет, я хочу остаться дома.</div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Неопределенное местоимение man',
+                        content: `
+                            <div class="theory-block">
+                                <p><strong>Man</strong> — это безличное местоимение, которое используется в немецком языке для выражения общих утверждений или правил, когда конкретное лицо не указано. Оно переводится как «кто-то», «ЛЮДИ», «мы» ИЛИ «ты» в зависимости от Контекста - заменяет подлежащее там, где его нет.</p>
+                                <p style="margin-top: 10px;"><strong>Особенности:</strong> Man всегда используется с глаголом в <strong>3-м лице единственного числа</strong> (как все глаголы в форме er, sie, es).</p>
+                            </div>
+                            <h3 style="margin-top: 20px;">Примеры:</h3>
+                            <ul>
+                                <li><span class="speak-sentence">Man darf hier nicht rauchen.</span> (Здесь нельзя курить.)</li>
+                                <li><span class="speak-sentence">Man soll mehr Sport treiben.</span> (Надо больше заниматься спортом.)</li>
+                                <li><span class="speak-sentence">Wie sagt man das auf Deutsch?</span> (Как это говорят на немецком?)</li>
+                                <li><span class="speak-sentence">Man kann nicht alles wissen.</span> (Нельзя знать всё.)</li>
+                                <li><span class="speak-sentence">Man kann hier sehr gut essen.</span> (Здесь можно очень хорошо поесть.)</li>
+                                <li><span class="speak-sentence">Man darf das nicht vergessen.</span> (Нельзя об этом забывать.)</li>
+                                <li><span class="speak-sentence">Man lernt aus seinen Fehlern.</span> (Учатся на своих ошибках.)</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: 'Практический диалог (Beschreib bitte den Weg!)',
+                        content: `
+                            <button class="check-btn pause-btn" onclick="speakFullText(this)" style="margin-bottom: 15px;">🔊 Озвучить весь текст</button>
+                            <div class="dialog">
+                                <h3>Beschreib bitte den Weg! (Объясни, пожалуйста, как пройти!)</h3>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Hey Klaudia! Ich bin momentan in Sankt Petersburg.</span></p>
+                                <p><span class="dialog-person">Petersburgerin:</span> <span class="speak-sentence">Hallo Lukas! Wo bist du gerade?</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Ich verstehe nicht. Sei so nett und hilf mir bitte!</span></p>
+                                <p><span class="dialog-person">Petersburgerin:</span> <span class="speak-sentence">Sag mir zuerst: Wohin musst du?</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Sorry, wiederhol bitte deine Frage! Man lacht hier sehr laut. Ich höre dich nicht.</span></p>
+                                <p><span class="dialog-person">Petersburgerin:</span> <span class="speak-sentence">Wohin musst du kommen?</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Achso, ich will ins Kino «Aurora». Es liegt auf der Newski-Prospekt-Straße.</span></p>
+                                <p><span class="dialog-person">Petersburgerin:</span> <span class="speak-sentence">Klar. Was siehst du vorne?</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Ich sehe die Kasaner Kathedrale. Bin ich irgendwo am Stadtrande?</span></p>
+                                <p><span class="dialog-person">Petersburgerin:</span> <span class="speak-sentence">Nein, natürlich nicht. Du bist fast an Ort und Stelle.</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Beschreib bitte den Weg!</span></p>
+                                <p><span class="dialog-person">Petersburgerin:</span> <span class="speak-sentence">Bleib stehen. Man muss aufpassen: Die Kasaner Kathedrale muss hinten sein. Überquer die Straße und geh geradeaus bis zur U-Bahn-Station «Gostinij Dwor». Bieg danach links ab und überquer die Newski-Prospekt-Straße. Bieg rechts ab und geh ein paar Meter geradeaus. Bieg links um die Ecke ab. Da ist das Kino.</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Danke! Willst du mit mir ins Kino gehen?</span></p>
+                                <p><span class="dialog-person">Petersburgerin:</span> <span class="speak-sentence">Ich will, aber ich kann nicht. Vielleicht das nächste Mal!</span></p>
+                                <p><span class="dialog-person">Berliner:</span> <span class="speak-sentence">Gerne!</span></p>
+                            </div>
+                            <h3 style="margin-top: 20px;">Запомните слова по теме:</h3>
+                            <ul>
+                                <li><span class="speak-vocab">der Petersburger, die Petersburgerin</span> - петербуржец / петербурженка</li>
+                                <li><span class="speak-vocab">momentan</span> - на данный момент</li>
+                                <li><span class="speak-vocab">verstehen</span> - понимать</li>
+                                <li><span class="speak-vocab">sagen</span> - сказать</li>
+                                <li><span class="speak-vocab">die Frage, die Fragen</span> - вопрос</li>
+                                <li><span class="speak-vocab">laut lachen</span> - громко смеяться</li>
+                                <li><span class="speak-vocab">auf der Newski-Prospekt-Straße</span> - на Невском проспекте</li>
+                                <li><span class="speak-vocab">vorne / hinten</span> - спереди / сзади</li>
+                                <li><span class="speak-vocab">die Kasaner Kathedrale</span> - Казанский кафедральный собор</li>
+                                <li><span class="speak-vocab">irgendwo</span> - где-то</li>
+                                <li><span class="speak-vocab">am Stadtrande</span> - на окраине города</li>
+                                <li><span class="speak-vocab">fast</span> - почти</li>
+                                <li><span class="speak-vocab">an Ort und Stelle sein</span> - быть на месте</li>
+                                <li><span class="speak-vocab">der Weg, die Wege</span> - путь, дорога</li>
+                                <li><span class="speak-vocab">beschreiben</span> - описывать (здесь: объяснять)</li>
+                                <li><span class="speak-vocab">bis zur U-Bahn-Station «Gostinij Dwor»</span> - до станции метро «Гостиный Двор»</li>
+                                <li><span class="speak-vocab">die Straße überqueren</span> - перейти дорогу</li>
+                                <li><span class="speak-vocab">um die Ecke</span> - за угол</li>
+                                <li><span class="speak-vocab">vielleicht das nächste Mal</span> - может, в другой раз</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: 'Задания',
+                        content: `
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 1: Ответьте на вопросы по диалогу:</div><div id="ex_l8_1"></div></div>
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 2: Преобразуйте формы «Sie» повелительного наклонения Imperativ в форму «du» повелительного наклонения Imperativ по образцу (Gehen Sie bitte! - Geh bitte!):</div><div id="ex_l8_2"></div></div>
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 3: Скажите по-немецки. Используйте формы повелительного наклонения, модальные глаголы и неопределенное местоимение man:</div><div id="ex_l8_3"></div></div>
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 4: Вставьте правильную форму глагола "wollen":</div><div id="ex_l8_4"></div></div>
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 5: Перепишите предложения, добавив "wollen" (Образец: Ich lese ein Buch. - Ich will ein Buch lesen.):</div><div id="ex_l8_5"></div></div>
+                            <div class="exercise"><div class="exercise-instruction">ЗАДАНИЕ № 6: Перепишите предложения, используя "man" (Образец: Die Leute kaufen Brot im Supermarkt. - Man kauft Brot im Supermarkt.):</div><div id="ex_l8_6"></div></div>
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 7 (факультативно, устно): Внимательно изучите карту исторического центра Санкт-Петербурга. Используя формы повелительного наклонения, опишите дорогу (устно):</div>
+                                <div class="exercise-card">
+                                    <ol>
+                                        <li>von der Kasaner Kathedrale bis zur Admiralität (от Казанского собора до Адмиралтейства)</li>
+                                        <li>von der Peter-und-Paul-Festung bis zur Isaakskathedrale (от Петропавловской крепости до Исаакиевского собора)</li>
+                                        <li>von der U-Bahn-Station «Sennaja» bis zur Erlöserkirche (от ст. метро Сенная до Спаса на крови)</li>
+                                    </ol>
+                                    <p style="margin-top: 10px; font-size: 14px; color: #7f8c8d;">Задание устное и факультативное, ключа с эталонным ответом в оригинале нет — карта в исходном материале дана как изображение.</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Ключи (ответы)',
+                        content: `
+                            <div class="keys">
+                                <h3>ЗАДАНИЕ № 1 — Диалог</h3>
+                                <ol>
+                                    <li>Der Berliner ist momentan in Sankt Petersburg.</li>
+                                    <li>Man lacht hier laut. Der Berliner hört die Petersburgerin nicht.</li>
+                                    <li>Der Berliner will ins Kino «Aurora». Das Kino liegt auf der Newski-Prospekt-Straße.</li>
+                                    <li>Der Berliner sieht vorne die Kasaner Kathedrale. Die Kasaner Kathedrale muss hinten sein.</li>
+                                    <li>Nein, natürlich nicht. Der Berliner ist fast an Ort und Stelle.</li>
+                                    <li>Die Petersburgerin will ins Kino, aber sie kann nicht.</li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 2 — Imperativ (du)</h3>
+                                <p>1. Fahr geradeaus! 2. Bieg um die Ecke ab! 3. Arbeite bitte! 4. Lauf Ski! 5. Zeichne! 6. Öffne bitte das Fenster! 7. Atme tief ein! 8. Rede Hochdeutsch! 9. Stoß bitte nicht! 10. Komm bei mir vorbei! 11. Sei so nett! 12. Pass bitte auf!</p>
+                                
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 3 — Перевод</h3>
+                                <ol>
+                                    <li>Geh geradeaus und bieg nicht rechts ab!</li>
+                                    <li>Fahr links und überquer die Straße!</li>
+                                    <li>Sei bitte so nett!</li>
+                                    <li>Bleib stehen!</li>
+                                    <li>Hilf bitte!</li>
+                                    <li>Beschreib bitte den Weg!</li>
+                                    <li>Sei ruhig! Hier darf man nicht sprechen.</li>
+                                    <li>Man liest. Man muss viel lesen.</li>
+                                    <li>Man geht. Man muss gehen.</li>
+                                    <li>Man spricht laut. Man darf nicht laut sprechen.</li>
+                                    <li>Hier raucht man. Man darf hier nicht rauchen.</li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 4 — wollen</h3>
+                                <p>1. will, 2. willst, 3. wollen, 4. wollen, 5. will, 6. wollt, 7. wollen, 8. Willst, 9. wollen, 10. will</p>
+                                
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 5 — добавить wollen</h3>
+                                <ol>
+                                    <li>Ich will ein Buch lesen.</li>
+                                    <li>Wir wollen ins Museum gehen.</li>
+                                    <li>Sie will eine Suppe kochen.</li>
+                                    <li>Du willst Deutsch lernen.</li>
+                                    <li>Peter will ein Auto kaufen.</li>
+                                    <li>Ihr wollt im Park spielen.</li>
+                                    <li>Meine Schwester will ihre Freundin besuchen.</li>
+                                    <li>Ich will ein Bild malen.</li>
+                                    <li>Die Kinder wollen schlafen.</li>
+                                    <li>Er will im Garten arbeiten.</li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 6 — man</h3>
+                                <ol>
+                                    <li>Man geht am Wochenende ins Kino.</li>
+                                    <li>Man isst Pizza in der Pizzeria.</li>
+                                    <li>Man fährt mit dem Bus zur Arbeit.</li>
+                                    <li>Man frühstückt morgens.</li>
+                                    <li>Man lernt Deutsch in der Schule.</li>
+                                    <li>Man spielt Fußball im Park.</li>
+                                    <li>Man arbeitet jeden Tag.</li>
+                                    <li>Man sieht am Abend fern.</li>
+                                    <li>Man kocht zu Hause.</li>
+                                    <li>Man liest Bücher in der Bibliothek.</li>
+                                </ol>
+                            </div>
+                        `
+                    }
+                ]
+            }
+        ];
+
+        let germanVoice = null;
+        let textChunks = [];
+        let currentChunkIndex = 0;
+        let customIsPaused = false;
+        let customIsSpeaking = false;
+        let currentPauseBtn = null;
+
+        function initVoice() {
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) return;
+            const priorityKeywords = ['Google', 'Premium', 'Enhanced', 'Neural', 'Natural', 'Online'];
+            germanVoice = voices.find(v => v.lang.startsWith('de') && priorityKeywords.some(k => v.name.includes(k)));
+            if (!germanVoice) {
+                germanVoice = voices.find(v => v.lang.startsWith('de'));
+            }
+        }
+
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = initVoice;
+        }
+
+        function resetAllPauseButtons() {
+            document.querySelectorAll('.pause-btn').forEach(btn => {
+                btn.innerHTML = '⏸️';
+                btn.title = 'Пауза';
+            });
+        }
+
+        function stopAllAudio() {
+            window.speechSynthesis.cancel();
+            customIsSpeaking = false;
+            customIsPaused = false;
+            resetAllPauseButtons();
+        }
+
+        function speakText(text, pauseBtnElement = null) {
+            stopAllAudio();
+            textChunks = text.match(/[^.!?]+[.!?]*/g) || [text];
+            textChunks = textChunks.map(s => s.trim()).filter(s => s.length > 0);
+            currentChunkIndex = 0;
+            customIsSpeaking = true;
+            customIsPaused = false;
+            currentPauseBtn = pauseBtnElement;
+            if (currentPauseBtn) {
+                currentPauseBtn.innerHTML = '⏸️';
+                currentPauseBtn.title = 'Пауза';
+            }
+            playNextChunk();
+        }
+
+        function playNextChunk() {
+            if (customIsPaused || currentChunkIndex >= textChunks.length) {
+                if (currentChunkIndex >= textChunks.length) stopAllAudio();
+                return;
+            }
+            if (!germanVoice) initVoice();
+            const msg = new SpeechSynthesisUtterance(textChunks[currentChunkIndex]);
+            msg.lang = 'de-DE';
+            msg.rate = 0.85;
+            if (germanVoice) msg.voice = germanVoice;
+            msg.onend = () => {
+                if (customIsPaused) return; 
+                currentChunkIndex++;
+                playNextChunk();
+            };
+            msg.onerror = () => {};
+            window.speechSynthesis.speak(msg);
+        }
+
+        function togglePause(btn) {
+            if (!customIsSpeaking) return;
+            if (customIsPaused) {
+                customIsPaused = false;
+                btn.innerHTML = '⏸️';
+                btn.title = 'Пауза';
+                playNextChunk();
+            } else {
+                customIsPaused = true;
+                window.speechSynthesis.cancel();
+                btn.innerHTML = '▶️';
+                btn.title = 'Продолжить';
+            }
+        }
+
+        function speakFullText(btn) {
+            if (customIsSpeaking && currentPauseBtn === btn) {
+                togglePause(btn);
+                return;
+            }
+            const container = btn.closest('.section').querySelector('.content');
+            const sentences = Array.from(container.querySelectorAll('.speak-sentence')).map(el => el.textContent.replace('🔊','').trim());
+            const fullText = sentences.join('. ');
+            if (!fullText) return;
+            speakText(fullText, btn);
+        }
+
+        function initAudioButtons() {
+            // Для отдельных фраз (.speak-sentence)
+            document.querySelectorAll('.speak-sentence').forEach(el => {
+                if (!el.querySelector('.play-btn')) {
+                    const btn = document.createElement('button');
+                    btn.className = 'play-btn';
+                    btn.innerHTML = '🔊';
+                    btn.title = 'Послушать';
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        let pureText = el.textContent.replace('🔊', '').trim();
+                        speakText(pureText);
+                    };
+                    el.appendChild(btn);
+                }
+            });
+
+            // Для отдельных слов (.speak-vocab)
+            document.querySelectorAll('.speak-vocab').forEach(el => {
+                if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('play-btn')) {
+                    const textToSpeak = el.textContent.trim();
+                    const btn = document.createElement('button');
+                    btn.className = 'play-btn';
+                    btn.innerHTML = '🔊';
+                    btn.title = 'Послушать';
+                    btn.style.position = 'relative';
+                    btn.style.display = 'inline-flex';
+                    btn.style.transform = 'none';
+                    btn.style.marginLeft = '5px';
+                    btn.style.width = '20px';
+                    btn.style.height = '20px';
+                    btn.style.fontSize = '12px';
+                    btn.style.background = 'none';
+
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        let pureText = textToSpeak.replace('🔊', '').trim();
+                        speakText(pureText);
+                    };
+                    el.insertAdjacentElement('afterend', btn);
+                }
+            });
+        }
+
+        function loadLesson(id) {
+            const lesson = lessons.find(l => l.id === id);
+            if (!lesson) return;
+
+            document.querySelectorAll('.lesson-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.lesson-btn').classList.add('active');
+
+            document.getElementById('lessonTitle').textContent = lesson.title;
+            document.getElementById('lessonSubtitle').textContent = lesson.subtitle;
+
+            let html = `<div class="section"><h2>✓ Цели лекции</h2><div class="goals"><ul>`;
+            lesson.goals.forEach(goal => { html += `<li>${goal}</li>`; });
+            html += `</ul></div></div>`;
+
+            lesson.sections.forEach((section) => {
+                html += `<div class="section"><h2><span>${section.title}</span><button class="toggle-btn show" onclick="toggleSection(this)"></button></h2><div class="content visible">${section.content}</div></div>`;
+            });
+
+            document.getElementById('content').innerHTML = html;
+
+            if (id === 7) initExercises7();
+            if (id === 8) initExercises8();
+
+            initAudioButtons();
+            document.getElementById('content').scrollTop = 0;
+        }
+
+        function toggleSection(btn) {
+            const content = btn.parentElement.parentElement.querySelector('.content');
+            content.classList.toggle('visible');
+            btn.classList.toggle('show');
+            btn.classList.toggle('hide');
+        }
+
+        // ================= УПРАЖНЕНИЯ ЛЕКЦИИ 7 =================
+        function initExercises7() {
+            const ex1Items = [
+                '1. Gibt es hier Apotheken?',
+                '2. Muss die Touristin geradeaus gehen? Was kommt dann? Muss die Touristin danach links abbiegen?',
+                '3. Soll die Touristin links oder rechts abbiegen?',
+                '4. Wie weit soll die Touristin zunächst geradeaus gehen? Was sieht die Touristin dann? Was kommt danach?',
+                '5. Wo sind die Touristin und der Berliner gerade?',
+                '6. Kann die Touristin klarkommen?',
+                '7. Hat der Berliner Zeit? Kann er die Touristin dorthin bringen?'
+            ];
+            let html = '';
+            ex1Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label"><span class="speak-sentence">${item}</span></div><textarea></textarea><div class="btn-group"><button class="check-btn" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l7_1').innerHTML = html;
+
+            const ex2Items = [
+                { q: '1. Sie fahren geradeaus.', a: 'Fahren Sie bitte geradeaus!' },
+                { q: '2. Sie biegen ab.', a: 'Biegen Sie bitte ab!' },
+                { q: '3. Sie biegen rechts ab.', a: 'Biegen Sie bitte rechts ab!' },
+                { q: '4. Sie schwimmen.', a: 'Schwimmen Sie bitte!' },
+                { q: '5. Sie tanzen.', a: 'Tanzen Sie bitte!' },
+                { q: '6. Sie singen.', a: 'Singen Sie bitte!' },
+                { q: '7. Sie kochen.', a: 'Kochen Sie bitte!' },
+                { q: '8. Sie telefonieren mit der Mutter.', a: 'Telefonieren Sie bitte mit der Mutter!' },
+                { q: '9. Sie lesen Bücher.', a: 'Lesen Sie bitte Bücher!' },
+                { q: '10. Sie warten es ab.', a: 'Warten Sie es bitte ab!' }
+            ];
+            html = '';
+            ex2Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label"><span class="speak-sentence">${item.q}</span></div><div class="btn-group"><input type="text" data-answer="${item.a}"><button class="check-btn" onclick="checkTextAnswerInput(this)">Проверить</button><button class="check-btn" data-answer="${item.a}" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l7_2').innerHTML = html;
+
+            const ex3Items = [
+                { ru: '- Добрый день! Вы не местный?', a: '- Guten Tag! Sind Sie fremd hier?' },
+                { ru: '- Добрый день! Да, я здесь не местный.', a: '- Guten Tag! Ja, ich bin hier fremd.' },
+                { ru: '- Мне Вам помочь?', a: '- Soll ich Ihnen helfen?' },
+                { ru: '- Да, помогите мне, пожалуйста! Здесь есть кинотеатры?', a: '- Ja, helfen Sie mir bitte! Gibt es hier Kinos?' },
+                { ru: '- Здесь есть один кинотеатр.', a: '- Hier gibt es ein Kino.' },
+                { ru: '- Как мне туда добраться?', a: '- Wie komme ich dorthin?' },
+                { ru: '- Вам нужно идти прямо и затем повернуть налево. Там будет светофор. Затем поверните направо.', a: '- Sie müssen geradeaus gehen und danach links abbiegen. Dann kommt eine Ampel. Biegen Sie danach rechts ab.' },
+                { ru: '- Не могу понять... Где мы сейчас?', a: '- Ich kann nicht klarkommen... Wo sind wir gerade?' },
+                { ru: '- Сейчас мы на Невском проспекте (in der Newski-Prospekt-Straße).', a: '- Gerade sind wir in der Newski-Prospekt-Straße.' },
+                { ru: '- У меня есть время. Мне Вас проводить?', a: '- Ich habe Zeit. Soll ich Sie dorthin bringen?' },
+                { ru: '- Спасибо!', a: '- Danke!' }
+            ];
+            html = '';
+            ex3Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label">${item.ru}</div><textarea placeholder="Ваш перевод..."></textarea><div class="btn-group"><button class="check-btn" data-answer="${item.a}" onclick="checkTextAnswer(this)">Проверить</button><button class="check-btn" data-answer="${item.a}" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l7_3').innerHTML = html;
+
+            const ex4Items = [
+                { q: '1. Ich kann heute nicht kommen. Ich ___ arbeiten.', a: 'muss' },
+                { q: '2. Er sagt, ich ___ ihn besuchen.', a: 'soll' },
+                { q: '3. Ich ___ zur Bank.', a: 'muss' },
+                { q: '4. Ich ___ dieses Medikament täglich einnehmen.', a: 'soll' },
+                { q: '5. Wann ___ ich kommen?', a: 'soll' },
+                { q: '6. Ich ___ Sport machen.', a: 'muss' },
+                { q: '7. ___ ich das Fenster schließen?', a: 'Soll' },
+                { q: '8. Jeder Mensch ___ schlafen.', a: 'muss' },
+                { q: '9. Meine Mama sagt, ich ___ Sport machen.', a: 'soll' },
+                { q: '10. Ich ___ zum Arzt.', a: 'muss' }
+            ];
+            html = '';
+            ex4Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label"><span class="speak-sentence">${item.q}</span></div><div class="btn-group"><input type="text" data-answer="${item.a}"><button class="check-btn" onclick="checkTextAnswerInput(this)">Проверить</button><button class="check-btn" data-answer="${item.a}" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l7_4').innerHTML = html;
+
+            const ex5Items = [
+                { q: '1. Ein Park ist in der Nähe.', a: 'Es gibt einen Park in der Nähe.' },
+                { q: '2. Zwei Apotheken sind in dieser Straße.', a: 'Es gibt zwei Apotheken in dieser Straße.' },
+                { q: '3. Eine Bäckerei ist neben dem Supermarkt.', a: 'Es gibt eine Bäckerei neben dem Supermarkt.' },
+                { q: '4. Viele Restaurants sind in der Stadt.', a: 'Es gibt viele Restaurants in der Stadt.' },
+                { q: '5. Ein Kino ist im Einkaufszentrum.', a: 'Es gibt ein Kino im Einkaufszentrum.' },
+                { q: '6. Ein Bahnhof ist in der Stadtmitte.', a: 'Es gibt einen Bahnhof in der Stadtmitte.' },
+                { q: '7. Viele Bücher sind in der Bibliothek.', a: 'Es gibt viele Bücher in der Bibliothek.' },
+                { q: '8. Ein Spielplatz ist im Park.', a: 'Es gibt einen Spielplatz im Park.' },
+                { q: '9. Zwei Museen sind in dieser Stadt.', a: 'Es gibt zwei Museen in dieser Stadt.' }
+            ];
+            html = '';
+            ex5Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label"><span class="speak-sentence">${item.q}</span></div><div class="btn-group"><input type="text" data-answer="${item.a}"><button class="check-btn" onclick="checkTextAnswerInput(this)">Проверить</button><button class="check-btn" data-answer="${item.a}" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l7_5').innerHTML = html;
+        }
+
+        // ================= УПРАЖНЕНИЯ ЛЕКЦИИ 8 =================
+        function initExercises8() {
+            const ex1Items = [
+                '1. Wo ist der Berliner momentan?',
+                '2. Lacht man hier laut? Hört der Berliner die Petersburgerin?',
+                '3. Wohin muss der Berliner kommen? Wo liegt das Kino?',
+                '4. Was sieht der Berliner vorne? Muss die Kasaner Kathedrale hinten sein?',
+                '5. Ist der Berliner irgendwo am Stadtrande?',
+                '6. Will die Petersburgerin ins Kino gehen?'
+            ];
+            let html = '';
+            ex1Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label"><span class="speak-sentence">${item}</span></div><textarea></textarea><div class="btn-group"><button class="check-btn" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l8_1').innerHTML = html;
+
+            const ex2Items = [
+                { q: '1. Fahren Sie geradeaus!', a: 'Fahr geradeaus!' },
+                { q: '2. Biegen Sie um die Ecke ab!', a: 'Bieg um die Ecke ab!' },
+                { q: '3. Arbeiten Sie bitte!', a: 'Arbeite bitte!' },
+                { q: '4. Laufen Sie Ski!', a: 'Lauf Ski!' },
+                { q: '5. Zeichnen Sie!', a: 'Zeichne!' },
+                { q: '6. Öffnen Sie bitte das Fenster!', a: 'Öffne bitte das Fenster!' },
+                { q: '7. Atmen Sie tief ein!', a: 'Atme tief ein!' },
+                { q: '8. Reden Sie Hochdeutsch!', a: 'Rede Hochdeutsch!' },
+                { q: '9. Stoßen Sie bitte nicht!', a: 'Stoß bitte nicht!' },
+                { q: '10. Kommen Sie bei mir vorbei!', a: 'Komm bei mir vorbei!' },
+                { q: '11. Seien Sie so nett!', a: 'Sei so nett!' },
+                { q: '12. Passen Sie bitte auf!', a: 'Pass bitte auf!' }
+            ];
+            html = '';
+            ex2Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label"><span class="speak-sentence">${item.q}</span></div><div class="btn-group"><input type="text" data-answer="${item.a}"><button class="check-btn" onclick="checkTextAnswerInput(this)">Проверить</button><button class="check-btn" data-answer="${item.a}" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l8_2').innerHTML = html;
+
+            const ex3Items = [
+                { ru: '1. Иди прямо и не сворачивай вправо!', a: 'Geh geradeaus und bieg nicht rechts ab!' },
+                { ru: '2. Поезжай налево и перейди дорогу!', a: 'Fahr links und überquer die Straße!' },
+                { ru: '3. Будь любезен!', a: 'Sei bitte so nett!' },
+                { ru: '4. Оставайся на месте!', a: 'Bleib stehen!' },
+                { ru: '5. Помоги, пожалуйста!', a: 'Hilf bitte!' },
+                { ru: '6. Объясни, пожалуйста, дорогу!', a: 'Beschreib bitte den Weg!' },
+                { ru: '7. Замолчи! Здесь нельзя говорить.', a: 'Sei ruhig! Hier darf man nicht sprechen.' },
+                { ru: '8. Читают. Нужно много читать.', a: 'Man liest. Man muss viel lesen.' },
+                { ru: '9. Идут. Нужно идти.', a: 'Man geht. Man muss gehen.' },
+                { ru: '10. Громко говорят. Нельзя говорить громко.', a: 'Man spricht laut. Man darf nicht laut sprechen.' },
+                { ru: '11. Здесь курят. Здесь нельзя курить.', a: 'Hier raucht man. Man darf hier nicht rauchen.' }
+            ];
+            html = '';
+            ex3Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label">${item.ru}</div><textarea placeholder="Ваш перевод..."></textarea><div class="btn-group"><button class="check-btn" data-answer="${item.a}" onclick="checkTextAnswer(this)">Проверить</button><button class="check-btn" data-answer="${item.a}" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l8_3').innerHTML = html;
+
+            const ex4Items = [
+                { q: '1. Ich ___ nach Berlin fahren.', a: 'will' },
+                { q: '2. Was ___ du am Wochenende machen?', a: 'willst' },
+                { q: '3. Wir ___ ins Kino gehen.', a: 'wollen' },
+                { q: '4. Meine Freunde ___ Fußball spielen.', a: 'wollen' },
+                { q: '5. Anna ___ einen Kuchen backen.', a: 'will' },
+                { q: '6. Ihr ___ heute Abend zu Hause bleiben.', a: 'wollt' },
+                { q: '7. Peter und Maria ___ eine Reise nach Italien machen.', a: 'wollen' },
+                { q: '8. ___ du mit mir spazieren gehen?', a: 'Willst' },
+                { q: '9. Meine Eltern ___ das Haus renovieren.', a: 'wollen' },
+                { q: '10. Ich ___ einen Computer kaufen.', a: 'will' }
+            ];
+            html = '';
+            ex4Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label"><span class="speak-sentence">${item.q}</span></div><div class="btn-group"><input type="text" data-answer="${item.a}"><button class="check-btn" onclick="checkTextAnswerInput(this)">Проверить</button><button class="check-btn" data-answer="${item.a}" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l8_4').innerHTML = html;
+
+            const ex5Items = [
+                { q: '1. Ich lese ein Buch. (Я хочу прочитать книгу.)', a: 'Ich will ein Buch lesen.' },
+                { q: '2. Wir gehen ins Museum. (Мы хотим пойти в музей.)', a: 'Wir wollen ins Museum gehen.' },
+                { q: '3. Sie kocht eine Suppe. (Она хочет приготовить суп.)', a: 'Sie will eine Suppe kochen.' },
+                { q: '4. Du lernst Deutsch. (Ты хочешь учить немецкий.)', a: 'Du willst Deutsch lernen.' },
+                { q: '5. Peter kauft ein Auto. (Петер хочет купить машину.)', a: 'Peter will ein Auto kaufen.' },
+                { q: '6. Ihr spielt im Park. (Вы хотите играть в парке.)', a: 'Ihr wollt im Park spielen.' },
+                { q: '7. Meine Schwester besucht ihre Freundin. (Моя сестра хочет навестить подругу.)', a: 'Meine Schwester will ihre Freundin besuchen.' },
+                { q: '8. Ich male ein Bild. (Я хочу нарисовать картину.)', a: 'Ich will ein Bild malen.' },
+                { q: '9. Die Kinder schlafen. (Дети хотят спать.)', a: 'Die Kinder wollen schlafen.' },
+                { q: '10. Er arbeitet im Garten. (Он хочет работать в саду.)', a: 'Er will im Garten arbeiten.' }
+            ];
+            html = '';
+            ex5Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label"><span class="speak-sentence">${item.q.split('(')[0]}</span> ${item.q.includes('(') ? '(' + item.q.split('(')[1] : ''}</div><div class="btn-group"><input type="text" data-answer="${item.a}"><button class="check-btn" onclick="checkTextAnswerInput(this)">Проверить</button><button class="check-btn" data-answer="${item.a}" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l8_5').innerHTML = html;
+            
+            const ex6Items = [
+                { q: '1. Die Menschen gehen ins Kino am Wochenende.', a: 'Man geht am Wochenende ins Kino.' },
+                { q: '2. Die Leute essen Pizza in der Pizzeria.', a: 'Man isst Pizza in der Pizzeria.' },
+                { q: '3. Die Menschen fahren mit dem Bus zur Arbeit.', a: 'Man fährt mit dem Bus zur Arbeit.' },
+                { q: '4. Alle frühstücken morgens.', a: 'Man frühstückt morgens.' },
+                { q: '5. Die Menschen lernen Deutsch in der Schule.', a: 'Man lernt Deutsch in der Schule.' },
+                { q: '6. Die Leute spielen Fußball im Park.', a: 'Man spielt Fußball im Park.' },
+                { q: '7. Die Menschen arbeiten jeden Tag.', a: 'Man arbeitet jeden Tag.' },
+                { q: '8. Die Leute sehen am Abend fern.', a: 'Man sieht am Abend fern.' },
+                { q: '9. Die Menschen kochen zu Hause.', a: 'Man kocht zu Hause.' },
+                { q: '10. Die Leute lesen Bücher in der Bibliothek.', a: 'Man liest Bücher in der Bibliothek.' }
+            ];
+            html = '';
+            ex6Items.forEach((item) => { 
+                html += `<div class="exercise-item"><div class="exercise-label"><span class="speak-sentence">${item.q}</span></div><div class="btn-group"><input type="text" data-answer="${item.a}"><button class="check-btn" onclick="checkTextAnswerInput(this)">Проверить</button><button class="check-btn" data-answer="${item.a}" onclick="revealAnswerInput(this)">Показать ответ</button></div><div class="result"></div></div>`; 
+            });
+            document.getElementById('ex_l8_6').innerHTML = html;
+        }
+
+        function normalizeText(s) {
+            return s.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[.!?]+$/, '');
+        }
+
+        function checkTextAnswer(btn) {
+            const answerRaw = btn.dataset.answer;
+            const alternatives = answerRaw.split('/').map(a => normalizeText(a));
+            const textarea = btn.parentElement.parentElement.querySelector('textarea');
+            const userVal = normalizeText(textarea.value);
+            const result = btn.parentElement.parentElement.querySelector('.result');
+            result.style.display = 'block';
+            
+            if (userVal.length > 0 && alternatives.includes(userVal)) {
+                result.className = 'result show correct'; 
+                result.textContent = '✓ Верно!';
+            } else {
+                result.className = 'result show incorrect'; 
+                result.textContent = '✗ Неверно. Попробуйте ещё раз.';
+            }
+        }
+
+        function checkTextAnswerInput(btn) {
+            const input = btn.parentElement.parentElement.querySelector('input');
+            const answerRaw = input.dataset.answer;
+            const userVal = normalizeText(input.value);
+            const alternatives = answerRaw.split('/').map(a => normalizeText(a));
+            const result = btn.parentElement.parentElement.querySelector('.result');
+            result.style.display = 'block';
+            
+            if (userVal.length > 0 && alternatives.includes(userVal)) {
+                result.className = 'result show correct'; 
+                result.textContent = '✓ Верно!';
+            } else {
+                result.className = 'result show incorrect'; 
+                result.textContent = '✗ Неверно. Попробуйте ещё раз.';
+            }
+        }
+        
+        function revealAnswerInput(btn) {
+            const answer = btn.parentElement.parentElement.querySelector('.check-btn[data-answer]')?.dataset.answer || btn.dataset.answer || "См. ключи к заданию.";
+            const result = btn.parentElement.parentElement.querySelector('.result');
+            result.style.display = 'block';
+            result.className = 'result show correct'; 
+            result.textContent = 'Ответ: ' + answer;
+        }
+
+        // Запуск
+        loadLesson(7);
+    </script>
+</body>
+</html>

@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Kapitel 5 – Was darf's sein? – Interaktiv</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --blue:#1d5c9e; --lightblue:#eaf2fb; --green:#2e8b57; --red:#c0392b;
+  --grey:#666; --border:#ccd6e0;
+}
+*{box-sizing:border-box;}
+body{font-family:'Segoe UI',Arial,sans-serif;margin:0;background:#f4f7fb;color:#222;}
+header{background:var(--blue);color:#fff;padding:18px 20px;text-align:center;}
+header h1{margin:0;font-size:1.5em;}
+header p{margin:6px 0 0;font-size:.95em;opacity:.9;}
+nav{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:50;}
+nav button{flex:1;min-width:110px;padding:12px 6px;border:none;background:#fff;cursor:pointer;font-size:.9em;color:var(--blue);border-bottom:3px solid transparent;}
+nav button.active{border-bottom:3px solid var(--blue);font-weight:bold;background:var(--lightblue);}
+main{max-width:900px;margin:0 auto;padding:16px;}
+.tab{display:none;}
+.tab.active{display:block;}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.card h2{margin-top:0;color:var(--blue);font-size:1.15em;border-bottom:2px solid var(--lightblue);padding-bottom:8px;}
+.card h3{color:#333;font-size:1em;margin-bottom:6px;}
+.hint{color:var(--grey);font-size:.87em;margin-bottom:10px;}
+input[type=text]{border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:1em;margin:2px;min-width:70px;}
+input.correct{background:#e3f6e8;border-color:var(--green);}
+input.incorrect{background:#fdeaea;border-color:var(--red);}
+textarea{width:100%;min-height:70px;border:1px solid var(--border);border-radius:5px;padding:8px;font-size:1em;font-family:inherit;}
+select{border:1px solid var(--border);border-radius:5px;padding:4px;font-size:.95em;}
+button.act{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:8px 14px;margin:4px 6px 4px 0;cursor:pointer;font-size:.9em;}
+button.act.secondary{background:#8296ab;}
+button.act.clear{background:#b0392b;}
+button.act:hover{opacity:.88;}
+.result-box{margin-top:8px;font-weight:bold;padding:8px;border-radius:6px;display:none;}
+.result-box.show{display:block;}
+.result-box.ok{background:#e3f6e8;color:var(--green);}
+.result-box.bad{background:#fdeaea;color:var(--red);}
+.sentence-line{margin:10px 0;line-height:2.3;}
+.wordlist{display:flex;gap:14px 24px;flex-wrap:wrap;background:var(--lightblue);padding:10px 14px;border-radius:6px;margin-bottom:12px;font-size:.95em;}
+table.ex{border-collapse:collapse;width:100%;margin:8px 0;}
+table.ex td,table.ex th{border:1px solid var(--border);padding:6px 8px;font-size:.93em;}
+table.ex th{background:var(--lightblue);}
+.dlg{background:#fafcff;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;}
+.notes-area{margin-bottom:20px;}
+.notes-area label{display:block;font-weight:bold;margin:10px 0 4px;color:#333;}
+.autosave-note{color:var(--grey);font-size:.85em;font-style:italic;}
+.flash-wrap{text-align:center;}
+.flash-filter{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
+.flash-filter button{padding:6px 12px;border-radius:16px;border:1px solid var(--blue);background:#fff;color:var(--blue);cursor:pointer;font-size:.85em;}
+.flash-filter button.on{background:var(--blue);color:#fff;}
+.flashcard{max-width:420px;margin:0 auto;min-height:180px;border:2px solid var(--blue);border-radius:14px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;cursor:pointer;position:relative;}
+.flashcard .word{font-size:1.6em;font-weight:bold;color:var(--blue);text-align:center;}
+.flashcard .cat{color:var(--grey);font-size:.8em;margin-top:6px;}
+.flashcard .answer{font-size:1.3em;color:var(--green);margin-top:14px;display:none;}
+.flashcard.flipped .answer{display:block;}
+.flash-controls{margin-top:16px;}
+.flash-controls button{margin:0 5px;}
+.srs-buttons{display:none;margin-top:16px;gap:8px;justify-content:center;}
+.srs-buttons.show{display:flex;}
+.srs-buttons button{padding:8px 14px;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:.9em;}
+.srs-again{background:var(--red);}
+.srs-hard{background:#e0a020;}
+.srs-easy{background:var(--green);}
+.speak-btn{background:none;border:1px solid var(--blue);color:var(--blue);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:1.1em;margin-top:8px;}
+.flash-stats{text-align:center;color:var(--grey);margin-top:10px;font-size:.9em;}
+.dir-toggle{text-align:center;margin-bottom:12px;}
+.dir-toggle button{padding:6px 14px;border-radius:16px;border:1px solid var(--blue);background:#fff;color:var(--blue);cursor:pointer;}
+.dir-toggle button.on{background:var(--blue);color:#fff;}
+.exam-part{border-left:4px solid var(--blue);padding-left:14px;margin-bottom:22px;}
+.exam-part h3{color:var(--blue);}
+.rf-item{margin:10px 0;padding:8px;background:#fafcff;border-radius:6px;}
+.rf-btns button{padding:5px 12px;margin-right:6px;border:1px solid var(--border);background:#fff;border-radius:5px;cursor:pointer;}
+.rf-btns button.selected-r{background:var(--green);color:#fff;}
+.rf-btns button.selected-f{background:var(--red);color:#fff;}
+.exam-final{margin-top:20px;padding:16px;border-radius:8px;text-align:center;font-size:1.1em;display:none;}
+.exam-final.show{display:block;}
+.exam-final.pass{background:#e3f6e8;color:var(--green);}
+.exam-final.fail{background:#fdeaea;color:var(--red);}
+.exam-breakdown{font-size:.85em;font-weight:normal;margin-top:10px;text-align:left;background:#fff;border-radius:6px;padding:10px;}
+.mc-opts label{display:block;margin:4px 0;cursor:pointer;}
+footer{text-align:center;padding:20px;color:var(--grey);font-size:.85em;}
+</style>
+</head>
+<body>
+<header>
+<h1>Kapitel 5 – Was darf's sein?</h1>
+<p>Berliner Platz 1 · Intensivtrainer · Interaktive Übungen</p>
+</header>
+<nav id="tabnav"></nav>
+<main id="mainArea"></main>
+<footer>Erstellt für dein Deutschlernen · Fortschritt wird lokal in deinem Browser gespeichert</footer>
+
+<script>
+/* =================== NAVIGATION =================== */
+const tabs = [
+  {id:'ex1', label:'Übung 1'},
+  {id:'ex2', label:'Übung 2-3'},
+  {id:'ex4', label:'Übung 4'},
+  {id:'ex5', label:'Übung 5'},
+  {id:'notes', label:'Notizen'},
+  {id:'cards', label:'Karten'},
+  {id:'quiz', label:'Abschlusstest'}
+];
+const nav = document.getElementById('tabnav');
+tabs.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.textContent=t.label;
+  b.onclick=()=>showTab(t.id);
+  b.id='navbtn-'+t.id;
+  if(i===0) b.className='active';
+  nav.appendChild(b);
+});
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('navbtn-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* =================== HELPERS =================== */
+function normalize(s){
+  return (s||'').toString().trim().toLowerCase()
+    .replace(/ß/g,'ss')
+    .replace(/[.,!?]/g,'')
+    .replace(/\s+/g,' ');
+}
+function checkGroup(cls){
+  const inputs = document.querySelectorAll('input.'+cls);
+  let correct=0, total=0;
+  inputs.forEach(inp=>{
+    total++;
+    const ans = (inp.dataset.ans||'').split('/').map(normalize);
+    const val = normalize(inp.value);
+    if(ans.includes(val)){ inp.classList.add('correct'); inp.classList.remove('incorrect'); correct++; }
+    else { inp.classList.add('incorrect'); inp.classList.remove('correct'); }
+  });
+  return {correct,total};
+}
+function showResult(boxId, correct, total){
+  const box=document.getElementById(boxId);
+  box.classList.add('show');
+  if(correct===total){ box.className='result-box show ok'; box.textContent='✓ Alles richtig! ('+correct+'/'+total+')'; }
+  else { box.className='result-box show bad'; box.textContent='Richtig: '+correct+' von '+total+'. Versuch es noch einmal!'; }
+}
+function revealGroup(cls){
+  document.querySelectorAll('input.'+cls).forEach(inp=>{
+    const ans=(inp.dataset.ans||'').split('/')[0];
+    inp.value=ans; inp.classList.add('correct'); inp.classList.remove('incorrect');
+  });
+}
+function clearGroup(cls, boxId){
+  document.querySelectorAll('input.'+cls).forEach(inp=>{
+    inp.value=''; inp.classList.remove('correct','incorrect');
+  });
+  if(boxId){ const box=document.getElementById(boxId); box.classList.remove('show'); }
+}
+function speak(text){
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='de-DE'; u.rate=0.9;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+}
+</script>
+
+<!-- ================= TAB 1: ÜBUNG 1 ================= -->
+<div class="tab active" id="tab-ex1">
+
+<div class="card">
+<h2>1a Lebensmittel – Wörter mit Artikel</h2>
+<p class="hint">Im Buch sind diese 20 Wörter im Suchrätsel versteckt. Ordne jedem Wort den richtigen Artikel zu.</p>
+<div id="ex1a"></div>
+<button class="act" onclick="check1a()">Проверить</button>
+<button class="act secondary" onclick="reveal1a()">Показать ответ</button>
+<button class="act clear" onclick="clear1a()">Очистить</button>
+<div class="result-box" id="res1a"></div>
+</div>
+
+<div class="card">
+<h2>1b Was passt nicht? – Wähle das unpassende Wort</h2>
+<div id="ex1b"></div>
+<button class="act" onclick="check1b()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g1b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g1b','res1b')">Очистить</button>
+<div class="result-box" id="res1b"></div>
+</div>
+
+<div class="card">
+<h2>1c Sätze schreiben</h2>
+<div class="sentence-line">1. kaufst / Wo / ein / du / ?<br><input type="text" class="g1c" data-ans="wo kaufst du ein" style="width:90%"></div>
+<div class="sentence-line">2. kaufe / meine Lebensmittel / Ich / im Supermarkt / .<br><input type="text" class="g1c" data-ans="ich kaufe meine lebensmittel im supermarkt" style="width:90%"></div>
+<div class="sentence-line">3. Peter / Wurst / kauft / in der Metzgerei / .<br><input type="text" class="g1c" data-ans="peter kauft wurst in der metzgerei" style="width:90%"></div>
+<div class="sentence-line">4. kauft / Brot / Brötchen / Frau Throm / beim Bäcker / und / .<br><input type="text" class="g1c" data-ans="frau throm kauft brot und brötchen beim bäcker/frau throm kauft brot und broetchen beim baecker" style="width:90%"></div>
+<div class="sentence-line">5. ein / wir / im Supermarkt / Nach der Arbeit / kaufen / .<br><input type="text" class="g1c" data-ans="nach der arbeit kaufen wir im supermarkt ein" style="width:90%"></div>
+<div class="sentence-line">6. ein / kaufe / Am Wochenende / die Getränke / ich / .<br><input type="text" class="g1c" data-ans="am wochenende kaufe ich die getränke ein/am wochenende kaufe ich die getraenke ein" style="width:90%"></div>
+<button class="act" onclick="check1c()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g1c')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g1c','res1c')">Очистить</button>
+<div class="result-box" id="res1c"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 2: ÜBUNG 2-3 ================= -->
+<div class="tab" id="tab-ex2">
+
+<div class="card">
+<h2>2 Packungen – Was passt nicht?</h2>
+<div id="ex2"></div>
+<button class="act" onclick="check2()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g2')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g2','res2')">Очистить</button>
+<div class="result-box" id="res2"></div>
+</div>
+
+<div class="card">
+<h2>3 Was mögen Sie? – Ergänze die Formen von <em>mögen</em></h2>
+<div class="dlg">
+<div class="sentence-line">💬 Ihr kommt aus Thailand. <input type="text" class="g3" data-ans="mögt/moegt" size="8"> ihr auch Käse?</div>
+<div class="sentence-line">⚪ Käse und Brot <input type="text" class="g3" data-ans="mögen/moegen" size="8"> wir nicht so sehr. Wir essen viel Gemüse, Fleisch und Obst. Und du? <input type="text" class="g3" data-ans="magst" size="8"> du Käse?</div>
+<div class="sentence-line">💬 Ja, es geht. Am liebsten <input type="text" class="g3" data-ans="mag" size="8"> ich Wurst und Schinken. Viele Kinder in Deutschland <input type="text" class="g3" data-ans="mögen/moegen" size="8"> Nudeln sehr. Isst man in Thailand Nudeln?</div>
+<div class="sentence-line">⚪ Ja, Reis und Nudeln <input type="text" class="g3" data-ans="mögen/moegen" size="8"> wir sehr gerne.</div>
+</div>
+<button class="act" onclick="showResult('res3', checkGroup('g3').correct, checkGroup('g3').total)">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g3')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g3','res3')">Очистить</button>
+<div class="result-box" id="res3"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 3: ÜBUNG 4 ================= -->
+<div class="tab" id="tab-ex4">
+
+<div class="card">
+<h2>4a Pluralformen – Nomen mit Artikel und Plural</h2>
+<p class="hint">Beispiel: der Apfel → die Äpfel. Schreibe für jedes Bild: Artikel + Nomen (Singular), dann Plural.</p>
+<div id="ex4a"></div>
+<button class="act" onclick="check4a()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g4a')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g4a','res4a')">Очистить</button>
+<div class="result-box" id="res4a"></div>
+</div>
+
+<div class="card">
+<h2>4b Was kosten...? Ergänze</h2>
+<div class="sentence-line">1. die Gurke, die Banane, die Birne, der Apfel, die Zwiebel →<br>Was kosten <input type="text" class="g4b" data-ans="die gurken, die bananen, die birnen, die äpfel und die zwiebeln/die gurken, die bananen, die birnen, die aepfel und die zwiebeln" style="width:85%">?</div>
+<div class="sentence-line">2. Glas Tomaten (3), Packung Butter (2), Ei (6), Flasche Apfelsaft (2) →<br>Ich möchte bitte <input type="text" class="g4b" data-ans="drei gläser tomaten, zwei packungen butter, sechs eier und zwei flaschen apfelsaft/drei glaeser tomaten, zwei packungen butter, sechs eier und zwei flaschen apfelsaft" style="width:85%">.</div>
+<div class="sentence-line">3. Liter Milch (2), Gramm Schinken (500), Dose Tomaten (2), Brot (2) →<br>Wir brauchen heute <input type="text" class="g4b" data-ans="zwei liter milch, 500 gramm schinken, zwei dosen tomaten und zwei brote" style="width:85%">.</div>
+<button class="act" onclick="check4b()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g4b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g4b','res4b')">Очистить</button>
+<div class="result-box" id="res4b"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 4: ÜBUNG 5 ================= -->
+<div class="tab" id="tab-ex5">
+
+<div class="card">
+<h2>5a Ein Essen planen – Ordne zu</h2>
+<p class="hint">Ordne jeder Aussage (1-7) die passende Antwort (a-g) zu.</p>
+<table class="ex" id="ex5aTable"></table>
+<button class="act" onclick="check5a()">Проверить</button>
+<button class="act secondary" onclick="reveal5a()">Показать ответ</button>
+<button class="act clear" onclick="clear5a()">Очистить</button>
+<div class="result-box" id="res5a"></div>
+</div>
+
+<div class="card">
+<h2>5b Verben und Nomen – Was passt zusammen?</h2>
+<p class="hint">Wortliste: trinken, suchen, kaufen, kochen, brauchen, machen, schneiden, zubereiten, vorbereiten, essen, schreiben, verkaufen, holen, nehmen</p>
+<div class="sentence-line">1. (Beispiel) das Gemüse → <b>kaufen, kochen, brauchen, machen, schneiden, zubereiten, essen, verkaufen, holen, nehmen</b></div>
+<div class="sentence-line">2. die Vorspeise →<br><input type="text" class="g5b" data-ans="machen, essen, nehmen" style="width:80%"></div>
+<div class="sentence-line">3. die Brötchen →<br><input type="text" class="g5b" data-ans="kaufen, essen, holen" style="width:80%"></div>
+<div class="sentence-line">4. einen Einkaufszettel →<br><input type="text" class="g5b" data-ans="brauchen, schreiben, nehmen" style="width:80%"></div>
+<div class="sentence-line">5. Spaghetti →<br><input type="text" class="g5b" data-ans="kochen, essen" style="width:80%"></div>
+<div class="sentence-line">6. einen Kaffee →<br><input type="text" class="g5b" data-ans="trinken, kochen, machen, nehmen" style="width:80%"></div>
+<button class="act" onclick="check5b()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g5b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g5b','res5b')">Очистить</button>
+<div class="result-box" id="res5b"></div>
+</div>
+
+<div class="card">
+<h2>5c Akkusativ: der/das/die und ein/kein – Ergänze die Artikel</h2>
+<table class="ex" id="ex5cTable"></table>
+<button class="act" onclick="check5c()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g5c')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g5c','res5c')">Очистить</button>
+<div class="result-box" id="res5c"></div>
+</div>
+
+<div class="card">
+<h2>5d Drei Situationen – Ergänze die Artikel (Akkusativ)</h2>
+<h3>A In der Küche</h3>
+<div class="sentence-line">Er macht <b>den</b> (Bsp.) Salat und <b>einen</b> (Bsp.) Nachtisch. Sie schneidet d<input type="text" class="g5d" data-ans="ie" size="4"> Zwiebeln und e<input type="text" class="g5d" data-ans="ine" size="4"> Gurke. Für den Salat brauchen sie noch e<input type="text" class="g5d" data-ans="ine" size="4"> Tomate. Sie schneidet d<input type="text" class="g5d" data-ans="ie" size="4"> Paprika und d<input type="text" class="g5d" data-ans="ie" size="4"> Kartoffeln. Er sagt: Im Kühlschrank haben wir noch e<input type="text" class="g5d" data-ans="inen" size="4"> Liter Milch, e<input type="text" class="g5d" data-ans="ine" size="4"> Packung Butter und e<input type="text" class="g5d" data-ans="ine" size="4"> Salami.</div>
+<h3>B Im Deutschkurs</h3>
+<div class="sentence-line">Die Teilnehmer lesen e<input type="text" class="g5d" data-ans="inen" size="4"> Text. Dann markieren sie d<input type="text" class="g5d" data-ans="ie" size="4"> Artikel der, das und die. Sie machen e<input type="text" class="g5d" data-ans="ine" size="4"> Übung zum Akkusativ. Bald schreiben sie e<input type="text" class="g5d" data-ans="inen" size="4"> Test. Sie fragen d<input type="text" class="g5d" data-ans="en" size="4"> Lehrer oder d<input type="text" class="g5d" data-ans="ie" size="4"> Lehrerin: Wie heißt die Akkusativform von der? Sie hören e<input type="text" class="g5d" data-ans="inen" size="4"> Text und spielen e<input type="text" class="g5d" data-ans="inen" size="4"> Dialog. Am Ende zeigt Frau Wohlfahrt e<input type="text" class="g5d" data-ans="ine" size="4"> Szene von der DVD.</div>
+<h3>C Auf dem Flohmarkt</h3>
+<div class="sentence-line">Adam verkauft e<input type="text" class="g5d" data-ans="inen" size="4"> Monitor und e<input type="text" class="g5d" data-ans="inen" size="4"> CD-Player. Carlos kauft <input type="text" class="g5d" data-ans="ein" size="4"> Heft. Yong-Min sucht e<input type="text" class="g5d" data-ans="in" size="4"> Wörterbuch Deutsch-Koreanisch. Frau Wohlfahrt braucht e<input type="text" class="g5d" data-ans="inen" size="4"> Papierkorb und e<input type="text" class="g5d" data-ans="ine" size="4"> Nähmaschine. Mehmet möchte e<input type="text" class="g5d" data-ans="ine" size="4"> Lampe, e<input type="text" class="g5d" data-ans="inen" size="4"> Rasierapparat und e<input type="text" class="g5d" data-ans="ine" size="4"> Kaffeemaschine kaufen. Olga verkauft e<input type="text" class="g5d" data-ans="inen" size="4"> Fernseher und e<input type="text" class="g5d" data-ans="in" size="4"> Handy.</div>
+<button class="act" onclick="check5d()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g5d')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g5d','res5d')">Очистить</button>
+<div class="result-box" id="res5d"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 5: NOTIZEN ================= -->
+<div class="tab" id="tab-notes">
+
+<div class="card">
+<h2>6–9 Meine Notizen</h2>
+<p class="autosave-note">Diese Übungen haben keine "eine" richtige Antwort – sie werden automatisch gespeichert (localStorage).</p>
+
+<div class="notes-area">
+<label>6. Das mag ich / Das mag ich nicht – Notiere die Lebensmittel:</label>
+<textarea data-note="n6" placeholder="Das mag ich: ... / Das mag ich nicht: ..."></textarea>
+</div>
+
+<div class="notes-area">
+<label>7. Wichtige Sätze und Ausdrücke – Schreiben Sie in Ihrer Sprache:</label>
+<textarea data-note="n7" placeholder="Ich hätte gern ein Kilo Tomaten. / Haben Sie auch Joghurt? / Was kosten die Bohnen? / 200 g Gouda in Scheiben bitte. / Was ist heute im Angebot? / Das war's."></textarea>
+</div>
+
+<div class="notes-area">
+<label>8. Wichtige Wörter und Sätze für Sie (Ihre Sprache / Deutsch):</label>
+<textarea data-note="n8" placeholder="Deine eigenen wichtigen Wörter und Sätze..."></textarea>
+</div>
+
+<div class="notes-area">
+<label>9. Ich über mich – Das esse ich gerne (zum Frühstück / Mittagessen / Abendessen):</label>
+<textarea data-note="n9" placeholder="zum Frühstück: ... / zum Mittagessen: ... / zum Abendessen: ..."></textarea>
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= TAB 6: KARTEN (FLASHCARDS) ================= -->
+<div class="tab" id="tab-cards">
+<div class="card flash-wrap">
+<h2>Wortschatz-Hitparade – Karteikarten</h2>
+<div class="dir-toggle">
+  <button id="dirDE" class="on" onclick="setDir('de')">DE → RU</button>
+  <button id="dirRU" onclick="setDir('ru')">RU → DE</button>
+</div>
+<div class="flash-filter" id="flashFilter"></div>
+<div class="flashcard" id="flashcard" onclick="flipCard()">
+  <div class="word" id="fcWord">–</div>
+  <div class="cat" id="fcCat"></div>
+  <div class="answer" id="fcAnswer">–</div>
+</div>
+<div>
+<button class="speak-btn" onclick="event.stopPropagation(); speakCurrent();">🔊</button>
+</div>
+<div class="srs-buttons" id="srsButtons">
+  <button class="srs-again" onclick="srsAnswer('again')">Nochmal</button>
+  <button class="srs-hard" onclick="srsAnswer('hard')">Schwer</button>
+  <button class="srs-easy" onclick="srsAnswer('easy')">Leicht</button>
+</div>
+<div class="flash-controls">
+<button class="act secondary" onclick="prevCard()">← Zurück</button>
+<button class="act" onclick="flipCard()">Umdrehen</button>
+<button class="act secondary" onclick="nextCard()">Weiter →</button>
+</div>
+<div class="flash-stats" id="flashStats"></div>
+</div>
+</div>
+
+<!-- ================= TAB 7: ABSCHLUSSTEST ================= -->
+<div class="tab" id="tab-quiz">
+
+<div class="card exam-part">
+<h3>Teil 1: Wortschatz &amp; Grammatik (10 Punkte)</h3>
+<p class="hint">Lies den Text und löse die Aufgaben.</p>
+<p style="background:#fafcff;padding:10px;border-radius:6px;">
+Frau Kaiser geht heute einkaufen. Sie braucht ein Kilo Kartoffeln, zwei Kilo Äpfel, eine Flasche Milch und ein Pfund Käse. Beim Bäcker kauft sie Brot und Brötchen. Beim Metzger nimmt sie 500 Gramm Schinken. An der Kasse zahlt sie 24 Euro 50. Sie sagt: "Das war's, danke!"
+</p>
+<div id="teil1Box"></div>
+</div>
+
+<div class="card exam-part">
+<h3>Teil 2: Leseverstehen (4 Punkte)</h3>
+<p style="background:#fafcff;padding:10px;border-radius:6px;">
+Einkaufsliste: "1 Kilo Tomaten, 2 Gläser Marmelade, 1 Päckchen Butter, 6 Eier, 1 Liter Orangensaft, 500 Gramm Gouda-Käse in Scheiben. Nicht vergessen: Brot vom Bäcker!"
+</p>
+<div id="teil2Box"></div>
+</div>
+
+<div class="card exam-part">
+<h3>Teil 3: Hörverstehen (4 Punkte)</h3>
+<p class="hint">Klicke auf ▶, um den Dialog zu hören (synthetische Stimme), und beantworte die Fragen.</p>
+<button class="act" onclick="playHoertext()">▶ Dialog anhören</button>
+<div id="teil3Box" style="margin-top:12px;"></div>
+</div>
+
+<div class="card exam-part">
+<h3>Teil 4: Schreiben (ungraded)</h3>
+<p class="hint">Schreibe deinen Einkaufszettel für diese Woche: Was brauchst du? Wie viel? (nicht bewertet, nur zur Übung)</p>
+<textarea data-note="quiz-writing" placeholder="Ich brauche..."></textarea>
+</div>
+
+<div class="card">
+<button class="act" style="font-size:1.05em;padding:12px 20px;" onclick="checkFullExam()">Test auswerten</button>
+<div class="exam-final" id="examFinal"></div>
+</div>
+
+</div>
+
+<script>
+/* =================== 1a data (Suchrätsel Lebensmittel) =================== */
+const ex1aWords = [
+  {w:"Butter", art:"die", example:true},
+  {w:"Paprika", art:"die"},
+  {w:"Apfel", art:"der"},
+  {w:"Milch", art:"die"},
+  {w:"Wein", art:"der"},
+  {w:"Kuchen", art:"der"},
+  {w:"Banane", art:"die"},
+  {w:"Zucker", art:"der"},
+  {w:"Brot", art:"das"},
+  {w:"Kartoffel", art:"die"},
+  {w:"Joghurt", art:"der"},
+  {w:"Fleisch", art:"das"},
+  {w:"Wurst", art:"die"},
+  {w:"Fisch", art:"der"},
+  {w:"Salat", art:"der"},
+  {w:"Käse/Kaese", art:"der"},
+  {w:"Schinken", art:"der"},
+  {w:"Brötchen/Broetchen", art:"das"},
+  {w:"Saft", art:"der"},
+  {w:"Kartoffel (2)", art:"die", skip:true}
+];
+const ex1aFinal = [
+  {w:"die Kartoffel", art:"die", example:true},
+  {w:"Butter", art:"die"},
+  {w:"Paprika", art:"die"},
+  {w:"Apfel", art:"der"},
+  {w:"Milch", art:"die"},
+  {w:"Wein", art:"der"},
+  {w:"Kuchen", art:"der"},
+  {w:"Banane", art:"die"},
+  {w:"Zucker", art:"der"},
+  {w:"Brot", art:"das"},
+  {w:"Joghurt", art:"der"},
+  {w:"Fleisch", art:"das"},
+  {w:"Wurst", art:"die"},
+  {w:"Fisch", art:"der"},
+  {w:"Salat", art:"der"},
+  {w:"Käse/Kaese", art:"der"},
+  {w:"Schinken", art:"der"},
+  {w:"Brötchen/Broetchen", art:"das"},
+  {w:"Saft", art:"der"},
+  {w:"Reis", art:"der"}
+];
+const ex1aDiv = document.getElementById('ex1a');
+ex1aFinal.forEach((item,i)=>{
+  const disp = item.w.split('/')[0];
+  const div=document.createElement('div');
+  div.className='sentence-line';
+  if(item.example){
+    div.innerHTML = `<b>${item.w}</b> (Beispiel)`;
+  } else {
+    div.innerHTML = `<input type="text" class="g1a" data-ans="${item.art}" size="5" placeholder="der/die/das"> ${disp}`;
+  }
+  ex1aDiv.appendChild(div);
+});
+function check1a(){ const r=checkGroup('g1a'); showResult('res1a', r.correct, r.total); }
+function reveal1a(){ revealGroup('g1a'); }
+function clear1a(){ clearGroup('g1a','res1a'); }
+
+/* =================== 1b data (Was passt nicht) =================== */
+const ex1bData = [
+  {group:"1. Butter, Zucker, Marmelade, Kuchen", ans:"kuchen", example:true},
+  {group:"2. Paket, Glas, Flasche, Pfund", ans:"pfund"},
+  {group:"3. Joghurt, Milch, Zucker, Käse", ans:"zucker"},
+  {group:"4. Käse, Fleisch, Wurst, Schinken", ans:"käse/kaese"},
+  {group:"5. Kartoffel, Paprika, Tomate, Banane", ans:"banane"},
+  {group:"6. Kuchen, Fisch, Brot, Brötchen", ans:"fisch"},
+  {group:"7. Apfel, Tomate, Banane, Birne", ans:"tomate"},
+  {group:"8. Obst, Gemüse, Milchprodukte, Banane", ans:"banane"},
+  {group:"9. Wasser, Wein, Glas, Milch", ans:"glas"},
+  {group:"10. Pfund, Kilo, Kasten, Gramm", ans:"kasten"}
+];
+const ex1bDiv = document.getElementById('ex1b');
+ex1bData.forEach(item=>{
+  const div=document.createElement('div');
+  div.className='sentence-line';
+  if(item.example){
+    div.innerHTML = `${item.group} → <b>${item.ans}</b> (Beispiel, ist kein Lebensmittel/passt nicht zur Kategorie)`;
+  } else {
+    div.innerHTML = `${item.group} → welches Wort passt nicht? <input type="text" class="g1b" data-ans="${item.ans}" size="12">`;
+  }
+  ex1bDiv.appendChild(div);
+});
+function check1b(){ const r=checkGroup('g1b'); showResult('res1b', r.correct, r.total); }
+
+/* =================== 1c check =================== */
+function check1c(){ const r=checkGroup('g1c'); showResult('res1c', r.correct, r.total); }
+
+/* =================== 2 data (Packungen) =================== */
+const ex2Data = [
+  {group:"1. ein Glas, ein Kilo, ein Liter → Tomaten", ans:"ein liter", example:true},
+  {group:"2. ein Kasten, eine Flasche, ein Pfund → Apfelsaft", ans:"ein pfund"},
+  {group:"3. eine Dose, eine Packung, ein Kilo → Zucker", ans:"eine dose"},
+  {group:"4. ein Pfund, 200 Gramm, eine Dose → Käse", ans:"eine dose"},
+  {group:"5. ein Kilo, eine Flasche, ein Glas → Bier", ans:"ein kilo"},
+  {group:"6. 500 Gramm, eine Dose, eine Packung → Reis", ans:"eine dose"}
+];
+const ex2Div = document.getElementById('ex2');
+ex2Data.forEach(item=>{
+  const div=document.createElement('div');
+  div.className='sentence-line';
+  if(item.example){
+    div.innerHTML = `${item.group} → <b>${item.ans}</b> passt nicht (Beispiel)`;
+  } else {
+    div.innerHTML = `${item.group} – welche Packungsangabe passt nicht? <input type="text" class="g2" data-ans="${item.ans}" size="14">`;
+  }
+  ex2Div.appendChild(div);
+});
+function check2(){ const r=checkGroup('g2'); showResult('res2', r.correct, r.total); }
+
+/* =================== 4a data (Pluralformen) =================== */
+const ex4aData = [
+  {num:1, sg:"der Apfel", pl:"die Äpfel/die Aepfel", example:true},
+  {num:2, sg:"die Kiwi", pl:"die Kiwis"},
+  {num:3, sg:"die Kartoffel", pl:"die Kartoffeln"},
+  {num:4, sg:"die Banane", pl:"die Bananen"},
+  {num:5, sg:"die Zwiebel", pl:"die Zwiebeln"},
+  {num:6, sg:"die Mango", pl:"die Mangos"},
+  {num:7, sg:"die Birne", pl:"die Birnen"},
+  {num:8, sg:"die Möhre/Moehre", pl:"die Möhren/die Moehren"},
+  {num:9, sg:"das Brot", pl:"die Brote"},
+  {num:10, sg:"der Joghurt", pl:"die Joghurts"},
+  {num:11, sg:"das Brötchen/Broetchen", pl:"die Brötchen/die Broetchen"},
+  {num:12, sg:"die Orange", pl:"die Orangen"},
+  {num:13, sg:"das Ei", pl:"die Eier"},
+  {num:14, sg:"die Paprika", pl:"die Paprikas"},
+  {num:15, sg:"die Gurke", pl:"die Gurken"}
+];
+const ex4aDiv = document.getElementById('ex4a');
+ex4aData.forEach(item=>{
+  const div=document.createElement('div');
+  div.className='sentence-line';
+  const sgDisp = item.sg.split('/')[0];
+  if(item.example){
+    div.innerHTML = `Bild ${item.num}: <b>${sgDisp}</b> / <b>${item.pl.split('/')[0]}</b> (Beispiel)`;
+  } else {
+    div.innerHTML = `Bild ${item.num}: <input type="text" class="g4a" data-ans="${item.sg}" style="width:150px" placeholder="Singular"> / <input type="text" class="g4a" data-ans="${item.pl}" style="width:150px" placeholder="Plural">`;
+  }
+  ex4aDiv.appendChild(div);
+});
+function check4a(){ const r=checkGroup('g4a'); showResult('res4a', r.correct, r.total); }
+
+/* =================== 4b check =================== */
+function check4b(){ const r=checkGroup('g4b'); showResult('res4b', r.correct, r.total); }
+
+/* =================== 5a data (Ein Essen planen zuordnen) =================== */
+const ex5aData = [
+  {q:"1. Was kosten denn die Mangos?", ans:"c", example:true},
+  {q:"2. Ich nehme 400 Gramm Gouda-Käse.", ans:"e"},
+  {q:"3. Ich möchte bitte zwei Kilo Kartoffeln.", ans:"b"},
+  {q:"4. Wie viel kostet das zusammen?", ans:"a"},
+  {q:"5. Haben Sie auch Paprika?", ans:"f"},
+  {q:"6. Wie viel Gramm sind sechs Äpfel?", ans:"g"},
+  {q:"7. Guten Tag.", ans:"d"}
+];
+const ex5aOptions = "a) 9 Euro 35 bitte. | b) Sechs Stück? Das sind gut drei Pfund. | c) Die sind aus Malaysia. 2 Euro 50 das Stück. | d) Gerne, sonst noch etwas? | e) In Scheiben oder am Stück? | f) Nein, heute nicht. | g) Sie wünschen?";
+const ex5aTable = document.getElementById('ex5aTable');
+let optsRow5a = document.createElement('tr');
+optsRow5a.innerHTML = `<td colspan="2" style="font-size:.85em;background:#fafcff;">${ex5aOptions}</td>`;
+ex5aTable.appendChild(optsRow5a);
+ex5aData.forEach(item=>{
+  const tr=document.createElement('tr');
+  if(item.example){
+    tr.innerHTML = `<td>${item.q}</td><td><b>${item.ans}</b> (Bsp.)</td>`;
+  } else {
+    tr.innerHTML = `<td>${item.q}</td><td><input type="text" class="g5a" data-ans="${item.ans}" size="4" placeholder="a-g"></td>`;
+  }
+  ex5aTable.appendChild(tr);
+});
+function check5a(){ const r=checkGroup('g5a'); showResult('res5a', r.correct, r.total); }
+function reveal5a(){ revealGroup('g5a'); }
+function clear5a(){ clearGroup('g5a','res5a'); }
+
+/* =================== 5b check =================== */
+function check5b(){ const r=checkGroup('g5b'); showResult('res5b', r.correct, r.total); }
+
+/* =================== 5c data (Akkusativ Tabelle) =================== */
+const ex5cRows = [
+  {label:"Nom. Sg. – Das ist", mask:"der/ein/kein", maskExample:true, neut:"das/ein/kein", neutW:"Ei", fem:"die/eine/keine", femW:"Birne"},
+  {label:"Akk. Sg. – Sie nimmt", mask:"den/einen/keinen", maskW:"Pfirsich", maskExample2:true, neut:"das/ein/kein", neutW:"Ei", fem:"die/eine/keine", femW:"Kiwi"},
+  {label:"Nom. Pl. – Das sind", mask:"die/–/keine", maskExample3:true, maskW:"Pfirsiche", neut:"die/–/keine", neutW:"Eier", fem:"die/–/keine", femW:"Kiwis"},
+  {label:"Akk. Pl. – Sie nimmt", mask:"die/–/keine", maskExample4:true, maskW:"Pfirsiche", neut:"die/–/keine", neutW:"Eier", fem:"die/–/keine", femW:"Kiwis"}
+];
+const ex5cTable = document.getElementById('ex5cTable');
+let head5c = document.createElement('tr');
+head5c.innerHTML = '<th></th><th>Maskulinum</th><th>Neutrum</th><th>Femininum</th>';
+ex5cTable.appendChild(head5c);
+const tr1 = document.createElement('tr');
+tr1.innerHTML = `<td><b>Nominativ Singular</b><br>Das ist</td>
+  <td><b>der/ein/kein</b> Apfel (Bsp.)</td>
+  <td><b>das/ein/kein</b> Ei (Bsp.)</td>
+  <td><input type="text" class="g5c" data-ans="die/eine/keine" style="width:90%"> Birne</td>`;
+ex5cTable.appendChild(tr1);
+const tr2 = document.createElement('tr');
+tr2.innerHTML = `<td><b>Akkusativ Singular</b><br>Sie nimmt</td>
+  <td><b>den/einen/keinen</b> Pfirsich (Bsp.)</td>
+  <td><b>das/ein/kein</b> Ei (Bsp.)</td>
+  <td><b>die/eine/keine</b> Kiwi (Bsp.)</td>`;
+ex5cTable.appendChild(tr2);
+const tr3 = document.createElement('tr');
+tr3.innerHTML = `<td><b>Nominativ Plural</b><br>Das sind</td>
+  <td><b>die/–/keine</b> Pfirsiche (Bsp.)</td>
+  <td><input type="text" class="g5c" data-ans="die/–/keine/die/-/keine" style="width:90%"> Eier</td>
+  <td><input type="text" class="g5c" data-ans="die/–/keine/die/-/keine" style="width:90%"> Kiwis</td>`;
+ex5cTable.appendChild(tr3);
+const tr4 = document.createElement('tr');
+tr4.innerHTML = `<td><b>Akkusativ Plural</b><br>Sie nimmt</td>
+  <td><b>die/–/keine</b> Pfirsiche (Bsp.)</td>
+  <td><b>die/–/keine</b> Eier (Bsp.)</td>
+  <td><input type="text" class="g5c" data-ans="die/–/keine/die/-/keine" style="width:90%"> Kiwis</td>`;
+ex5cTable.appendChild(tr4);
+function check5c(){ const r=checkGroup('g5c'); showResult('res5c', r.correct, r.total); }
+
+/* =================== 5d check =================== */
+function check5d(){ const r=checkGroup('g5d'); showResult('res5d', r.correct, r.total); }
+
+/* =================== NOTES (autosave) =================== */
+const NOTES_KEY='kapitel5-notes-v1';
+function loadNotes(){
+  const saved = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    const key = ta.dataset.note;
+    if(saved[key]) ta.value = saved[key];
+    ta.addEventListener('input', saveNotes);
+  });
+}
+function saveNotes(){
+  const data={};
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    data[ta.dataset.note] = ta.value;
+  });
+  localStorage.setItem(NOTES_KEY, JSON.stringify(data));
+}
+loadNotes();
+
+/* =================== FLASHCARDS =================== */
+const vocab = [
+  {cat:"Nomen", de:"der Apfel, \"-", ru:"яблоко"},
+  {cat:"Nomen", de:"das Bier, -e", ru:"пиво"},
+  {cat:"Nomen", de:"die Butter Sg.", ru:"масло (сливочное)"},
+  {cat:"Nomen", de:"das Brot, -e", ru:"хлеб"},
+  {cat:"Nomen", de:"das Ei, -er", ru:"яйцо"},
+  {cat:"Nomen", de:"der Fisch, -e", ru:"рыба"},
+  {cat:"Nomen", de:"die Flasche, -n", ru:"бутылка"},
+  {cat:"Nomen", de:"das Fleisch Sg.", ru:"мясо"},
+  {cat:"Nomen", de:"das Geld Sg.", ru:"деньги"},
+  {cat:"Nomen", de:"das Gemüse, -", ru:"овощи"},
+  {cat:"Nomen", de:"das Gramm, -e", ru:"грамм"},
+  {cat:"Nomen", de:"die Kartoffel, -n", ru:"картофель"},
+  {cat:"Nomen", de:"der Käse Sg.", ru:"сыр"},
+  {cat:"Nomen", de:"das Kilo(gramm), -s", ru:"килограмм"},
+  {cat:"Nomen", de:"der Kuchen, -", ru:"пирог, торт"},
+  {cat:"Nomen", de:"der Laden, \"-", ru:"магазин, лавка"},
+  {cat:"Nomen", de:"das Lebensmittel, -", ru:"продукт питания"},
+  {cat:"Nomen", de:"der Liter, -", ru:"литр"},
+  {cat:"Nomen", de:"das Mehl Sg.", ru:"мука"},
+  {cat:"Nomen", de:"das Obst Sg.", ru:"фрукты"},
+  {cat:"Nomen", de:"das Öl, -e", ru:"масло (растительное)"},
+  {cat:"Nomen", de:"das Päckchen, -", ru:"пакетик, небольшая упаковка"},
+  {cat:"Nomen", de:"das Paket, -e", ru:"упаковка, пакет"},
+  {cat:"Nomen", de:"der Reis Sg.", ru:"рис"},
+  {cat:"Nomen", de:"das Rezept, -e", ru:"рецепт"},
+  {cat:"Nomen", de:"der Salat, -e", ru:"салат"},
+  {cat:"Nomen", de:"das Salz Sg.", ru:"соль"},
+  {cat:"Nomen", de:"der Schinken, -", ru:"ветчина"},
+  {cat:"Nomen", de:"das Schnitzel, -", ru:"шницель"},
+  {cat:"Nomen", de:"die Soße, -n", ru:"соус"},
+  {cat:"Nomen", de:"die Tüte, -n", ru:"пакет (бумажный/пластиковый)"},
+  {cat:"Nomen", de:"der Wein, -e", ru:"вино"},
+  {cat:"Nomen", de:"die Wurst, \"-e", ru:"колбаса"},
+  {cat:"Nomen", de:"die Zwiebel, -n", ru:"лук"},
+  {cat:"Verben", de:"bekommen", ru:"получать"},
+  {cat:"Verben", de:"dürfen", ru:"мочь, иметь разрешение"},
+  {cat:"Verben", de:"fehlen", ru:"не хватать, отсутствовать"},
+  {cat:"Verben", de:"holen", ru:"приносить, забирать"},
+  {cat:"Verben", de:"legen", ru:"класть"},
+  {cat:"Verben", de:"mitbringen", ru:"приносить с собой"},
+  {cat:"Verben", de:"schneiden", ru:"резать"},
+  {cat:"Verben", de:"vergleichen", ru:"сравнивать"},
+  {cat:"Verben", de:"waschen", ru:"мыть"},
+  {cat:"Verben", de:"wünschen", ru:"желать"},
+  {cat:"Adjektive", de:"blau", ru:"синий"},
+  {cat:"Adjektive", de:"braun", ru:"коричневый"},
+  {cat:"Adjektive", de:"dünn", ru:"тонкий"},
+  {cat:"Adjektive", de:"fein", ru:"тонкий, изысканный"},
+  {cat:"Adjektive", de:"gelb", ru:"жёлтый"},
+  {cat:"Adjektive", de:"grün", ru:"зелёный"},
+  {cat:"Adjektive", de:"rot", ru:"красный"},
+  {cat:"Adjektive", de:"süß", ru:"сладкий"},
+  {cat:"Andere Wörter", de:"etwas", ru:"немного, что-то"},
+  {cat:"Andere Wörter", de:"nichts", ru:"ничего"},
+  {cat:"Andere Wörter", de:"zu viel", ru:"слишком много"},
+  {cat:"Andere Wörter", de:"zu wenig", ru:"слишком мало"}
+];
+
+const SRS_KEY='kapitel5-srs-v1';
+const SRS_INTERVALS=[0,1,3,7,14,30];
+let srsData = JSON.parse(localStorage.getItem(SRS_KEY) || '{}');
+function saveSRS(){ localStorage.setItem(SRS_KEY, JSON.stringify(srsData)); }
+function getCardState(i){
+  if(!srsData[i]) srsData[i] = {level:0, due:0, seen:0};
+  return srsData[i];
+}
+
+let activeCats = new Set(vocab.map(v=>v.cat));
+let direction = 'de';
+let deck = [];
+let currentIdx = 0;
+let flipped = false;
+
+const catsUnique = [...new Set(vocab.map(v=>v.cat))];
+const filterDiv = document.getElementById('flashFilter');
+catsUnique.forEach(cat=>{
+  const b=document.createElement('button');
+  b.textContent=cat; b.className='on';
+  b.onclick=()=>{
+    if(activeCats.has(cat)){ activeCats.delete(cat); b.classList.remove('on'); }
+    else { activeCats.add(cat); b.classList.add('on'); }
+    buildDeck();
+  };
+  filterDiv.appendChild(b);
+});
+const allBtn=document.createElement('button');
+allBtn.textContent='Alle'; allBtn.className='on';
+allBtn.onclick=()=>{
+  activeCats = new Set(vocab.map(v=>v.cat));
+  filterDiv.querySelectorAll('button').forEach(b=>b.classList.add('on'));
+  buildDeck();
+};
+filterDiv.appendChild(allBtn);
+
+function setDir(d){
+  direction=d;
+  document.getElementById('dirDE').classList.toggle('on', d==='de');
+  document.getElementById('dirRU').classList.toggle('on', d==='ru');
+  flipped=false;
+  renderCard();
+}
+
+function buildDeck(){
+  deck = vocab.map((v,i)=>i).filter(i=>activeCats.has(vocab[i].cat));
+  currentIdx = 0;
+  flipped = false;
+  renderCard();
+}
+
+function renderCard(){
+  const stats=document.getElementById('flashStats');
+  if(deck.length===0){
+    document.getElementById('fcWord').textContent='–';
+    document.getElementById('fcCat').textContent='Keine Karten ausgewählt';
+    document.getElementById('fcAnswer').textContent='';
+    stats.textContent='';
+    return;
+  }
+  const idx = deck[currentIdx];
+  const item = vocab[idx];
+  const front = direction==='de' ? item.de : item.ru;
+  const back = direction==='de' ? item.ru : item.de;
+  document.getElementById('fcWord').textContent = front;
+  document.getElementById('fcCat').textContent = item.cat;
+  document.getElementById('fcAnswer').textContent = back;
+  const card=document.getElementById('flashcard');
+  card.classList.toggle('flipped', flipped);
+  document.getElementById('srsButtons').classList.toggle('show', flipped);
+  const st = getCardState(idx);
+  stats.textContent = `Karte ${currentIdx+1}/${deck.length} · Stufe ${st.level+1}/${SRS_INTERVALS.length} · Kategorie: ${item.cat}`;
+}
+
+function flipCard(){
+  if(deck.length===0) return;
+  flipped=!flipped;
+  renderCard();
+}
+function nextCard(){
+  if(deck.length===0) return;
+  currentIdx = (currentIdx+1) % deck.length;
+  flipped=false;
+  renderCard();
+}
+function prevCard(){
+  if(deck.length===0) return;
+  currentIdx = (currentIdx-1+deck.length) % deck.length;
+  flipped=false;
+  renderCard();
+}
+function srsAnswer(result){
+  if(deck.length===0) return;
+  const idx = deck[currentIdx];
+  const st = getCardState(idx);
+  if(result==='again'){ st.level=0; }
+  else if(result==='hard'){ st.level=Math.max(0, st.level); }
+  else if(result==='easy'){ st.level=Math.min(SRS_INTERVALS.length-1, st.level+1); }
+  st.seen++;
+  saveSRS();
+  nextCard();
+}
+function speakCurrent(){
+  if(deck.length===0) return;
+  const idx = deck[currentIdx];
+  const item = vocab[idx];
+  speak(item.de.split(',')[0].split('"')[0]);
+}
+buildDeck();
+
+/* =================== ABSCHLUSSTEST =================== */
+const teil1Data = [
+  {type:"mc", q:"1. Wie viel Kilo Kartoffeln braucht Frau Kaiser?", opts:["Ein Kilo","Zwei Kilo","Drei Kilo"], correct:0},
+  {type:"mc", q:"2. Wie viel Kilo Äpfel kauft sie?", opts:["Ein Kilo","Zwei Kilo","Drei Kilo"], correct:1},
+  {type:"mc", q:"3. Wo kauft sie Brot und Brötchen?", opts:["Beim Metzger","Beim Bäcker","Im Supermarkt"], correct:1},
+  {type:"mc", q:"4. Wie viel Schinken nimmt sie?", opts:["200 Gramm","500 Gramm","1 Kilo"], correct:1},
+  {type:"mc", q:"5. Wie viel zahlt sie insgesamt?", opts:["14 Euro 50","24 Euro 50","34 Euro 50"], correct:1},
+  {type:"text", q:"6. Ergänze den Artikel: ___ Kartoffel (der/das/die)", ans:"die"},
+  {type:"text", q:"7. Ergänze den Artikel: ___ Ei (der/das/die)", ans:"das"},
+  {type:"text", q:"8. Plural von 'der Apfel':", ans:"die äpfel/die aepfel"},
+  {type:"text", q:"9. Plural von 'das Ei':", ans:"die eier"},
+  {type:"text", q:"10. Akkusativ: 'Ich nehme ___ Apfel.' (ein)", ans:"einen"}
+];
+const teil1Box=document.getElementById('teil1Box');
+teil1Data.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='rf-item';
+  if(item.type==='mc'){
+    let optsHtml='';
+    item.opts.forEach((o,oi)=>{
+      optsHtml += `<label><input type="radio" name="t1q${i}" value="${oi}"> ${o}</label>`;
+    });
+    div.innerHTML = `<b>${item.q}</b><div class="mc-opts">${optsHtml}</div>`;
+  } else {
+    div.innerHTML = `<b>${item.q}</b> <input type="text" class="t1text" data-idx="${i}" style="width:150px;">`;
+  }
+  teil1Box.appendChild(div);
+});
+function scoreTeil1(){
+  let correct=0;
+  teil1Data.forEach((item,i)=>{
+    if(item.type==='mc'){
+      const sel = document.querySelector(`input[name="t1q${i}"]:checked`);
+      if(sel && parseInt(sel.value)===item.correct) correct++;
+    } else {
+      const inp = document.querySelector(`.t1text[data-idx="${i}"]`);
+      const val = normalize(inp.value);
+      const anss = item.ans.split('/').map(normalize);
+      if(anss.includes(val)){ correct++; inp.classList.add('correct'); inp.classList.remove('incorrect'); }
+      else { inp.classList.add('incorrect'); inp.classList.remove('correct'); }
+    }
+  });
+  return {correct, total: teil1Data.length};
+}
+
+const teil2Data = [
+  {q:"1. Auf der Liste stehen sechs Eier.", ans:true},
+  {q:"2. Man soll zwei Liter Orangensaft kaufen.", ans:false},
+  {q:"3. Der Gouda-Käse soll in Scheiben sein.", ans:true},
+  {q:"4. Brot steht nicht auf der Liste, man soll es aber holen.", ans:true}
+];
+const teil2Box=document.getElementById('teil2Box');
+teil2Data.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='rf-item';
+  div.innerHTML = `<b>${item.q}</b><div class="rf-btns" id="t2rf${i}">
+    <button onclick="selectRF(this,'t2',${i},true)">Richtig</button>
+    <button onclick="selectRF(this,'t2',${i},false)">Falsch</button>
+  </div>`;
+  teil2Box.appendChild(div);
+});
+const rfAnswers={t2:{}, t3:{}};
+function selectRF(btn, teilId, idx, value){
+  rfAnswers[teilId][idx]=value;
+  const wrap=document.getElementById(teilId+'rf'+idx);
+  wrap.querySelectorAll('button').forEach(b=>b.classList.remove('selected-r','selected-f'));
+  btn.classList.add(value?'selected-r':'selected-f');
+}
+function scoreTeil2(){
+  let correct=0;
+  teil2Data.forEach((item,i)=>{
+    if(rfAnswers.t2[i]===item.ans) correct++;
+  });
+  return {correct, total: teil2Data.length};
+}
+
+const teil3Data = [
+  {q:"1. Der Kunde möchte Käse kaufen.", ans:true},
+  {q:"2. Er nimmt 300 Gramm Käse.", ans:false},
+  {q:"3. Er kauft auch Schinken.", ans:true},
+  {q:"4. Er zahlt am Ende mit Karte.", ans:false}
+];
+const teil3Box=document.getElementById('teil3Box');
+teil3Data.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='rf-item';
+  div.innerHTML = `<b>${item.q}</b><div class="rf-btns" id="t3rf${i}">
+    <button onclick="selectRF(this,'t3',${i},true)">Richtig</button>
+    <button onclick="selectRF(this,'t3',${i},false)">Falsch</button>
+  </div>`;
+  teil3Box.appendChild(div);
+});
+function scoreTeil3(){
+  let correct=0;
+  teil3Data.forEach((item,i)=>{
+    if(rfAnswers.t3[i]===item.ans) correct++;
+  });
+  return {correct, total: teil3Data.length};
+}
+function playHoertext(){
+  const text = "Verkäuferin: Guten Tag, Sie wünschen? Kunde: Guten Tag, ich hätte gern 400 Gramm Käse, den Gouda bitte. Verkäuferin: In Scheiben oder am Stück? Kunde: In Scheiben, bitte. Und haben Sie auch Schinken? Verkäuferin: Ja, natürlich. Wie viel möchten Sie? Kunde: 200 Gramm bitte. Das ist alles, danke. Wie viel macht das zusammen? Verkäuferin: Das macht zusammen zwölf Euro fünfzig. Kunde: Bitte, hier sind zwanzig Euro. Verkäuferin: Und sieben Euro fünfzig zurück. Danke schön!";
+  speak(text);
+}
+
+function checkFullExam(){
+  const r1=scoreTeil1(), r2=scoreTeil2(), r3=scoreTeil3();
+  const totalCorrect = r1.correct + r2.correct + r3.correct;
+  const totalPoints = r1.total + r2.total + r3.total;
+  const pct = Math.round((totalCorrect/totalPoints)*100);
+  const pass = pct>=60;
+  const box=document.getElementById('examFinal');
+  box.className = 'exam-final show ' + (pass?'pass':'fail');
+  box.innerHTML = `
+    ${pass ? '✓ BESTANDEN' : '✗ NICHT BESTANDEN'} – ${totalCorrect}/${totalPoints} Punkte (${pct}%)
+    <div class="exam-breakdown">
+      Teil 1 (Wortschatz &amp; Grammatik): ${r1.correct}/${r1.total}<br>
+      Teil 2 (Leseverstehen): ${r2.correct}/${r2.total}<br>
+      Teil 3 (Hörverstehen): ${r3.correct}/${r3.total}<br>
+      Teil 4 (Schreiben): nicht bewertet<br>
+      <br>Bestehensgrenze: 60%
+    </div>
+  `;
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+}
+</script>
+</body>
+</html>

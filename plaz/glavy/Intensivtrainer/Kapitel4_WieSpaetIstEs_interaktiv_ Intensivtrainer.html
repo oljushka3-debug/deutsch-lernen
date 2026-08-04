@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Kapitel 4 – Wie spät ist es? – Interaktiv</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --blue:#1d5c9e; --lightblue:#eaf2fb; --green:#2e8b57; --red:#c0392b;
+  --grey:#666; --border:#ccd6e0;
+}
+*{box-sizing:border-box;}
+body{font-family:'Segoe UI',Arial,sans-serif;margin:0;background:#f4f7fb;color:#222;}
+header{background:var(--blue);color:#fff;padding:18px 20px;text-align:center;}
+header h1{margin:0;font-size:1.5em;}
+header p{margin:6px 0 0;font-size:.95em;opacity:.9;}
+nav{display:flex;flex-wrap:wrap;background:#fff;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:50;}
+nav button{flex:1;min-width:110px;padding:12px 6px;border:none;background:#fff;cursor:pointer;font-size:.9em;color:var(--blue);border-bottom:3px solid transparent;}
+nav button.active{border-bottom:3px solid var(--blue);font-weight:bold;background:var(--lightblue);}
+main{max-width:900px;margin:0 auto;padding:16px;}
+.tab{display:none;}
+.tab.active{display:block;}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.card h2{margin-top:0;color:var(--blue);font-size:1.15em;border-bottom:2px solid var(--lightblue);padding-bottom:8px;}
+.card h3{color:#333;font-size:1em;margin-bottom:6px;}
+.hint{color:var(--grey);font-size:.87em;margin-bottom:10px;}
+input[type=text]{border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:1em;margin:2px;min-width:70px;}
+input.correct{background:#e3f6e8;border-color:var(--green);}
+input.incorrect{background:#fdeaea;border-color:var(--red);}
+textarea{width:100%;min-height:70px;border:1px solid var(--border);border-radius:5px;padding:8px;font-size:1em;font-family:inherit;}
+select{border:1px solid var(--border);border-radius:5px;padding:4px;font-size:.95em;}
+button.act{background:var(--blue);color:#fff;border:none;border-radius:5px;padding:8px 14px;margin:4px 6px 4px 0;cursor:pointer;font-size:.9em;}
+button.act.secondary{background:#8296ab;}
+button.act.clear{background:#b0392b;}
+button.act:hover{opacity:.88;}
+.result-box{margin-top:8px;font-weight:bold;padding:8px;border-radius:6px;display:none;}
+.result-box.show{display:block;}
+.result-box.ok{background:#e3f6e8;color:var(--green);}
+.result-box.bad{background:#fdeaea;color:var(--red);}
+.sentence-line{margin:10px 0;line-height:2.3;}
+.wordlist{display:flex;gap:14px 24px;flex-wrap:wrap;background:var(--lightblue);padding:10px 14px;border-radius:6px;margin-bottom:12px;font-size:.95em;}
+table.ex{border-collapse:collapse;width:100%;margin:8px 0;}
+table.ex td,table.ex th{border:1px solid var(--border);padding:6px 8px;font-size:.93em;}
+table.ex th{background:var(--lightblue);}
+.dlg{background:#fafcff;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;}
+.dlg-line{display:flex;align-items:center;gap:8px;margin:6px 0;}
+.dlg-line select{width:55px;}
+.dlg-speaker{font-weight:bold;color:var(--blue);min-width:24px;}
+.notes-area{margin-bottom:20px;}
+.notes-area label{display:block;font-weight:bold;margin:10px 0 4px;color:#333;}
+.autosave-note{color:var(--grey);font-size:.85em;font-style:italic;}
+.flash-wrap{text-align:center;}
+.flash-filter{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
+.flash-filter button{padding:6px 12px;border-radius:16px;border:1px solid var(--blue);background:#fff;color:var(--blue);cursor:pointer;font-size:.85em;}
+.flash-filter button.on{background:var(--blue);color:#fff;}
+.flashcard{max-width:420px;margin:0 auto;min-height:180px;border:2px solid var(--blue);border-radius:14px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;cursor:pointer;position:relative;}
+.flashcard .word{font-size:1.6em;font-weight:bold;color:var(--blue);text-align:center;}
+.flashcard .cat{color:var(--grey);font-size:.8em;margin-top:6px;}
+.flashcard .answer{font-size:1.3em;color:var(--green);margin-top:14px;display:none;}
+.flashcard.flipped .answer{display:block;}
+.flash-controls{margin-top:16px;}
+.flash-controls button{margin:0 5px;}
+.srs-buttons{display:none;margin-top:16px;gap:8px;justify-content:center;}
+.srs-buttons.show{display:flex;}
+.srs-buttons button{padding:8px 14px;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:.9em;}
+.srs-again{background:var(--red);}
+.srs-hard{background:#e0a020;}
+.srs-easy{background:var(--green);}
+.speak-btn{background:none;border:1px solid var(--blue);color:var(--blue);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:1.1em;margin-top:8px;}
+.flash-stats{text-align:center;color:var(--grey);margin-top:10px;font-size:.9em;}
+.dir-toggle{text-align:center;margin-bottom:12px;}
+.dir-toggle button{padding:6px 14px;border-radius:16px;border:1px solid var(--blue);background:#fff;color:var(--blue);cursor:pointer;}
+.dir-toggle button.on{background:var(--blue);color:#fff;}
+.exam-part{border-left:4px solid var(--blue);padding-left:14px;margin-bottom:22px;}
+.exam-part h3{color:var(--blue);}
+.rf-item{margin:10px 0;padding:8px;background:#fafcff;border-radius:6px;}
+.rf-btns button{padding:5px 12px;margin-right:6px;border:1px solid var(--border);background:#fff;border-radius:5px;cursor:pointer;}
+.rf-btns button.selected-r{background:var(--green);color:#fff;}
+.rf-btns button.selected-f{background:var(--red);color:#fff;}
+.exam-final{margin-top:20px;padding:16px;border-radius:8px;text-align:center;font-size:1.1em;display:none;}
+.exam-final.show{display:block;}
+.exam-final.pass{background:#e3f6e8;color:var(--green);}
+.exam-final.fail{background:#fdeaea;color:var(--red);}
+.exam-breakdown{font-size:.85em;font-weight:normal;margin-top:10px;text-align:left;background:#fff;border-radius:6px;padding:10px;}
+.mc-opts label{display:block;margin:4px 0;cursor:pointer;}
+.match-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
+.match-row select{width:60px;}
+.clock{font-size:1.3em;background:var(--lightblue);padding:6px 10px;border-radius:6px;display:inline-block;margin:4px;}
+footer{text-align:center;padding:20px;color:var(--grey);font-size:.85em;}
+</style>
+</head>
+<body>
+<header>
+<h1>Kapitel 4 – Wie spät ist es?</h1>
+<p>Berliner Platz 1 · Intensivtrainer · Interaktive Übungen</p>
+</header>
+<nav id="tabnav"></nav>
+<main id="mainArea"></main>
+<footer>Erstellt für dein Deutschlernen · Fortschritt wird lokal in deinem Browser gespeichert</footer>
+
+<script>
+/* =================== NAVIGATION =================== */
+const tabs = [
+  {id:'ex1', label:'Übung 1'},
+  {id:'ex2', label:'Übung 2'},
+  {id:'ex3', label:'Übung 3'},
+  {id:'ex4', label:'Übung 4-5'},
+  {id:'notes', label:'Notizen'},
+  {id:'cards', label:'Karten'},
+  {id:'quiz', label:'Abschlusstest'}
+];
+const nav = document.getElementById('tabnav');
+tabs.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.textContent=t.label;
+  b.onclick=()=>showTab(t.id);
+  b.id='navbtn-'+t.id;
+  if(i===0) b.className='active';
+  nav.appendChild(b);
+});
+function showTab(id){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('navbtn-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* =================== HELPERS =================== */
+function normalize(s){
+  return (s||'').toString().trim().toLowerCase()
+    .replace(/ß/g,'ss')
+    .replace(/[.,!?]/g,'')
+    .replace(/\s+/g,' ');
+}
+function checkGroup(cls){
+  const inputs = document.querySelectorAll('input.'+cls);
+  let correct=0, total=0;
+  inputs.forEach(inp=>{
+    total++;
+    const ans = (inp.dataset.ans||'').split('/').map(normalize);
+    const val = normalize(inp.value);
+    if(ans.includes(val)){ inp.classList.add('correct'); inp.classList.remove('incorrect'); correct++; }
+    else { inp.classList.add('incorrect'); inp.classList.remove('correct'); }
+  });
+  return {correct,total};
+}
+function showResult(boxId, correct, total){
+  const box=document.getElementById(boxId);
+  box.classList.add('show');
+  if(correct===total){ box.className='result-box show ok'; box.textContent='✓ Alles richtig! ('+correct+'/'+total+')'; }
+  else { box.className='result-box show bad'; box.textContent='Richtig: '+correct+' von '+total+'. Versuch es noch einmal!'; }
+}
+function revealGroup(cls){
+  document.querySelectorAll('input.'+cls).forEach(inp=>{
+    const ans=(inp.dataset.ans||'').split('/')[0];
+    inp.value=ans; inp.classList.add('correct'); inp.classList.remove('incorrect');
+  });
+}
+function clearGroup(cls, boxId){
+  document.querySelectorAll('input.'+cls).forEach(inp=>{
+    inp.value=''; inp.classList.remove('correct','incorrect');
+  });
+  if(boxId){ const box=document.getElementById(boxId); box.classList.remove('show'); }
+}
+function speak(text){
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='de-DE'; u.rate=0.9;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
+}
+</script>
+
+<!-- ================= TAB 1: ÜBUNG 1 ================= -->
+<div class="tab active" id="tab-ex1">
+
+<div class="card">
+<h2>1a Ein Tag – Ergänze die Verben</h2>
+<p class="hint">Wortliste: gehe...weg, arbeite, stehe...auf, spiele, sehen...fern, frühstücken, hat, bringt, bringe</p>
+<div class="sentence-line">1. (Beispiel) Ich <b>stehe</b> schon um Viertel vor sieben <b>auf</b>.</div>
+<div class="sentence-line">2. Ich <input type="text" class="g1a" data-ans="bringe" size="10"> meinen Sohn zur Schule.</div>
+<div class="sentence-line">3. Meine Tochter und ich <input type="text" class="g1a" data-ans="frühstücken/fruehstuecken" size="14"> zusammen.</div>
+<div class="sentence-line">4. Meine Tochter <input type="text" class="g1a" data-ans="hat" size="8"> um acht Uhr Schule.</div>
+<div class="sentence-line">5. Ich <input type="text" class="g1a" data-ans="arbeite" size="10"> zu Hause.</div>
+<div class="sentence-line">6. Ich <input type="text" class="g1a" data-ans="gehe" size="10"> um neun Uhr <input type="text" class="g1a" data-ans="weg" size="8">.</div>
+<div class="sentence-line">7. Abends <input type="text" class="g1a" data-ans="spiele" size="10"> ich noch ein bisschen mit Lea.</div>
+<div class="sentence-line">8. Nach dem Abendessen <input type="text" class="g1a" data-ans="sehen" size="10"> wir ein bisschen <input type="text" class="g1a" data-ans="fern" size="8">.</div>
+<div class="sentence-line">9. Mein Abendessen <input type="text" class="g1a" data-ans="bringt" size="10"> der Pizzaservice.</div>
+<button class="act" onclick="check1a()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g1a')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g1a','res1a')">Очистить</button>
+<div class="result-box" id="res1a"></div>
+</div>
+
+<div class="card">
+<h2>1b Ergänze den Text – bei jedem zweiten Wort fehlt die Hälfte</h2>
+<div class="sentence-line">Ich gehe schon um Viertel nach sie<input type="text" class="g1b" data-ans="ben" size="4"> weg.</div>
+<div class="sentence-line">Me<input type="text" class="g1b" data-ans="in" size="4"> Mann u<input type="text" class="g1b" data-ans="nd" size="4"> mein So<input type="text" class="g1b" data-ans="hn" size="4"> gehen um ha<input type="text" class="g1b" data-ans="lb" size="4"> acht.</div>
+<div class="sentence-line">Me<input type="text" class="g1b" data-ans="in" size="4"> Sohn ma<input type="text" class="g1b" data-ans="cht" size="4"> ein Prak<input type="text" class="g1b" data-ans="tikum" size="8"> und me<input type="text" class="g1b" data-ans="in" size="4"> Mann ge<input type="text" class="g1b" data-ans="ht" size="4"> zur Arb<input type="text" class="g1b" data-ans="eit" size="4">.</div>
+<div class="sentence-line">Meine Toc<input type="text" class="g1b" data-ans="hter" size="6"> hat um ac<input type="text" class="g1b" data-ans="ht" size="4"> Uhr Sch<input type="text" class="g1b" data-ans="ule" size="4">.</div>
+<div class="sentence-line">Ich b<input type="text" class="g1b" data-ans="in" size="4"> um 16 U<input type="text" class="g1b" data-ans="hr" size="4"> zu Ha<input type="text" class="g1b" data-ans="use" size="4">.</div>
+<div class="sentence-line">Mein Ma<input type="text" class="g1b" data-ans="nn" size="4"> kommt um 18 U<input type="text" class="g1b" data-ans="hr" size="4">.</div>
+<div class="sentence-line">Nach d<input type="text" class="g1b" data-ans="em" size="4"> Abendessen spi<input type="text" class="g1b" data-ans="elen" size="6"> wir Kar<input type="text" class="g1b" data-ans="ten" size="4"> oder w<input type="text" class="g1b" data-ans="ir" size="4"> sehen fern.</div>
+<button class="act" onclick="showResult('res1b', checkGroup('g1b').correct, checkGroup('g1b').total)">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g1b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g1b','res1b')">Очистить</button>
+<div class="result-box" id="res1b"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 2: ÜBUNG 2-3 ================= -->
+<div class="tab" id="tab-ex2">
+
+<div class="card">
+<h2>2 Wie spät ist es? – Ordne die Uhrzeiten den Uhren zu</h2>
+<p class="hint">Uhren 1-8: wähle den passenden Buchstaben (a-h)</p>
+<table class="ex" id="ex2Table"></table>
+<button class="act" onclick="check2()">Проверить</button>
+<button class="act secondary" onclick="reveal2()">Показать ответ</button>
+<button class="act clear" onclick="clear2()">Очистить</button>
+<div class="result-box" id="res2"></div>
+</div>
+
+<div class="card">
+<h2>3a Verbformen: trennbare Verben</h2>
+<p class="hint">aufstehen, anfangen, fernsehen, einkaufen, aufmachen</p>
+<table class="ex" id="ex3aTable"></table>
+<button class="act" onclick="check3a()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g3a')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g3a','res3a')">Очистить</button>
+<div class="result-box" id="res3a"></div>
+</div>
+
+<div class="card">
+<h2>3b Fragen schreiben</h2>
+<div class="sentence-line">1. (Beispiel) kauft / Herr Hansen / wann / ein → <b>Wann kauft Herr Hansen ein?</b></div>
+<div class="sentence-line">2. jeden Morgen / auf / wer / um sechs Uhr / steht<br><input type="text" class="g3b" data-ans="wer steht jeden morgen um sechs uhr auf" style="width:90%"></div>
+<div class="sentence-line">3. Deutschkurs / wann / der / fängt / an<br><input type="text" class="g3b" data-ans="wann fängt der deutschkurs an/wann faengt der deutschkurs an" style="width:90%"></div>
+<div class="sentence-line">4. macht / der Supermarkt / zu / wann<br><input type="text" class="g3b" data-ans="wann macht der supermarkt zu" style="width:90%"></div>
+<div class="sentence-line">5. kauft / ein / für das Essen / wann / Petra<br><input type="text" class="g3b" data-ans="wann kauft petra für das essen ein/wann kauft petra fuer das essen ein" style="width:90%"></div>
+<div class="sentence-line">6. macht / um / die Cafeteria / wie viel Uhr / auf<br><input type="text" class="g3b" data-ans="um wie viel uhr macht die cafeteria auf" style="width:90%"></div>
+<div class="sentence-line">7. du / wo / für das Abendessen / kaufst / ein<br><input type="text" class="g3b" data-ans="wo kaufst du für das abendessen ein/wo kaufst du fuer das abendessen ein" style="width:90%"></div>
+<div class="sentence-line">8. wie lange / Sie / abends / fern / sehen<br><input type="text" class="g3b" data-ans="wie lange sehen sie abends fern" style="width:90%"></div>
+<button class="act" onclick="check3b()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g3b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g3b','res3b')">Очистить</button>
+<div class="result-box" id="res3b"></div>
+</div>
+
+<div class="card">
+<h2>4 Wann...? Wie lange...? Fragen und Antworten zuordnen</h2>
+<p class="hint">Ordne jeder Frage (1-9) die passende Antwort (a-i) zu.</p>
+<table class="ex" id="ex4Table"></table>
+<button class="act" onclick="check4()">Проверить</button>
+<button class="act secondary" onclick="reveal4()">Показать ответ</button>
+<button class="act clear" onclick="clear4()">Очистить</button>
+<div class="result-box" id="res4"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 3: ÜBUNG 3 (5a/5b) ================= -->
+<div class="tab" id="tab-ex3">
+
+<div class="card">
+<h2>5a Kommst du mit? – Sätze schreiben</h2>
+<div class="sentence-line">1. (Beispiel) Wann / Supermarkt? / der / öffnet → <b>Wann öffnet der Supermarkt?</b></div>
+<div class="sentence-line">2. Konzert? / dauert / das / Wie / lange<br><input type="text" class="g5a" data-ans="wie lange dauert das konzert" style="width:90%"></div>
+<div class="sentence-line">3. das / zu / Ende? / Kino / ist / Wann<br><input type="text" class="g5a" data-ans="wann ist das kino zu ende" style="width:90%"></div>
+<div class="sentence-line">4. übermorgen / du / Hast / Zeit?<br><input type="text" class="g5a" data-ans="hast du übermorgen zeit/hast du uebermorgen zeit" style="width:90%"></div>
+<div class="sentence-line">5. spät / es? / ist / Wie<br><input type="text" class="g5a" data-ans="wie spät ist es/wie spaet ist es" style="width:90%"></div>
+<div class="sentence-line">6. fünf / nach / ist / Es / zehn. / halb<br><input type="text" class="g5a" data-ans="es ist fünf nach halb zehn/es ist fuenf nach halb zehn" style="width:90%"></div>
+<div class="sentence-line">7. du? / kommst / viel / Um / Uhr / wie<br><input type="text" class="g5a" data-ans="um wie viel uhr kommst du" style="width:90%"></div>
+<div class="sentence-line">8. Kino / Uhr / Ende. / ist / Das / zu / gegen 18<br><input type="text" class="g5a" data-ans="das kino ist gegen 18 uhr zu ende" style="width:90%"></div>
+<div class="sentence-line">9. Wie / Unterricht? / der / dauert / lange<br><input type="text" class="g5a" data-ans="wie lange dauert der unterricht" style="width:90%"></div>
+<div class="sentence-line">10. heute Abend / nach Hause? / kommst / Wann / du<br><input type="text" class="g5a" data-ans="wann kommst du heute abend nach hause" style="width:90%"></div>
+<div class="sentence-line">11. halb acht. / komme / Ich / um<br><input type="text" class="g5a" data-ans="ich komme um halb acht" style="width:90%"></div>
+<div class="sentence-line">12. ins Schwimmbad? / gehen / Um wie viel Uhr / wir<br><input type="text" class="g5a" data-ans="um wie viel uhr gehen wir ins schwimmbad" style="width:90%"></div>
+<button class="act" onclick="check5a()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g5a')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g5a','res5a')">Очистить</button>
+<div class="result-box" id="res5a"></div>
+</div>
+
+<div class="card">
+<h2>5b Wiederholung Verben: du-Form und Sie-Form</h2>
+<table class="ex" id="ex5bTable"></table>
+<button class="act" onclick="check5b()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g5b')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g5b','res5b')">Очистить</button>
+<div class="result-box" id="res5b"></div>
+</div>
+
+</div>
+
+<!-- ================= TAB 4: ÜBUNG 4-5 (5c/5d Zeit-Text + Textschlange) ================= -->
+<div class="tab" id="tab-ex4">
+
+<div class="card">
+<h2>5c Die "Zeit" – Ergänze den Text</h2>
+<p class="hint">Wortliste: Jahr, Wochen, Woche, Tage, Wochentage (Montag...Sonntag), Tag, Stunden, Minuten, Minute, Sekunden, Morgen, Vormittag, Mittag, Nachmittag, Abend, 20 Uhr, Nacht</p>
+<div class="sentence-line">Ein <input type="text" class="g5c" data-ans="jahr" size="10"> hat zwölf Monate.</div>
+<div class="sentence-line">Ein Monat hat vier <input type="text" class="g5c" data-ans="wochen" size="10"> und eine <input type="text" class="g5c" data-ans="woche" size="10"> sieben <input type="text" class="g5c" data-ans="tage" size="10">.</div>
+<div class="sentence-line">Die Wochentage heißen <input type="text" class="g5c" data-ans="montag" size="10">, <input type="text" class="g5c" data-ans="dienstag" size="10">, <input type="text" class="g5c" data-ans="mittwoch" size="10">, <input type="text" class="g5c" data-ans="donnerstag" size="10">, <input type="text" class="g5c" data-ans="freitag" size="10">, <input type="text" class="g5c" data-ans="samstag" size="10">, <input type="text" class="g5c" data-ans="sonntag" size="10">.</div>
+<div class="sentence-line">Ein <input type="text" class="g5c" data-ans="tag" size="10"> hat 24 <input type="text" class="g5c" data-ans="stunden" size="10"> und eine Stunde hat 60 <input type="text" class="g5c" data-ans="minuten" size="10">.</div>
+<div class="sentence-line">Eine <input type="text" class="g5c" data-ans="minute" size="10"> ist nach 60 <input type="text" class="g5c" data-ans="sekunden" size="10"> zu Ende.</div>
+<div class="sentence-line">Der <input type="text" class="g5c" data-ans="tag" size="10"> beginnt am <input type="text" class="g5c" data-ans="morgen" size="10">, dann kommt der <input type="text" class="g5c" data-ans="vormittag" size="10">.</div>
+<div class="sentence-line">Um 12 Uhr ist <input type="text" class="g5c" data-ans="mittag" size="10"> und danach kommt der <input type="text" class="g5c" data-ans="nachmittag" size="10">.</div>
+<div class="sentence-line">Der <input type="text" class="g5c" data-ans="abend" size="10"> beginnt um 18 oder 20 <input type="text" class="g5c" data-ans="uhr" size="10"> und danach kommt die <input type="text" class="g5c" data-ans="nacht" size="10">.</div>
+<button class="act" onclick="check5c()">Проверить</button>
+<button class="act secondary" onclick="revealGroup('g5c')">Показать ответ</button>
+<button class="act clear" onclick="clearGroup('g5c','res5c')">Очистить</button>
+<div class="result-box" id="res5c"></div>
+</div>
+
+<div class="card">
+<h2>5d Textschlange – Mein Wochenende</h2>
+<p class="hint">Die versteckte Textschlange lautet (zur Kontrolle, in Sinnabschnitte getrennt): "Am Samstag stehe ich spät auf. Ich frühstücke um 10 Uhr. Dann lese ich die Zeitung und höre Musik. Am Nachmittag gehe ich in den Park. Am Abend sehe ich fern und gehe um elf ins Bett. Am Sonntagmorgen gehe ich vormittags ins Schwimmbad und nachmittags in ein Konzert. Am Abend gehe ich ins Kino und dann in ein Café."</p>
+<textarea data-note="n5d" placeholder="Schreibe den Text hier ab oder schreibe deine eigene Version..."></textarea>
+</div>
+
+</div>
+
+<!-- ================= TAB 5: NOTIZEN ================= -->
+<div class="tab" id="tab-notes">
+
+<div class="card">
+<h2>6–9 Meine Notizen</h2>
+<p class="autosave-note">Diese Übungen haben keine "eine" richtige Antwort – sie werden automatisch gespeichert (localStorage).</p>
+
+<div class="notes-area">
+<label>6. Ein Tag: Was tun Sie? Ergänze Wörter (Kette: aufwachen → ... → ...) und Freizeitaktivitäten (Mindmap, z.B. das Kino):</label>
+<textarea data-note="n6" placeholder="aufwachen → aufstehen → duschen → frühstücken → ... / Freizeitaktivitäten: das Kino, ..."></textarea>
+</div>
+
+<div class="notes-area">
+<label>7. Wichtige Wörter und Sätze – Schreiben Sie in Ihrer Sprache:</label>
+<textarea data-note="n7" placeholder="Wie viel Uhr ist es? / Es ist Viertel nach/vor zwölf. / Es ist halb eins. / Hast du heute Abend Zeit? / Ich habe leider keine Zeit. / Wann fängt der Film an? / Wie lange dauert das Konzert? / Wann ist der Unterricht zu Ende? / Von wann bis wann arbeitest du? / Kommst du mit ins Schwimmbad?"></textarea>
+</div>
+
+<div class="notes-area">
+<label>8. Wichtige Wörter und Sätze für Sie (Ihre Sprache / Deutsch):</label>
+<textarea data-note="n8" placeholder="Deine eigenen wichtigen Wörter und Sätze..."></textarea>
+</div>
+
+<div class="notes-area">
+<label>9. Ich über mich – Meine Woche. Notiere drei Aktivitäten für jeden Tag:</label>
+<textarea data-note="n9" placeholder="Montag: ... / Dienstag: ... / Mittwoch: ... / Donnerstag: ... / Freitag: ... / Samstag/Sonntag: ..."></textarea>
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= TAB 6: KARTEN (FLASHCARDS) ================= -->
+<div class="tab" id="tab-cards">
+<div class="card flash-wrap">
+<h2>Wortschatz-Hitparade – Karteikarten</h2>
+<div class="dir-toggle">
+  <button id="dirDE" class="on" onclick="setDir('de')">DE → RU</button>
+  <button id="dirRU" onclick="setDir('ru')">RU → DE</button>
+</div>
+<div class="flash-filter" id="flashFilter"></div>
+<div class="flashcard" id="flashcard" onclick="flipCard()">
+  <div class="word" id="fcWord">–</div>
+  <div class="cat" id="fcCat"></div>
+  <div class="answer" id="fcAnswer">–</div>
+</div>
+<div>
+<button class="speak-btn" onclick="event.stopPropagation(); speakCurrent();">🔊</button>
+</div>
+<div class="srs-buttons" id="srsButtons">
+  <button class="srs-again" onclick="srsAnswer('again')">Nochmal</button>
+  <button class="srs-hard" onclick="srsAnswer('hard')">Schwer</button>
+  <button class="srs-easy" onclick="srsAnswer('easy')">Leicht</button>
+</div>
+<div class="flash-controls">
+<button class="act secondary" onclick="prevCard()">← Zurück</button>
+<button class="act" onclick="flipCard()">Umdrehen</button>
+<button class="act secondary" onclick="nextCard()">Weiter →</button>
+</div>
+<div class="flash-stats" id="flashStats"></div>
+</div>
+</div>
+
+<!-- ================= TAB 7: ABSCHLUSSTEST ================= -->
+<div class="tab" id="tab-quiz">
+
+<div class="card exam-part">
+<h3>Teil 1: Wortschatz &amp; Grammatik (10 Punkte)</h3>
+<p class="hint">Lies den Text und löse die Aufgaben.</p>
+<p style="background:#fafcff;padding:10px;border-radius:6px;">
+Herr Schulz hat einen typischen Tag. Er steht um Viertel vor sechs auf und frühstückt um sechs Uhr. Um sieben Uhr geht er zur Arbeit. Er arbeitet von acht bis siebzehn Uhr. Die Mittagspause ist um zwölf Uhr, sie dauert eine Stunde. Nach der Arbeit kauft er oft ein. Abends um sieben isst er zu Abend, und um zehn Uhr sieht er noch ein bisschen fern, bevor er ins Bett geht.
+</p>
+<div id="teil1Box"></div>
+</div>
+
+<div class="card exam-part">
+<h3>Teil 2: Leseverstehen (4 Punkte)</h3>
+<p style="background:#fafcff;padding:10px;border-radius:6px;">
+Kino-Anzeige: "Der Film beginnt um 20 Uhr und dauert etwa 100 Minuten. Er ist also gegen 21:40 Uhr zu Ende. Die Kasse öffnet um 19:15 Uhr. Karten kosten 9 Euro, für Studenten 6 Euro."
+</p>
+<div id="teil2Box"></div>
+</div>
+
+<div class="card exam-part">
+<h3>Teil 3: Hörverstehen (4 Punkte)</h3>
+<p class="hint">Klicke auf ▶, um den Dialog zu hören (synthetische Stimme), und beantworte die Fragen.</p>
+<button class="act" onclick="playHoertext()">▶ Dialog anhören</button>
+<div id="teil3Box" style="margin-top:12px;"></div>
+</div>
+
+<div class="card exam-part">
+<h3>Teil 4: Schreiben (ungraded)</h3>
+<p class="hint">Beschreibe deinen typischen Tag: Wann stehst du auf? Wann arbeitest/lernst du? Was machst du abends? (nicht bewertet, nur zur Übung)</p>
+<textarea data-note="quiz-writing" placeholder="Mein Tag: Ich stehe um..."></textarea>
+</div>
+
+<div class="card">
+<button class="act" style="font-size:1.05em;padding:12px 20px;" onclick="checkFullExam()">Test auswerten</button>
+<div class="exam-final" id="examFinal"></div>
+</div>
+
+</div>
+
+<script>
+/* =================== 1a check =================== */
+function check1a(){ const r=checkGroup('g1a'); showResult('res1a', r.correct, r.total); }
+
+/* =================== 2 data (Uhrzeiten zuordnen) =================== */
+const ex2Data = [
+  {clock:1, ans:"a", text:"Es ist halb eins."},
+  {clock:2, ans:"h", text:"Es ist fünf nach halb acht."},
+  {clock:3, ans:"c", text:"Es ist Viertel vor neun."},
+  {clock:4, ans:"g", text:"Es ist fünf vor halb sechs."},
+  {clock:5, ans:"e", text:"Es ist zehn nach elf."},
+  {clock:6, ans:"b", text:"Es ist halb zwölf."},
+  {clock:7, ans:"d", text:"Es ist Viertel nach sieben."},
+  {clock:8, ans:"f", text:"Es ist zwanzig vor drei."}
+];
+const ex2Options = "a) Es ist halb eins. | b) Es ist halb zwölf. | c) Es ist Viertel vor neun. | d) Es ist Viertel nach sieben. | e) Es ist zehn nach elf. | f) Es ist zwanzig vor drei. | g) Es ist fünf vor halb sechs. | h) Es ist fünf nach halb acht.";
+const ex2Table = document.getElementById('ex2Table');
+let tr2h = document.createElement('tr');
+tr2h.innerHTML = '<th colspan="2">Wähle für jede Uhr (1-8) den passenden Satz (a-h)</th>';
+ex2Table.appendChild(tr2h);
+let optsRow = document.createElement('tr');
+optsRow.innerHTML = `<td colspan="2" style="font-size:.85em;background:#fafcff;">${ex2Options}</td>`;
+ex2Table.appendChild(optsRow);
+ex2Data.forEach(item=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML = `<td>Uhr ${item.clock}</td><td><input type="text" class="g2" data-ans="${item.ans}" size="4" placeholder="a-h"></td>`;
+  ex2Table.appendChild(tr);
+});
+function check2(){ const r=checkGroup('g2'); showResult('res2', r.correct, r.total); }
+function reveal2(){ revealGroup('g2'); }
+function clear2(){ clearGroup('g2','res2'); }
+
+/* =================== 3a data (trennbare Verben Tabelle) =================== */
+const pronouns = ["ich","du","er/es/sie","wir","ihr","sie/Sie"];
+const verbs3a = {
+  aufstehen: ["stehe auf","stehst auf","steht auf","stehen auf","steht auf","stehen auf"],
+  anfangen: ["fange an","fängst an/faengst an","fängt an/faengt an","fangen an","fangt an","fangen an"],
+  fernsehen: ["sehe fern","siehst fern","sieht fern","sehen fern","seht fern","sehen fern"],
+  einkaufen: ["kaufe ein","kaufst ein","kauft ein","kaufen ein","kauft ein","kaufen ein"],
+  aufmachen: ["mache auf","machst auf","macht auf","machen auf","macht auf","machen auf"]
+};
+const ex3aTable = document.getElementById('ex3aTable');
+let head3a = document.createElement('tr');
+head3a.innerHTML = '<th></th>' + Object.keys(verbs3a).map(v=>`<th>${v}</th>`).join('');
+ex3aTable.appendChild(head3a);
+pronouns.forEach((p,pi)=>{
+  const tr=document.createElement('tr');
+  let cells = `<td><b>${p}</b></td>`;
+  Object.keys(verbs3a).forEach(v=>{
+    if(p==='ich' && v==='aufstehen'){
+      cells += `<td><b>${verbs3a[v][pi]}</b> (Bsp.)</td>`;
+    } else {
+      cells += `<td><input type="text" class="g3a" data-ans="${verbs3a[v][pi]}" style="width:95%"></td>`;
+    }
+  });
+  tr.innerHTML = cells;
+  ex3aTable.appendChild(tr);
+});
+function check3a(){ const r=checkGroup('g3a'); showResult('res3a', r.correct, r.total); }
+
+/* =================== 3b check =================== */
+function check3b(){ const r=checkGroup('g3b'); showResult('res3b', r.correct, r.total); }
+
+/* =================== 4 data (Fragen/Antworten zuordnen) =================== */
+const ex4Data = [
+  {q:"1. Wie viel Uhr ist es?", ans:"c"},
+  {q:"2. Wann ist der Film zu Ende?", ans:"b"},
+  {q:"3. Wie lange frühstückst du?", ans:"d"},
+  {q:"4. Kaufst du für das Abendessen ein?", ans:"e"},
+  {q:"5. Von wann bis wann arbeitest du?", ans:"a"},
+  {q:"6. Wie viele Stunden arbeitest du am Tag?", ans:"h"},
+  {q:"7. Ist die Cafeteria schon auf?", ans:"g"},
+  {q:"8. Siehst du morgens fern?", ans:"f"},
+  {q:"9. Kaufst du immer nach der Arbeit ein?", ans:"i"}
+];
+const ex4Options = "a) Von 8 bis 17 Uhr. | b) Ja, heute Nachmittag. | c) Kurz vor zehn. | d) Ungefähr 25 Minuten. | e) Ja, oder samstags. | f) Nein, da höre ich nur Radio. | g) Nein, sie macht erst um neun auf. | h) Acht Stunden. | i) Um halb elf.";
+const ex4Table = document.getElementById('ex4Table');
+let optsRow4 = document.createElement('tr');
+optsRow4.innerHTML = `<td colspan="2" style="font-size:.85em;background:#fafcff;">${ex4Options}</td>`;
+ex4Table.appendChild(optsRow4);
+ex4Data.forEach((item,i)=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML = `<td>${item.q}</td><td><input type="text" class="g4" data-ans="${item.ans}" size="4" placeholder="a-i"></td>`;
+  ex4Table.appendChild(tr);
+});
+function check4(){ const r=checkGroup('g4'); showResult('res4', r.correct, r.total); }
+function reveal4(){ revealGroup('g4'); }
+function clear4(){ clearGroup('g4','res4'); }
+
+/* =================== 5a check =================== */
+function check5a(){ const r=checkGroup('g5a'); showResult('res5a', r.correct, r.total); }
+
+/* =================== 5b data (du-Form / Sie-Form) =================== */
+const verbs5b = [
+  {inf:"einkaufen", du:"du kaufst ein", sie:"Sie kaufen ein", example:true},
+  {inf:"telefonieren", du:"du telefonierst", sie:"Sie telefonieren"},
+  {inf:"verkaufen", du:"du verkaufst", sie:"Sie verkaufen"},
+  {inf:"essen", du:"du isst", sie:"Sie essen"},
+  {inf:"anfangen", du:"du fängst an/du faengst an", sie:"Sie fangen an"},
+  {inf:"schlafen", du:"du schläfst/du schlaefst", sie:"Sie schlafen"},
+  {inf:"kochen", du:"du kochst", sie:"Sie kochen"},
+  {inf:"frühstücken/fruehstuecken", du:"du frühstückst/du fruehstueckst", sie:"Sie frühstücken/Sie fruehstuecken"},
+  {inf:"fahren", du:"du fährst/du faehrst", sie:"Sie fahren"},
+  {inf:"zumachen", du:"du machst zu", sie:"Sie machen zu"},
+  {inf:"sein", du:"du bist", sie:"Sie sind"},
+  {inf:"aufstehen", du:"du stehst auf", sie:"Sie stehen auf"},
+  {inf:"nehmen", du:"du nimmst", sie:"Sie nehmen"},
+  {inf:"trinken", du:"du trinkst", sie:"Sie trinken"},
+  {inf:"sprechen", du:"du sprichst", sie:"Sie sprechen"},
+  {inf:"mitkommen", du:"du kommst mit", sie:"Sie kommen mit"},
+  {inf:"gehen", du:"du gehst", sie:"Sie gehen"}
+];
+const ex5bTable = document.getElementById('ex5bTable');
+let head5b = document.createElement('tr');
+head5b.innerHTML = '<th>Infinitiv</th><th>du-Form</th><th>Sie-Form</th>';
+ex5bTable.appendChild(head5b);
+verbs5b.forEach(item=>{
+  const tr=document.createElement('tr');
+  const inf = item.inf.split('/')[0];
+  if(item.example){
+    tr.innerHTML = `<td>${inf}</td><td><b>${item.du}</b> (Bsp.)</td><td><b>${item.sie}</b> (Bsp.)</td>`;
+  } else {
+    tr.innerHTML = `<td>${inf}</td><td><input type="text" class="g5b" data-ans="${item.du}" style="width:95%"></td><td><input type="text" class="g5b" data-ans="${item.sie}" style="width:95%"></td>`;
+  }
+  ex5bTable.appendChild(tr);
+});
+function check5b(){ const r=checkGroup('g5b'); showResult('res5b', r.correct, r.total); }
+
+/* =================== 5c check =================== */
+function check5c(){ const r=checkGroup('g5c'); showResult('res5c', r.correct, r.total); }
+
+/* =================== NOTES (autosave) =================== */
+const NOTES_KEY='kapitel4-notes-v1';
+function loadNotes(){
+  const saved = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    const key = ta.dataset.note;
+    if(saved[key]) ta.value = saved[key];
+    ta.addEventListener('input', saveNotes);
+  });
+}
+function saveNotes(){
+  const data={};
+  document.querySelectorAll('textarea[data-note]').forEach(ta=>{
+    data[ta.dataset.note] = ta.value;
+  });
+  localStorage.setItem(NOTES_KEY, JSON.stringify(data));
+}
+loadNotes();
+
+/* =================== FLASHCARDS =================== */
+const vocab = [
+  {cat:"Nomen", de:"der Abend, -e", ru:"вечер"},
+  {cat:"Nomen", de:"die Arbeit Sg.", ru:"работа"},
+  {cat:"Nomen", de:"die Bäckerei, -en", ru:"пекарня"},
+  {cat:"Nomen", de:"das Bad, \"-er", ru:"ванная"},
+  {cat:"Nomen", de:"das Brötchen, -", ru:"булочка"},
+  {cat:"Nomen", de:"der Chef, -s", ru:"начальник"},
+  {cat:"Nomen", de:"die Chefin, -nen", ru:"начальница"},
+  {cat:"Nomen", de:"der Eintritt Sg.", ru:"вход (плата)"},
+  {cat:"Nomen", de:"das Ende Sg.", ru:"конец"},
+  {cat:"Nomen", de:"das Essen Sg.", ru:"еда"},
+  {cat:"Nomen", de:"der Film, -e", ru:"фильм"},
+  {cat:"Nomen", de:"die Karte, -n", ru:"билет, карта"},
+  {cat:"Nomen", de:"das Kino, -s", ru:"кинотеатр"},
+  {cat:"Nomen", de:"das Konzert, -e", ru:"концерт"},
+  {cat:"Nomen", de:"der Mittag, -e", ru:"полдень"},
+  {cat:"Nomen", de:"der Morgen, -", ru:"утро"},
+  {cat:"Nomen", de:"der Nachmittag, -e", ru:"вторая половина дня"},
+  {cat:"Nomen", de:"der Park, -s", ru:"парк"},
+  {cat:"Nomen", de:"die Pause, -n", ru:"перерыв"},
+  {cat:"Nomen", de:"die Schule, -n", ru:"школа"},
+  {cat:"Nomen", de:"das Schwimmbad, \"-er", ru:"бассейн"},
+  {cat:"Nomen", de:"der Tag, -e", ru:"день"},
+  {cat:"Nomen", de:"der Unterricht Sg.", ru:"урок, занятие"},
+  {cat:"Nomen", de:"der Vormittag, -e", ru:"первая половина дня"},
+  {cat:"Nomen", de:"die Woche, -n", ru:"неделя"},
+  {cat:"Nomen", de:"der Wochentag, -e", ru:"будний день"},
+  {cat:"Nomen", de:"die Zeit, -en", ru:"время"},
+  {cat:"Nomen", de:"die Zeitung, -en", ru:"газета"},
+  {cat:"Verben", de:"anfangen", ru:"начинать"},
+  {cat:"Verben", de:"aufmachen", ru:"открывать"},
+  {cat:"Verben", de:"aufstehen", ru:"вставать"},
+  {cat:"Verben", de:"aufwachen", ru:"просыпаться"},
+  {cat:"Verben", de:"ausmachen", ru:"выключать"},
+  {cat:"Verben", de:"beginnen", ru:"начинаться"},
+  {cat:"Verben", de:"duschen", ru:"принимать душ"},
+  {cat:"Verben", de:"einladen", ru:"приглашать"},
+  {cat:"Verben", de:"einschlafen", ru:"засыпать"},
+  {cat:"Verben", de:"frühstücken", ru:"завтракать"},
+  {cat:"Verben", de:"sehen", ru:"видеть, смотреть"},
+  {cat:"Verben", de:"(sich) verabreden", ru:"договариваться о встрече"},
+  {cat:"Verben", de:"warten", ru:"ждать"},
+  {cat:"Verben", de:"zumachen", ru:"закрывать"},
+  {cat:"Andere Wörter", de:"abends", ru:"вечером"},
+  {cat:"Andere Wörter", de:"danach", ru:"после этого, потом"},
+  {cat:"Andere Wörter", de:"gerade", ru:"как раз, именно"},
+  {cat:"Andere Wörter", de:"gestern", ru:"вчера"},
+  {cat:"Andere Wörter", de:"halb", ru:"половина"},
+  {cat:"Andere Wörter", de:"heute", ru:"сегодня"},
+  {cat:"Andere Wörter", de:"mittags", ru:"в полдень"},
+  {cat:"Andere Wörter", de:"morgen", ru:"завтра"},
+  {cat:"Andere Wörter", de:"morgens", ru:"утром"},
+  {cat:"Andere Wörter", de:"zehn nach", ru:"десять минут после"},
+  {cat:"Andere Wörter", de:"nachmittags", ru:"после обеда"},
+  {cat:"Andere Wörter", de:"nachts", ru:"ночью"},
+  {cat:"Andere Wörter", de:"um zwölf", ru:"в двенадцать"},
+  {cat:"Andere Wörter", de:"von ... bis ...", ru:"с ... до ..."},
+  {cat:"Andere Wörter", de:"Viertel vor", ru:"без четверти"},
+  {cat:"Andere Wörter", de:"vormittags", ru:"в первой половине дня"}
+];
+
+const SRS_KEY='kapitel4-srs-v1';
+const SRS_INTERVALS=[0,1,3,7,14,30];
+let srsData = JSON.parse(localStorage.getItem(SRS_KEY) || '{}');
+function saveSRS(){ localStorage.setItem(SRS_KEY, JSON.stringify(srsData)); }
+function getCardState(i){
+  if(!srsData[i]) srsData[i] = {level:0, due:0, seen:0};
+  return srsData[i];
+}
+
+let activeCats = new Set(vocab.map(v=>v.cat));
+let direction = 'de';
+let deck = [];
+let currentIdx = 0;
+let flipped = false;
+
+const catsUnique = [...new Set(vocab.map(v=>v.cat))];
+const filterDiv = document.getElementById('flashFilter');
+catsUnique.forEach(cat=>{
+  const b=document.createElement('button');
+  b.textContent=cat; b.className='on';
+  b.onclick=()=>{
+    if(activeCats.has(cat)){ activeCats.delete(cat); b.classList.remove('on'); }
+    else { activeCats.add(cat); b.classList.add('on'); }
+    buildDeck();
+  };
+  filterDiv.appendChild(b);
+});
+const allBtn=document.createElement('button');
+allBtn.textContent='Alle'; allBtn.className='on';
+allBtn.onclick=()=>{
+  activeCats = new Set(vocab.map(v=>v.cat));
+  filterDiv.querySelectorAll('button').forEach(b=>b.classList.add('on'));
+  buildDeck();
+};
+filterDiv.appendChild(allBtn);
+
+function setDir(d){
+  direction=d;
+  document.getElementById('dirDE').classList.toggle('on', d==='de');
+  document.getElementById('dirRU').classList.toggle('on', d==='ru');
+  flipped=false;
+  renderCard();
+}
+
+function buildDeck(){
+  deck = vocab.map((v,i)=>i).filter(i=>activeCats.has(vocab[i].cat));
+  currentIdx = 0;
+  flipped = false;
+  renderCard();
+}
+
+function renderCard(){
+  const stats=document.getElementById('flashStats');
+  if(deck.length===0){
+    document.getElementById('fcWord').textContent='–';
+    document.getElementById('fcCat').textContent='Keine Karten ausgewählt';
+    document.getElementById('fcAnswer').textContent='';
+    stats.textContent='';
+    return;
+  }
+  const idx = deck[currentIdx];
+  const item = vocab[idx];
+  const front = direction==='de' ? item.de : item.ru;
+  const back = direction==='de' ? item.ru : item.de;
+  document.getElementById('fcWord').textContent = front;
+  document.getElementById('fcCat').textContent = item.cat;
+  document.getElementById('fcAnswer').textContent = back;
+  const card=document.getElementById('flashcard');
+  card.classList.toggle('flipped', flipped);
+  document.getElementById('srsButtons').classList.toggle('show', flipped);
+  const st = getCardState(idx);
+  stats.textContent = `Karte ${currentIdx+1}/${deck.length} · Stufe ${st.level+1}/${SRS_INTERVALS.length} · Kategorie: ${item.cat}`;
+}
+
+function flipCard(){
+  if(deck.length===0) return;
+  flipped=!flipped;
+  renderCard();
+}
+function nextCard(){
+  if(deck.length===0) return;
+  currentIdx = (currentIdx+1) % deck.length;
+  flipped=false;
+  renderCard();
+}
+function prevCard(){
+  if(deck.length===0) return;
+  currentIdx = (currentIdx-1+deck.length) % deck.length;
+  flipped=false;
+  renderCard();
+}
+function srsAnswer(result){
+  if(deck.length===0) return;
+  const idx = deck[currentIdx];
+  const st = getCardState(idx);
+  if(result==='again'){ st.level=0; }
+  else if(result==='hard'){ st.level=Math.max(0, st.level); }
+  else if(result==='easy'){ st.level=Math.min(SRS_INTERVALS.length-1, st.level+1); }
+  st.seen++;
+  saveSRS();
+  nextCard();
+}
+function speakCurrent(){
+  if(deck.length===0) return;
+  const idx = deck[currentIdx];
+  const item = vocab[idx];
+  speak(item.de.split(',')[0].split('"')[0]);
+}
+buildDeck();
+
+/* =================== ABSCHLUSSTEST =================== */
+const teil1Data = [
+  {type:"mc", q:"1. Wann steht Herr Schulz auf?", opts:["Um sechs Uhr","Um Viertel vor sechs","Um sieben Uhr"], correct:1},
+  {type:"mc", q:"2. Wann geht er zur Arbeit?", opts:["Um sechs Uhr","Um sieben Uhr","Um acht Uhr"], correct:1},
+  {type:"mc", q:"3. Wie lange dauert die Mittagspause?", opts:["Eine halbe Stunde","Eine Stunde","Zwei Stunden"], correct:1},
+  {type:"mc", q:"4. Wann isst er zu Abend?", opts:["Um sechs Uhr","Um sieben Uhr","Um zehn Uhr"], correct:1},
+  {type:"mc", q:"5. Was macht er um zehn Uhr abends?", opts:["Er schläft schon","Er sieht fern","Er kauft ein"], correct:1},
+  {type:"text", q:"6. Trennbares Verb: 'Ich ___ um sieben Uhr ___.' (aufstehen)", ans:"stehe/auf"},
+  {type:"text", q:"7. Gegenteil von 'aufmachen':", ans:"zumachen"},
+  {type:"text", q:"8. Wie viele Minuten hat eine Stunde?", ans:"60/sechzig"},
+  {type:"text", q:"9. Wie viele Tage hat eine Woche?", ans:"7/sieben"},
+  {type:"text", q:"10. Synonym für 'Viertel nach neun': neun Uhr ___", ans:"fünfzehn/funfzehn/fuenfzehn/15"}
+];
+const teil1Box=document.getElementById('teil1Box');
+teil1Data.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='rf-item';
+  if(item.type==='mc'){
+    let optsHtml='';
+    item.opts.forEach((o,oi)=>{
+      optsHtml += `<label><input type="radio" name="t1q${i}" value="${oi}"> ${o}</label>`;
+    });
+    div.innerHTML = `<b>${item.q}</b><div class="mc-opts">${optsHtml}</div>`;
+  } else {
+    div.innerHTML = `<b>${item.q}</b> <input type="text" class="t1text" data-idx="${i}" style="width:150px;">`;
+  }
+  teil1Box.appendChild(div);
+});
+function scoreTeil1(){
+  let correct=0;
+  teil1Data.forEach((item,i)=>{
+    if(item.type==='mc'){
+      const sel = document.querySelector(`input[name="t1q${i}"]:checked`);
+      if(sel && parseInt(sel.value)===item.correct) correct++;
+    } else {
+      const inp = document.querySelector(`.t1text[data-idx="${i}"]`);
+      const val = normalize(inp.value);
+      const anss = item.ans.split('/').map(normalize);
+      if(anss.includes(val)){ correct++; inp.classList.add('correct'); inp.classList.remove('incorrect'); }
+      else { inp.classList.add('incorrect'); inp.classList.remove('correct'); }
+    }
+  });
+  return {correct, total: teil1Data.length};
+}
+
+const teil2Data = [
+  {q:"1. Der Film beginnt um 20 Uhr.", ans:true},
+  {q:"2. Der Film dauert etwa 3 Stunden.", ans:false},
+  {q:"3. Die Kasse öffnet vor dem Film.", ans:true},
+  {q:"4. Studenten zahlen genauso viel wie andere.", ans:false}
+];
+const teil2Box=document.getElementById('teil2Box');
+teil2Data.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='rf-item';
+  div.innerHTML = `<b>${item.q}</b><div class="rf-btns" id="t2rf${i}">
+    <button onclick="selectRF(this,'t2',${i},true)">Richtig</button>
+    <button onclick="selectRF(this,'t2',${i},false)">Falsch</button>
+  </div>`;
+  teil2Box.appendChild(div);
+});
+const rfAnswers={t2:{}, t3:{}};
+function selectRF(btn, teilId, idx, value){
+  rfAnswers[teilId][idx]=value;
+  const wrap=document.getElementById(teilId+'rf'+idx);
+  wrap.querySelectorAll('button').forEach(b=>b.classList.remove('selected-r','selected-f'));
+  btn.classList.add(value?'selected-r':'selected-f');
+}
+function scoreTeil2(){
+  let correct=0;
+  teil2Data.forEach((item,i)=>{
+    if(rfAnswers.t2[i]===item.ans) correct++;
+  });
+  return {correct, total: teil2Data.length};
+}
+
+const teil3Data = [
+  {q:"1. Anna und Ben verabreden sich für heute Abend.", ans:true},
+  {q:"2. Sie treffen sich um sechs Uhr.", ans:false},
+  {q:"3. Der Film fängt um acht Uhr an.", ans:true},
+  {q:"4. Sie treffen sich vor dem Kino.", ans:true}
+];
+const teil3Box=document.getElementById('teil3Box');
+teil3Data.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='rf-item';
+  div.innerHTML = `<b>${item.q}</b><div class="rf-btns" id="t3rf${i}">
+    <button onclick="selectRF(this,'t3',${i},true)">Richtig</button>
+    <button onclick="selectRF(this,'t3',${i},false)">Falsch</button>
+  </div>`;
+  teil3Box.appendChild(div);
+});
+function scoreTeil3(){
+  let correct=0;
+  teil3Data.forEach((item,i)=>{
+    if(rfAnswers.t3[i]===item.ans) correct++;
+  });
+  return {correct, total: teil3Data.length};
+}
+function playHoertext(){
+  const text = "Anna: Hallo Ben, hast du heute Abend Zeit? Ben: Ja, ich habe Zeit. Was machen wir? Anna: Wollen wir ins Kino gehen? Der neue Film fängt um acht Uhr an. Ben: Prima! Wo treffen wir uns? Anna: Wir treffen uns um Viertel vor acht direkt vor dem Kino, ist das okay? Ben: Ja, das passt gut. Bis später!";
+  speak(text);
+}
+
+function checkFullExam(){
+  const r1=scoreTeil1(), r2=scoreTeil2(), r3=scoreTeil3();
+  const totalCorrect = r1.correct + r2.correct + r3.correct;
+  const totalPoints = r1.total + r2.total + r3.total;
+  const pct = Math.round((totalCorrect/totalPoints)*100);
+  const pass = pct>=60;
+  const box=document.getElementById('examFinal');
+  box.className = 'exam-final show ' + (pass?'pass':'fail');
+  box.innerHTML = `
+    ${pass ? '✓ BESTANDEN' : '✗ NICHT BESTANDEN'} – ${totalCorrect}/${totalPoints} Punkte (${pct}%)
+    <div class="exam-breakdown">
+      Teil 1 (Wortschatz &amp; Grammatik): ${r1.correct}/${r1.total}<br>
+      Teil 2 (Leseverstehen): ${r2.correct}/${r2.total}<br>
+      Teil 3 (Hörverstehen): ${r3.correct}/${r3.total}<br>
+      Teil 4 (Schreiben): nicht bewertet<br>
+      <br>Bestehensgrenze: 60%
+    </div>
+  `;
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+}
+</script>
+</body>
+</html>

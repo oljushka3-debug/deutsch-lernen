@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kapitel 1 — Hallo! Interaktiver Trainer</title>
+<style>
+  :root{
+    --bg:#f6f4ef;
+    --card:#ffffff;
+    --ink:#2b2a28;
+    --muted:#767268;
+    --accent:#c0392b;
+    --accent2:#1f6f5c;
+    --line:#e3ddd0;
+    --ok:#1f6f5c;
+    --bad:#c0392b;
+    --chip:#efe9db;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.5;
+  }
+  header{
+    background:var(--ink);
+    color:#fdfaf3;
+    padding:28px 20px 22px;
+    text-align:center;
+  }
+  header h1{
+    margin:0 0 4px;
+    font-size:2.1rem;
+    letter-spacing:.5px;
+  }
+  header p{
+    margin:0;
+    color:#cfc8b8;
+    font-size:.95rem;
+  }
+  nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:#fffdf8;
+    border-bottom:2px solid var(--line);
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding:10px 16px;
+    justify-content:center;
+  }
+  nav button{
+    font-family:inherit;
+    border:1px solid var(--line);
+    background:var(--chip);
+    color:var(--ink);
+    padding:7px 14px;
+    border-radius:20px;
+    cursor:pointer;
+    font-size:.85rem;
+    transition:.15s;
+  }
+  nav button:hover{background:#e4dcc7;}
+  nav button.active{
+    background:var(--accent);
+    color:#fff;
+    border-color:var(--accent);
+  }
+  main{
+    max-width:840px;
+    margin:0 auto;
+    padding:24px 16px 80px;
+  }
+  section{display:none;}
+  section.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 22px 24px;
+    margin-bottom:22px;
+    box-shadow:0 2px 6px rgba(0,0,0,.04);
+  }
+  .card h2{
+    margin-top:0;
+    font-size:1.3rem;
+    color:var(--accent);
+    border-bottom:2px dotted var(--line);
+    padding-bottom:8px;
+  }
+  .card h3{
+    font-size:1.02rem;
+    color:var(--ink);
+    margin-bottom:10px;
+  }
+  .instr{
+    color:var(--muted);
+    font-style:italic;
+    margin-bottom:14px;
+    font-size:.95rem;
+  }
+  .row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:10px 0;
+    flex-wrap:wrap;
+  }
+  .row .label{min-width:26px;color:var(--muted);font-size:.9rem;}
+  input[type=text]{
+    font-family:inherit;
+    font-size:1rem;
+    padding:7px 10px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    background:#fffef9;
+    color:var(--ink);
+    min-width:120px;
+    flex:1;
+  }
+  input[type=text].wide{min-width:260px;}
+  input[type=text]:focus{outline:none;border-color:var(--accent2);}
+  input.correct{border-color:var(--ok);background:#eef7f2;}
+  input.incorrect{border-color:var(--bad);background:#fbeceb;}
+  .btn-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+  }
+  .checkbtn, .revealbtn, .shufflebtn, .clearbtn{
+    font-family:inherit;
+    border:none;
+    padding:9px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:.92rem;
+    font-weight:bold;
+  }
+  .checkbtn{
+    background:var(--ink);
+    color:#fdfaf3;
+  }
+  .revealbtn, .clearbtn, .shufflebtn{
+    background:var(--chip);
+    color:var(--ink);
+  }
+  .checkbtn:hover{opacity:.88;}
+  .revealbtn:hover, .clearbtn:hover, .shufflebtn:hover{background:#e4dcc7;}
+  .feedback{
+    margin-top:10px;
+    font-size:.9rem;
+    font-weight:bold;
+  }
+  .feedback.ok{color:var(--ok);}
+  .feedback.bad{color:var(--bad);}
+  .answer-reveal{
+    margin-top:8px;
+    font-size:.85rem;
+    color:var(--muted);
+    display:none;
+  }
+  .sentence-build{
+    background:#fbf9f3;
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:12px;
+    margin:12px 0;
+  }
+  .word-bank{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:10px;
+  }
+  .word-chip{
+    background:var(--chip);
+    border:1px solid var(--line);
+    padding:5px 10px;
+    border-radius:16px;
+    font-size:.9rem;
+  }
+  select{
+    font-family:inherit;
+    font-size:.95rem;
+    padding:6px 8px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+  }
+  table{width:100%;border-collapse:collapse;margin:10px 0;}
+  table td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  .score-pill{
+    display:inline-block;
+    background:var(--chip);
+    border-radius:20px;
+    padding:6px 14px;
+    font-size:.85rem;
+    margin-bottom:10px;
+  }
+  /* Flashcards */
+  .fc-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+  }
+  .fc-controls{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-bottom:6px;
+  }
+  .fc-controls button{
+    font-family:inherit;
+    background:var(--chip);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:16px;
+    cursor:pointer;
+    font-size:.85rem;
+  }
+  .fc-controls button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .flashcard{
+    width:100%;
+    max-width:420px;
+    height:230px;
+    perspective:1200px;
+    cursor:pointer;
+  }
+  .flashcard-inner{
+    position:relative;
+    width:100%;
+    height:100%;
+    transition:transform .5s;
+    transform-style:preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner{transform:rotateY(180deg);}
+  .fc-face{
+    position:absolute;
+    width:100%;
+    height:100%;
+    backface-visibility:hidden;
+    border-radius:16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    text-align:center;
+    border:2px solid var(--line);
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+  }
+  .fc-front{background:#fffdf8;}
+  .fc-back{
+    background:var(--ink);
+    color:#fdfaf3;
+    transform:rotateY(180deg);
+  }
+  .fc-cat{
+    font-size:.75rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--muted);
+    margin-bottom:10px;
+  }
+  .fc-back .fc-cat{color:#cfc8b8;}
+  .fc-word{font-size:1.55rem;font-weight:bold;}
+  .fc-translation{font-size:1.35rem;}
+  .fc-hint{margin-top:14px;font-size:.8rem;color:var(--muted);}
+  .fc-nav{
+    display:flex;
+    gap:14px;
+    align-items:center;
+  }
+  .fc-nav button{
+    font-family:inherit;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:1.1rem;
+  }
+  .fc-count{color:var(--muted);font-size:.9rem;}
+  .fc-know-btns{display:flex;gap:10px;margin-top:4px;}
+  .fc-know-btns button{
+    font-family:inherit;
+    border:none;
+    padding:8px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:.85rem;
+    color:#fff;
+  }
+  .btn-no{background:var(--bad);}
+  .btn-mid{background:#c8862c;}
+  .btn-yes{background:var(--ok);}
+  .fc-audio-btn{
+    position:absolute;
+    top:14px;
+    right:16px;
+    background:none;
+    border:1.5px solid var(--line);
+    border-radius:50%;
+    width:34px;
+    height:34px;
+    font-size:1rem;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .fc-back .fc-audio-btn{border-color:#4a473f;color:#fdfaf3;}
+  .fc-audio-btn:hover{background:var(--chip);}
+  .fc-back .fc-audio-btn:hover{background:#4a473f;}
+  .fc-status{
+    margin-top:6px;
+    font-size:.78rem;
+    color:var(--muted);
+  }
+  .srs-legend{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:6px;
+    font-size:.78rem;
+  }
+  .srs-pill{
+    padding:3px 10px;
+    border-radius:12px;
+    background:var(--chip);
+    color:var(--muted);
+  }
+  .progress-bar{
+    width:100%;
+    max-width:420px;
+    height:6px;
+    background:var(--line);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent2);
+    width:0%;
+    transition:width .3s;
+  }
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:.8rem;
+    padding:20px;
+  }
+  .intro-img{
+    background:#eee7d6;
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:14px;
+    text-align:center;
+    color:var(--muted);
+    font-size:.85rem;
+    margin-bottom:16px;
+  }
+  .final-summary{
+    text-align:center;
+    padding:30px 10px;
+  }
+  .final-summary .big{font-size:2.2rem;color:var(--accent);font-weight:bold;}
+  /* Notes section (Aufgaben 5-8) */
+  .mindmap{
+    display:flex;
+    flex-wrap:wrap;
+    gap:24px;
+    justify-content:center;
+    margin:16px 0 8px;
+  }
+  .mindmap-bubble{
+    border:2px solid var(--ink);
+    border-radius:50%;
+    width:170px;
+    height:170px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:10px;
+    font-weight:bold;
+    background:#fbf9f3;
+  }
+  textarea{
+    font-family:inherit;
+    font-size:.95rem;
+    padding:8px 10px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    background:#fffef9;
+    color:var(--ink);
+    width:100%;
+    resize:vertical;
+    min-height:38px;
+  }
+  textarea:focus{outline:none;border-color:var(--accent2);}
+  .notes-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    align-items:center;
+    margin:10px 0;
+  }
+  .notes-row .de-label{color:var(--muted);font-style:italic;}
+  .autosave-note{
+    font-size:.8rem;
+    color:var(--muted);
+    margin-top:10px;
+  }
+  /* Exam-style test */
+  .exam-header{
+    background:#fbf9f3;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:20px;
+  }
+  .exam-header h3{margin:0 0 6px;color:var(--accent);}
+  .teil-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:8px;
+    margin-bottom:14px;
+  }
+  .teil-header h2{margin:0;border:none;padding:0;}
+  .teil-points{
+    font-size:.85rem;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .exam-text{
+    background:#fbf9f3;
+    border-left:4px solid var(--accent2);
+    padding:14px 16px;
+    border-radius:6px;
+    margin-bottom:16px;
+    font-size:.98rem;
+  }
+  .rf-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:8px 0;
+    flex-wrap:wrap;
+  }
+  .rf-row .rf-text{flex:1;min-width:200px;}
+  .rf-choice{display:flex;gap:6px;}
+  .rf-choice button{
+    font-family:inherit;
+    border:1.5px solid var(--line);
+    background:#fffef9;
+    padding:6px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:.85rem;
+  }
+  .rf-choice button.selected-r{background:var(--ok);color:#fff;border-color:var(--ok);}
+  .rf-choice button.selected-f{background:var(--bad);color:#fff;border-color:var(--bad);}
+  .listen-btn{
+    font-family:inherit;
+    background:var(--accent2);
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:.92rem;
+    margin-bottom:14px;
+  }
+  .listen-btn:hover{opacity:.88;}
+  .schreiben-box{
+    margin-top:10px;
+  }
+  .schreiben-box textarea{min-height:120px;}
+  .section-result{
+    margin-top:14px;
+    padding:10px 14px;
+    border-radius:8px;
+    background:var(--chip);
+    font-size:.88rem;
+    font-weight:bold;
+  }
+  .exam-final{
+    text-align:center;
+    padding:26px 16px;
+    border-radius:14px;
+    margin-top:10px;
+  }
+  .exam-final.pass{background:#eef7f2;border:2px solid var(--ok);}
+  .exam-final.fail{background:#fbeceb;border:2px solid var(--bad);}
+  .exam-final .big{font-size:2.6rem;font-weight:bold;}
+  .exam-final.pass .big{color:var(--ok);}
+  .exam-final.fail .big{color:var(--bad);}
+  .exam-final .verdict{font-size:1.2rem;font-weight:bold;margin-top:6px;}
+  .exam-breakdown{
+    margin-top:16px;
+    text-align:left;
+    max-width:400px;
+    margin-left:auto;
+    margin-right:auto;
+    font-size:.9rem;
+  }
+  .exam-breakdown div{
+    display:flex;
+    justify-content:space-between;
+    padding:5px 0;
+    border-bottom:1px dotted var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>1 · Hallo!</h1>
+  <p>Berliner Platz 1 — Intensivtrainer · Interaktive Übungen &amp; Wortschatz-Karten</p>
+</header>
+
+<nav id="tabs">
+  <button data-tab="ex1" class="active">1 Name und Ort</button>
+  <button data-tab="ex2">2 Zwei Dialoge</button>
+  <button data-tab="ex3">3 Andere vorstellen</button>
+  <button data-tab="ex4">4 Wörter ordnen</button>
+  <button data-tab="notes">5–8 Meine Notizen</button>
+  <button data-tab="cards">🗂 Wortschatzkarten</button>
+  <button data-tab="quiz">✅ Abschlusstest</button>
+</nav>
+
+<main>
+
+<!-- ================= EXERCISE 1 ================= -->
+<section id="ex1" class="active">
+
+  <div class="card">
+    <h2>1a · Ergänzen Sie den Dialog</h2>
+    <p class="instr">Füllen Sie die fehlenden Buchstaben in die Lücken ein.</p>
+
+    <div class="row"><span>😊 Gut</span><input type="text" data-ans="en" size="4" class="g1"> T<input type="text" data-ans="ag" size="4" class="g1">. Ich b<input type="text" data-ans="in" size="4" class="g1"> Olga.</div>
+    <div class="row">○ Hallo, ich <input type="text" data-ans="hei" size="4" class="g1">ße Carlos. Carlos Sánchez.</div>
+    <div class="row">😊 Und wo<input type="text" data-ans="her" size="4" class="g1"> kom<input type="text" data-ans="men" size="4" class="g1"> S<input type="text" data-ans="ie" size="4" class="g1">?</div>
+    <div class="row">○ I<input type="text" data-ans="ch" size="4" class="g1"> ko<input type="text" data-ans="mm" size="4" class="g1">e a<input type="text" data-ans="us" size="4" class="g1"> Spanien.</div>
+    <div class="row">😊 Und ich kom<input type="text" data-ans="me" size="4" class="g1"> aus Russland, aus Moskau.</div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g1')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g1')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g1')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g1"></div>
+  </div>
+
+  <div class="card">
+    <h2>1b · Schreiben Sie Sätze</h2>
+    <p class="instr">Bilden Sie aus den Wörtern richtige Sätze.</p>
+
+    <div class="row"><span class="label">1.</span> mein / ist / Name / Korkmaz / Mehmet. <input type="text" class="wide g1b" data-ans="Mein Name ist Mehmet Korkmaz."></div>
+    <div class="row"><span class="label">2.</span> heiße / ich / Yong-Min. <input type="text" class="wide g1b" data-ans="Ich heiße Yong-Min."></div>
+    <div class="row"><span class="label">3.</span> Sie / woher / kommen / ? <input type="text" class="wide g1b" data-ans="Woher kommen Sie?"></div>
+    <div class="row"><span class="label">4.</span> ich / aus / komme / Korea. <input type="text" class="wide g1b" data-ans="Ich komme aus Korea."></div>
+    <div class="row"><span class="label">5.</span> kommst / woher / du / ? <input type="text" class="wide g1b" data-ans="Woher kommst du?"></div>
+    <div class="row"><span class="label">6.</span> wie / du / heißt / ? <input type="text" class="wide g1b" data-ans="Wie heißt du?"></div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g1b', true)">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g1b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g1b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g1b"></div>
+  </div>
+
+  <div class="card">
+    <h2>1c · Markieren Sie und schreiben Sie die Sätze</h2>
+    <p class="instr">Trennen Sie die Wörter und schreiben Sie richtige Sätze mit Groß-/Kleinschreibung.</p>
+
+    <div class="row"><span class="label">1.</span> hallo/ichbinmagdalenakowalskaichkommeauspolen<br>
+    <input type="text" class="wide g1c" data-ans="Hallo, ich bin Magdalena Kowalska. Ich komme aus Polen."></div>
+    <div class="row"><span class="label">2.</span> gutentagmeinnameistsabinewohlfahrtichbinihrelehrerin<br>
+    <input type="text" class="wide g1c" data-ans="Guten Tag, mein Name ist Sabine Wohlfahrt. Ich bin Ihre Lehrerin."></div>
+    <div class="row"><span class="label">3.</span> wieheißtduundwoherkommstdu?<br>
+    <input type="text" class="wide g1c" data-ans="Wie heißt du und woher kommst du?"></div>
+    <div class="row"><span class="label">4.</span> ichheißecarlosundichkommeausspanienausvalencia<br>
+    <input type="text" class="wide g1c" data-ans="Ich heiße Carlos und ich komme aus Spanien, aus Valencia."></div>
+    <div class="row"><span class="label">5.</span> woherkommensieundwieheißensie?<br>
+    <input type="text" class="wide g1c" data-ans="Woher kommen Sie und wie heißen Sie?"></div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g1c', true)">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g1c')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g1c')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g1c"></div>
+    <p class="instr" style="margin-top:8px;">Tipp: Groß-/Kleinschreibung wird bei der Prüfung ignoriert — es zählt der Wortlaut.</p>
+  </div>
+</section>
+
+<!-- ================= EXERCISE 2 ================= -->
+<section id="ex2">
+
+  <div class="card">
+    <h2>2a · Zwei Dialoge — richtige Reihenfolge</h2>
+    <p class="instr">Die Sätze sind durcheinander. Wählen Sie für jeden Satz die richtige Position (1, 2, 3 …), sodass ein sinnvoller Dialog entsteht. Die erste Zeile ist schon vorgegeben.</p>
+
+    <h3>Dialog 1</h3>
+    <div id="dlg1"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkOrder('dlg1')">Проверить</button>
+      <button class="revealbtn" onclick="revealOrder('dlg1')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearOrder('dlg1')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-dlg1"></div>
+
+    <h3 style="margin-top:26px;">Dialog 2</h3>
+    <div id="dlg2"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkOrder('dlg2')">Проверить</button>
+      <button class="revealbtn" onclick="revealOrder('dlg2')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearOrder('dlg2')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-dlg2"></div>
+  </div>
+
+  <div class="card">
+    <h2>2b · Fragen und Antworten</h2>
+    <p class="instr">Ergänzen Sie die Fragewörter.</p>
+
+    <div class="row"><span class="label">1.</span> <input type="text" data-ans="Wie" class="g2b" size="8"> heißt du? — <i>Ich...</i></div>
+    <div class="row"><span class="label">2.</span> Woher <input type="text" data-ans="kommen" class="g2b" size="10"> Sie?</div>
+    <div class="row"><span class="label">3.</span> Entschuldigung, wie <input type="text" data-ans="ist" class="g2b" size="8"> dein Name?</div>
+    <div class="row"><span class="label">4.</span> Und <input type="text" data-ans="woher" class="g2b" size="10"> kommst du?</div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g2b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g2b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g2b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g2b"></div>
+  </div>
+
+  <div class="card">
+    <h2>2c · Verbposition — Schreiben Sie die Sätze mit den Verben</h2>
+    <p class="instr">Wortschatz: heißen · heißen · sein · kommen · kommen · kommen</p>
+
+    <div class="row"><span class="label">1.</span> Wie Sie bitte? <input type="text" class="wide g2c" data-ans="Wie heißen Sie bitte?"></div>
+    <div class="row"><span class="label">2.</span> Entschuldigung, wie du? <input type="text" class="wide g2c" data-ans="Entschuldigung, wie heißt du?"></div>
+    <div class="row"><span class="label">3.</span> Ich aus Spanien, und du? <input type="text" class="wide g2c" data-ans="Ich bin aus Spanien, und du?"></div>
+    <div class="row"><span class="label">4.</span> Woher du? <input type="text" class="wide g2c" data-ans="Woher kommst du?"></div>
+    <div class="row"><span class="label">5.</span> Mein Name Svoboda. <input type="text" class="wide g2c" data-ans="Mein Name ist Svoboda."></div>
+    <div class="row"><span class="label">6.</span> Entschuldigung, woher Sie? <input type="text" class="wide g2c" data-ans="Entschuldigung, woher kommen Sie?"></div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g2c', true)">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g2c')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g2c')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g2c"></div>
+  </div>
+</section>
+
+<!-- ================= EXERCISE 3 ================= -->
+<section id="ex3">
+
+  <div class="card">
+    <h2>3a · Was ist richtig? </h2>
+    <p class="instr">Wählen Sie die passende Ergänzung.</p>
+    <div id="q3a"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkMC('q3a')">Проверить</button>
+      <button class="revealbtn" onclick="revealMC('q3a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearMC('q3a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-q3a"></div>
+  </div>
+
+  <div class="card">
+    <h2>3b · Länder und Sprachen</h2>
+    <p class="instr">Ergänzen Sie die passende Sprache zum Land.</p>
+    <div class="row"><span class="label">Russland –</span><input type="text" class="g3b" data-ans="Russisch"></div>
+    <div class="row"><span class="label">Tschechien –</span><input type="text" class="g3b" data-ans="Tschechisch"></div>
+    <div class="row"><span class="label">Schweden –</span><input type="text" class="g3b" data-ans="Schwedisch"></div>
+    <div class="row"><span class="label">Frankreich –</span><input type="text" class="g3b" data-ans="Französisch"></div>
+    <div class="row"><span class="label">Korea –</span><input type="text" class="g3b" data-ans="Koreanisch"></div>
+    <div class="row"><span class="label">Marokko –</span><input type="text" class="g3b" data-ans="Arabisch"></div>
+    <div class="row"><span class="label">Österreich –</span><input type="text" class="g3b" data-ans="Deutsch"></div>
+    <div class="row"><span class="label">Slowakei –</span><input type="text" class="g3b" data-ans="Slowakisch"></div>
+    <div class="row"><span class="label">Tunesien –</span><input type="text" class="g3b" data-ans="Arabisch"></div>
+    <div class="row"><span class="label">Spanien –</span><input type="text" class="g3b" data-ans="Spanisch"></div>
+    <div class="row"><span class="label">Türkei –</span><input type="text" class="g3b" data-ans="Türkisch"></div>
+    <div class="row"><span class="label">Brasilien –</span><input type="text" class="g3b" data-ans="Portugiesisch"></div>
+    <div class="row"><span class="label">Portugal –</span><input type="text" class="g3b" data-ans="Portugiesisch"></div>
+
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g3b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g3b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g3b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g3b"></div>
+  </div>
+
+  <div class="card">
+    <h2>3c · Mein Name ist … — Ergänzen Sie den Text</h2>
+    <p class="instr">Schreiben Sie die fehlenden Buchstaben / Wörter.</p>
+    <p style="line-height:2.1;">
+      Mein Na<input type="text" data-ans="me" class="g3c" size="4"> ist Ali Kahn. Ali i<input type="text" data-ans="st" class="g3c" size="4">
+      mein Vor<input type="text" data-ans="name" class="g3c" size="6"> un<input type="text" data-ans="d" class="g3c" size="3">
+      Kahn ist mein <input type="text" data-ans="Familien" class="g3c" size="10">name. Ich spre<input type="text" data-ans="che" class="g3c" size="5">
+      Arab<input type="text" data-ans="isch" class="g3c" size="6"> und <input type="text" data-ans="franz" class="g3c" size="7">ösisch.
+      Ich komme <input type="text" data-ans="aus" class="g3c" size="5"> Tunesien, <input type="text" data-ans="aus" class="g3c" size="5"> Tunis.
+      Ich <input type="text" data-ans="wohne" class="g3c" size="7"> in Berlin und bin im Deutsch<input type="text" data-ans="kurs" class="g3c" size="6"> A1.
+      Die <input type="text" data-ans="Kurs" class="g3c" size="6">leiterin h<input type="text" data-ans="eißt" class="g3c" size="6"> Maria Blasig
+      und der Kurslei<input type="text" data-ans="ter" class="g3c" size="5"> ist Herr Wüppen-Schneider.
+    </p>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g3c')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g3c')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g3c')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g3c"></div>
+  </div>
+
+  <div class="card">
+    <h2>3e · Verbformen — Ergänzen Sie die Endungen</h2>
+    <div class="row"><span class="label">1.</span> er komm<input type="text" data-ans="t" class="g3e" size="3"></div>
+    <div class="row"><span class="label">2.</span> du sprich<input type="text" data-ans="st" class="g3e" size="3"></div>
+    <div class="row"><span class="label">3.</span> Sie heiß<input type="text" data-ans="en" class="g3e" size="3"></div>
+    <div class="row"><span class="label">4.</span> sie sprich<input type="text" data-ans="t" class="g3e" size="3"></div>
+    <div class="row"><span class="label">5.</span> ich komm<input type="text" data-ans="e" class="g3e" size="3"></div>
+    <div class="row"><span class="label">6.</span> sie buchstabier<input type="text" data-ans="en/t" class="g3e" size="4"></div>
+    <div class="row"><span class="label">7.</span> ich sprech<input type="text" data-ans="e" class="g3e" size="3"></div>
+    <div class="row"><span class="label">8.</span> das lieg<input type="text" data-ans="t" class="g3e" size="3"></div>
+    <div class="row"><span class="label">9.</span> du heiß<input type="text" data-ans="t" class="g3e" size="3"></div>
+    <div class="row"><span class="label">10.</span> ich heiß<input type="text" data-ans="e" class="g3e" size="3"></div>
+    <div class="row"><span class="label">11.</span> Sie sprech<input type="text" data-ans="en" class="g3e" size="3"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('g3e')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('g3e')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('g3e')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-g3e"></div>
+  </div>
+</section>
+
+<!-- ================= EXERCISE 4 ================= -->
+<section id="ex4">
+  <div class="card">
+    <h2>4 · Wörter ordnen — Nomen, Verben, andere Wörter</h2>
+    <p class="instr">Ordnen Sie jedes Wort der richtigen Kategorie zu.</p>
+    <div class="word-bank">
+      <span class="word-chip">BUCHSTABIEREN</span><span class="word-chip">VORNAME</span><span class="word-chip">WIE</span>
+      <span class="word-chip">ER</span><span class="word-chip">LAND</span><span class="word-chip">KOMMEN</span>
+      <span class="word-chip">VORSTELLEN</span><span class="word-chip">NEIN</span><span class="word-chip">MACHEN</span>
+      <span class="word-chip">NAME</span><span class="word-chip">SATZ</span><span class="word-chip">SCHREIBEN</span>
+      <span class="word-chip">SPRECHEN</span><span class="word-chip">SIE</span><span class="word-chip">WORT</span>
+      <span class="word-chip">ZAHL</span><span class="word-chip">BITTE</span><span class="word-chip">STADT</span>
+      <span class="word-chip">ENTSCHULDIGUNG</span><span class="word-chip">WOHER</span><span class="word-chip">WOHNEN</span>
+      <span class="word-chip">RUSSISCH</span><span class="word-chip">LEHRER</span><span class="word-chip">WIR</span>
+      <span class="word-chip">LIEGEN</span><span class="word-chip">HEISSEN</span><span class="word-chip">ICH</span><span class="word-chip">WO</span>
+    </div>
+    <div id="sortGame"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkSort()">Проверить</button>
+      <button class="revealbtn" onclick="revealSort()">Показать ответ</button>
+      <button class="clearbtn" onclick="clearSort()">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-sort"></div>
+  </div>
+</section>
+
+<!-- ================= NOTES: Aufgaben 5-8 ================= -->
+<section id="notes">
+
+  <div class="card">
+    <h2>5 · Wörter thematisch — Sammeln Sie Wörter</h2>
+    <p class="instr">Die Wortschatz-Hitparade hilft. Schreiben Sie eigene Wörter zu jedem Thema (frei, ohne Prüfung).</p>
+    <div class="mindmap">
+      <div class="mindmap-bubble">Deutschkurs<br><small>(begrüßen, Teilnehmer, ...)</small></div>
+      <div class="mindmap-bubble">Name und Land<br><small>(heißen, ...)</small></div>
+      <div class="mindmap-bubble">Deutsch<br><small>(hören, ...)</small></div>
+    </div>
+    <div class="row"><span style="min-width:140px;">Deutschkurs:</span><textarea data-note="n5-1" placeholder="z. B. Kursleiter, Kursleiterin, lernen ..."></textarea></div>
+    <div class="row"><span style="min-width:140px;">Name und Land:</span><textarea data-note="n5-2" placeholder="z. B. Vorname, Familienname, Land, kommen ..."></textarea></div>
+    <div class="row"><span style="min-width:140px;">Deutsch:</span><textarea data-note="n5-3" placeholder="z. B. sprechen, verstehen, buchstabieren ..."></textarea></div>
+  </div>
+
+  <div class="card">
+    <h2>6 · Wichtige Wörter und Sätze — Schreiben Sie in Ihrer Sprache</h2>
+    <p class="instr">Übersetzen Sie die deutschen Sätze in Ihre Sprache (Russisch).</p>
+    <div class="notes-row"><span class="de-label">Wie?</span><textarea data-note="n6-1"></textarea></div>
+    <div class="notes-row"><span class="de-label">Wie heißen Sie?</span><textarea data-note="n6-2"></textarea></div>
+    <div class="notes-row"><span class="de-label">Wie heißt du?</span><textarea data-note="n6-3"></textarea></div>
+    <div class="notes-row"><span class="de-label">Woher?</span><textarea data-note="n6-4"></textarea></div>
+    <div class="notes-row"><span class="de-label">Woher kommen Sie?</span><textarea data-note="n6-5"></textarea></div>
+    <div class="notes-row"><span class="de-label">Woher kommst du?</span><textarea data-note="n6-6"></textarea></div>
+    <div class="notes-row"><span class="de-label">Ich spreche …</span><textarea data-note="n6-7"></textarea></div>
+  </div>
+
+  <div class="card">
+    <h2>7 · Wichtige Wörter und Sätze für Sie — Schreiben Sie</h2>
+    <p class="instr">Eigene wichtige Wörter/Sätze — links in Ihrer Sprache, rechts auf Deutsch.</p>
+    <div class="notes-row"><textarea data-note="n7-ru-1" placeholder="Ihre Sprache"></textarea><textarea data-note="n7-de-1" placeholder="Deutsch"></textarea></div>
+    <div class="notes-row"><textarea data-note="n7-ru-2" placeholder="Ihre Sprache"></textarea><textarea data-note="n7-de-2" placeholder="Deutsch"></textarea></div>
+    <div class="notes-row"><textarea data-note="n7-ru-3" placeholder="Ihre Sprache"></textarea><textarea data-note="n7-de-3" placeholder="Deutsch"></textarea></div>
+    <div class="notes-row"><textarea data-note="n7-ru-4" placeholder="Ihre Sprache"></textarea><textarea data-note="n7-de-4" placeholder="Deutsch"></textarea></div>
+  </div>
+
+  <div class="card">
+    <h2>8 · Ich über mich — Ergänzen Sie</h2>
+    <div class="row"><span style="min-width:170px;">Ich heiße</span><input type="text" class="wide" data-note="n8-1"></div>
+    <div class="row"><span style="min-width:170px;">Mein Vorname ist</span><input type="text" class="wide" data-note="n8-2"></div>
+    <div class="row"><span style="min-width:170px;">Mein Familienname ist</span><input type="text" class="wide" data-note="n8-3"></div>
+    <div class="row"><span style="min-width:170px;">Ich komme aus</span><input type="text" class="wide" data-note="n8-4"></div>
+    <div class="row"><span style="min-width:170px;">Ich spreche</span><input type="text" class="wide" data-note="n8-5"></div>
+  </div>
+
+  <div class="card">
+    <div class="btn-group">
+      <button class="clearbtn" onclick="clearAllNotes()">Очистить все заметки (5–8)</button>
+    </div>
+    <p class="autosave-note">Заметки сохраняются автоматически в этом браузере (localStorage) — при следующем открытии файла на этом же компьютере они останутся на месте.</p>
+  </div>
+</section>
+
+<!-- ================= FLASHCARDS ================= -->
+<section id="cards">
+  <div class="card">
+    <h2>🗂 Die Wortschatz-Hitparade — Karteikarten</h2>
+    <p class="instr">Klicken Sie auf die Karte, um die Übersetzung zu sehen. Mit den Pfeilen wechseln Sie die Karte. Wählen Sie unten die Richtung: Deutsch→Russisch oder Russisch→Deutsch.</p>
+
+    <div class="fc-controls" id="fc-filters">
+      <button class="active" data-cat="all">Alle (48)</button>
+      <button data-cat="Nomen">Nomen</button>
+      <button data-cat="Verben">Verben</button>
+      <button data-cat="Andere Wörter">Andere Wörter</button>
+    </div>
+
+    <div class="fc-controls" id="fc-mode">
+      <button class="active" data-mode="all">Alle Karten</button>
+      <button data-mode="due">📅 Nur heute fällig</button>
+    </div>
+
+    <div class="fc-controls" id="fc-direction">
+      <button class="active" data-dir="de-ru">🇩🇪 → 🇷🇺 Deutsch → Russisch</button>
+      <button data-dir="ru-de">🇷🇺 → 🇩🇪 Russisch → Deutsch</button>
+    </div>
+
+    <div class="srs-legend">
+      <span class="srs-pill srs-new">🆕 neu</span>
+      <span class="srs-pill srs-learning">🔄 wiederholen</span>
+      <span class="srs-pill srs-learned">✅ gelernt</span>
+    </div>
+
+    <div class="fc-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="fc-progress"></div></div>
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flashcard-inner" id="flashcardInner">
+          <div class="fc-face fc-front">
+            <div class="fc-cat" id="fc-cat-front">Nomen</div>
+            <button class="fc-audio-btn" onclick="speakWord(event)" title="Aussprache anhören">🔊</button>
+            <div class="fc-word" id="fc-word">der Alltag</div>
+            <div class="fc-status" id="fc-status-front"></div>
+            <div class="fc-hint">Klicken zum Umdrehen</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-cat" id="fc-cat-back">Nomen</div>
+            <button class="fc-audio-btn" onclick="speakWord(event)" title="Aussprache anhören">🔊</button>
+            <div class="fc-translation" id="fc-translation">повседневная жизнь, будни</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-know-btns">
+        <button class="btn-no" onclick="markCard('again')">😕 Noch nicht</button>
+        <button class="btn-mid" onclick="markCard('hard')">🤔 Schwer</button>
+        <button class="btn-yes" onclick="markCard('easy')">😊 Weiß ich</button>
+      </div>
+      <div class="fc-nav">
+        <button onclick="prevCard()">‹</button>
+        <span class="fc-count" id="fc-count">1 / 48</span>
+        <button onclick="nextCard()">›</button>
+      </div>
+      <button class="shufflebtn" onclick="shuffleCards()">🔀 Mischen</button>
+      <button class="shufflebtn" onclick="resetProgress()" style="background:var(--muted);color:#fff;">↺ Fortschritt zurücksetzen</button>
+      <div id="fc-summary" style="text-align:center;color:var(--muted);font-size:.9rem;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EXAM-STYLE FINAL TEST ================= -->
+<section id="quiz">
+
+  <div class="exam-header">
+    <h3>✅ Abschlusstest — Kapitel 1 „Hallo!"</h3>
+    <p class="instr" style="margin-bottom:0;">Dieser Test ist wie eine echte Sprachkurs-Prüfung aufgebaut: Wortschatz &amp; Grammatik, Leseverstehen, Hörverstehen und Schreiben. Bearbeiten Sie alle vier Teile und klicken Sie dann auf „Gesamtergebnis auswerten".</p>
+  </div>
+
+  <!-- TEIL 1: Wortschatz & Grammatik -->
+  <div class="card">
+    <div class="teil-header">
+      <h2>Teil 1 · Wortschatz &amp; Grammatik</h2>
+      <span class="teil-points" id="t1-points">0 / 10 Punkte</span>
+    </div>
+    <div id="teil1"></div>
+    <div class="btn-group">
+      <button class="revealbtn" onclick="revealTeil1()">Показать ответы (Teil 1)</button>
+      <button class="clearbtn" onclick="clearTeil1()">Очистить (Teil 1)</button>
+    </div>
+  </div>
+
+  <!-- TEIL 2: Leseverstehen -->
+  <div class="card">
+    <div class="teil-header">
+      <h2>Teil 2 · Leseverstehen</h2>
+      <span class="teil-points" id="t2-points">0 / 4 Punkte</span>
+    </div>
+    <p class="instr">Lesen Sie den Text und entscheiden Sie: richtig (R) oder falsch (F).</p>
+    <div class="exam-text">
+      Mein Name ist Elena Petrova. Elena ist mein Vorname und Petrova ist mein Familienname.
+      Ich komme aus Russland, aus Moskau. Ich spreche Russisch und ein bisschen Deutsch.
+      Ich wohne jetzt in Berlin und bin im Deutschkurs A1. Die Kursleiterin heißt Anna Berg.
+    </div>
+    <div id="teil2"></div>
+    <div class="btn-group">
+      <button class="revealbtn" onclick="revealTeil2()">Показать ответы (Teil 2)</button>
+      <button class="clearbtn" onclick="clearTeil2()">Очистить (Teil 2)</button>
+    </div>
+  </div>
+
+  <!-- TEIL 3: Hörverstehen-style -->
+  <div class="card">
+    <div class="teil-header">
+      <h2>Teil 3 · Hörverstehen</h2>
+      <span class="teil-points" id="t3-points">0 / 4 Punkte</span>
+    </div>
+    <p class="instr">Hören Sie sich den Dialog an (Button „Anhören") und beantworten Sie die Fragen.</p>
+    <button class="listen-btn" onclick="playHoertext()">🔊 Dialog anhören</button>
+    <div id="teil3"></div>
+    <div class="btn-group">
+      <button class="revealbtn" onclick="revealTeil3()">Показать ответы (Teil 3)</button>
+      <button class="clearbtn" onclick="clearTeil3()">Очистить (Teil 3)</button>
+    </div>
+  </div>
+
+  <!-- TEIL 4: Schreiben -->
+  <div class="card">
+    <div class="teil-header">
+      <h2>Teil 4 · Schreiben</h2>
+      <span class="teil-points">ohne automatische Bewertung</span>
+    </div>
+    <p class="instr">Schreiben Sie 3–4 Sätze über sich: Name, Land, Sprache, Wohnort. Nutzen Sie das Beispiel aus Aufgabe 3d als Vorbild.</p>
+    <div class="schreiben-box">
+      <textarea id="schreibenText" data-note="quiz-schreiben" placeholder="Mein Name ist ... Ich komme aus ... Ich spreche ... Ich wohne in ..."></textarea>
+    </div>
+    <p class="autosave-note">Ihr Text wird automatisch gespeichert. Vergleichen Sie ihn selbst mit dem Beispiel in Aufgabe 3d (Abschnitt „3 Andere vorstellen").</p>
+  </div>
+
+  <div class="card">
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkFullExam()" style="font-size:1rem;padding:12px 24px;">📊 Gesamtergebnis auswerten</button>
+      <button class="clearbtn" onclick="clearFullExam()">Alles zurücksetzen</button>
+    </div>
+    <div id="examResult"></div>
+  </div>
+
+</section>
+
+</main>
+
+<footer>Berliner Platz 1 · Intensivtrainer · Kapitel 1 „Hallo!" — erstellt zum Selbststudium</footer>
+
+<script>
+/* ---------- TAB NAVIGATION ---------- */
+document.querySelectorAll('#tabs button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* ---------- GENERIC FILL-IN CHECKER ---------- */
+function normalize(s){
+  return s.trim().toLowerCase()
+    .replace(/\s+/g,' ')
+    .replace(/[.,!?]/g,'')
+    .replace(/ß/g,'ss');
+}
+function checkGroup(cls, sentenceMode){
+  const inputs = document.querySelectorAll('input.'+cls);
+  let correct=0, total=inputs.length;
+  inputs.forEach(inp=>{
+    const answers = inp.dataset.ans.split('/').map(a=>normalize(a));
+    const val = normalize(inp.value);
+    if(answers.includes(val) && val.length>0){
+      inp.classList.add('correct');
+      inp.classList.remove('incorrect');
+      correct++;
+    } else {
+      inp.classList.add('incorrect');
+      inp.classList.remove('correct');
+    }
+  });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){
+    fb.textContent = `${correct} von ${total} richtig.` + (correct===total ? ' 🎉 Sehr gut!' : ' Versuchen Sie es noch einmal.');
+    fb.className = 'feedback ' + (correct===total ? 'ok' : 'bad');
+  }
+}
+function revealGroup(cls){
+  const inputs = document.querySelectorAll('input.'+cls);
+  inputs.forEach(inp=>{
+    inp.value = inp.dataset.ans.split('/')[0];
+    inp.classList.remove('incorrect');
+    inp.classList.add('correct');
+  });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent = 'Ответы показаны.'; fb.className = 'feedback'; }
+}
+function clearGroup(cls){
+  const inputs = document.querySelectorAll('input.'+cls);
+  inputs.forEach(inp=>{
+    inp.value = '';
+    inp.classList.remove('correct','incorrect');
+  });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent = ''; fb.className = 'feedback'; }
+}
+
+/* ---------- Dialog ordering (2a) ---------- */
+const dialogData = {
+  dlg1: {
+    speakers: ["😊","○","😊","○","😊","○"],
+    lines: ["Tag, ich bin Timo.","Hallo, ich heiße Silvia.","Wie bitte?","Ich bin Silvia.","Woher kommst du?","Ich komme aus Spanien."],
+    correctOrder: [1,2,3,4,5,6],
+    fixedFirst: true
+  },
+  dlg2: {
+    speakers: ["😊","○","😊","○","😊"],
+    lines: ["Guten Tag, mein Name ist Schröder.","Entschuldigung, wie heißen Sie?","Hans Schröder, ich komme aus Berlin.","Guten Tag, ich bin Sarah Bernd.","Guten Tag, Frau Bernd."],
+    correctOrder: [1,2,3,4,5],
+    fixedFirst: true
+  }
+};
+const dialogDisplay = {};
+function initDialog(id){
+  const d = dialogData[id];
+  const idxs = d.lines.map((_,i)=>i);
+  const rest = idxs.slice(1);
+  for(let i=rest.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [rest[i],rest[j]] = [rest[j],rest[i]];
+  }
+  dialogDisplay[id] = [0, ...rest];
+}
+function renderDialog(id){
+  initDialog(id);
+  const d = dialogData[id];
+  const order = dialogDisplay[id];
+  const c = document.getElementById(id);
+  c.innerHTML = order.map((origIdx, pos)=>{
+    const isFixed = pos===0;
+    const opts = d.lines.map((_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');
+    return `<div class="row">
+      <span style="min-width:26px;">${d.speakers[origIdx]}</span>
+      <span style="flex:2;">${isFixed?'<i>':''}${d.lines[origIdx]}${isFixed?'</i>':''}</span>
+      <select class="order-select" data-dialog="${id}" data-orig="${origIdx}" ${isFixed?'disabled':''}>
+        <option value="">–</option>${opts}
+      </select>
+    </div>`;
+  }).join('');
+  if(order.length>0){
+    const firstSelect = c.querySelector(`select[data-orig="${order[0]}"]`);
+    if(firstSelect){ firstSelect.innerHTML = '<option value="1" selected>1</option>'; }
+  }
+}
+renderDialog('dlg1');
+renderDialog('dlg2');
+function checkOrder(id){
+  const d = dialogData[id];
+  const selects = document.querySelectorAll(`#${id} select.order-select`);
+  let correct=0, total=selects.length;
+  selects.forEach(s=>{
+    const origIdx = parseInt(s.dataset.orig);
+    const correctPos = d.correctOrder[origIdx];
+    const chosen = parseInt(s.value);
+    if(chosen === correctPos){
+      s.style.borderColor='var(--ok)'; s.style.background='#eef7f2';
+      correct++;
+    } else {
+      s.style.borderColor='var(--bad)'; s.style.background='#fbeceb';
+    }
+  });
+  const fb = document.getElementById('fb-'+id);
+  fb.textContent = `${correct} von ${total} richtig.` + (correct===total ? ' 🎉 Perfekt!' : ' Versuchen Sie es noch einmal.');
+  fb.className = 'feedback ' + (correct===total ? 'ok':'bad');
+}
+function revealOrder(id){
+  const d = dialogData[id];
+  const selects = document.querySelectorAll(`#${id} select.order-select`);
+  selects.forEach(s=>{
+    const origIdx = parseInt(s.dataset.orig);
+    s.value = d.correctOrder[origIdx];
+    s.style.borderColor='var(--ok)'; s.style.background='#eef7f2';
+  });
+  const fb = document.getElementById('fb-'+id);
+  fb.textContent = 'Ответы показаны.'; fb.className='feedback';
+}
+function clearOrder(id){
+  const selects = document.querySelectorAll(`#${id} select.order-select`);
+  selects.forEach(s=>{
+    if(!s.disabled){ s.value=''; }
+    s.style.borderColor=''; s.style.background='';
+  });
+  const fb = document.getElementById('fb-'+id);
+  fb.textContent=''; fb.className='feedback';
+}
+
+/* ---------- 3a Multiple choice ---------- */
+const q3aData = [
+  {q:"1. Er spricht ___", options:["England","Mehmet","Schwedisch"], correct:"Schwedisch"},
+  {q:"2. Das ist ___", options:["Familienname","Adam Svoboda","aus Polen"], correct:"aus Polen"},
+  {q:"3. Ich komme ___", options:["Estland","aus der Türkei","in Berlin"], correct:"aus der Türkei"},
+  {q:"4. Sie heißt ___", options:["Teilnehmer","Olga","Frau"], correct:"Olga"},
+  {q:"5. Die Stadt liegt ___", options:["Türkei","in Korea","Arabisch"], correct:"in Korea"},
+  {q:"6. Sie spricht ___", options:["Bratislava","Französisch","Russland"], correct:"Französisch"},
+  {q:"7. Er kommt ___", options:["aus Tunis","Frankreich","Türkei"], correct:"aus Tunis"}
+];
+function renderMC(containerId, data){
+  const c = document.getElementById(containerId);
+  c.innerHTML = data.map((item,i)=>{
+    const opts = item.options.map(o=>`<option value="${o}">${o}</option>`).join('');
+    return `<div class="row"><span>${item.q}</span>
+      <select data-idx="${i}" data-correct="${item.correct}">
+        <option value="">— wählen —</option>${opts}
+      </select></div>`;
+  }).join('');
+}
+renderMC('q3a', q3aData);
+function checkMC(containerId){
+  const selects = document.querySelectorAll('#'+containerId+' select');
+  let correct=0;
+  selects.forEach(s=>{
+    if(s.value === s.dataset.correct){
+      s.style.borderColor='var(--ok)'; s.style.background='#eef7f2';
+      correct++;
+    } else {
+      s.style.borderColor='var(--bad)'; s.style.background='#fbeceb';
+    }
+  });
+  const fb = document.getElementById('fb-'+containerId);
+  fb.textContent = `${correct} von ${selects.length} richtig.` + (correct===selects.length ? ' 🎉' : '');
+  fb.className = 'feedback ' + (correct===selects.length ? 'ok':'bad');
+}
+function revealMC(containerId){
+  const selects = document.querySelectorAll('#'+containerId+' select');
+  selects.forEach(s=>{
+    s.value = s.dataset.correct;
+    s.style.borderColor='var(--ok)'; s.style.background='#eef7f2';
+  });
+  const fb = document.getElementById('fb-'+containerId);
+  if(fb){ fb.textContent = 'Ответы показаны.'; fb.className='feedback'; }
+}
+function clearMC(containerId){
+  const selects = document.querySelectorAll('#'+containerId+' select');
+  selects.forEach(s=>{
+    s.value = '';
+    s.style.borderColor=''; s.style.background='';
+  });
+  const fb = document.getElementById('fb-'+containerId);
+  if(fb){ fb.textContent = ''; fb.className='feedback'; }
+}
+
+/* ---------- Exercise 4: word sort ---------- */
+const sortWords = {
+  "BUCHSTABIEREN":"Verben","VORNAME":"Nomen","WIE":"Andere","ER":"Andere","LAND":"Nomen",
+  "KOMMEN":"Verben","VORSTELLEN":"Verben","NEIN":"Andere","MACHEN":"Verben","NAME":"Nomen",
+  "SATZ":"Nomen","SCHREIBEN":"Verben","SPRECHEN":"Verben","SIE":"Andere","WORT":"Nomen",
+  "ZAHL":"Nomen","BITTE":"Andere","STADT":"Nomen","ENTSCHULDIGUNG":"Nomen","WOHER":"Andere",
+  "WOHNEN":"Verben","RUSSISCH":"Andere","LEHRER":"Nomen","WIR":"Andere","LIEGEN":"Verben",
+  "HEISSEN":"Verben","ICH":"Andere","WO":"Andere"
+};
+function renderSort(){
+  const words = Object.keys(sortWords);
+  const c = document.getElementById('sortGame');
+  c.innerHTML = words.map(w=>{
+    return `<div class="row"><span style="min-width:160px;font-weight:bold;">${w}</span>
+      <select data-word="${w}">
+        <option value="">— wählen —</option>
+        <option value="Nomen">Nomen</option>
+        <option value="Verben">Verben</option>
+        <option value="Andere">Andere Wörter</option>
+      </select></div>`;
+  }).join('');
+}
+renderSort();
+function checkSort(){
+  const selects = document.querySelectorAll('#sortGame select');
+  let correct=0;
+  selects.forEach(s=>{
+    const word = s.dataset.word;
+    if(s.value === sortWords[word]){
+      s.style.borderColor='var(--ok)'; s.style.background='#eef7f2';
+      correct++;
+    } else {
+      s.style.borderColor='var(--bad)'; s.style.background='#fbeceb';
+    }
+  });
+  const fb = document.getElementById('fb-sort');
+  fb.textContent = `${correct} von ${selects.length} richtig.` + (correct===selects.length ? ' 🎉 Perfekt!' : '');
+  fb.className = 'feedback ' + (correct===selects.length ? 'ok':'bad');
+}
+function revealSort(){
+  const selects = document.querySelectorAll('#sortGame select');
+  selects.forEach(s=>{
+    s.value = sortWords[s.dataset.word];
+    s.style.borderColor='var(--ok)'; s.style.background='#eef7f2';
+  });
+  const fb = document.getElementById('fb-sort');
+  fb.textContent = 'Ответы показаны.'; fb.className='feedback';
+}
+function clearSort(){
+  const selects = document.querySelectorAll('#sortGame select');
+  selects.forEach(s=>{
+    s.value = '';
+    s.style.borderColor=''; s.style.background='';
+  });
+  const fb = document.getElementById('fb-sort');
+  fb.textContent = ''; fb.className='feedback';
+}
+
+/* ---------- FLASHCARDS DATA (Die Wortschatz-Hitparade) ---------- */
+const vocab = [
+  {cat:"Nomen", de:"der Alltag", ru:"повседневная жизнь, будни"},
+  {cat:"Nomen", de:"das Alphabet, -e", ru:"алфавит"},
+  {cat:"Nomen", de:"die Antwort, -en", ru:"ответ"},
+  {cat:"Nomen", de:"das Beispiel, -e", ru:"пример"},
+  {cat:"Nomen", de:"der Beruf, -e", ru:"профессия"},
+  {cat:"Nomen", de:"das Deutsch", ru:"немецкий язык"},
+  {cat:"Nomen", de:"die Entschuldigung, -en", ru:"извинение"},
+  {cat:"Nomen", de:"der Familienname, -en", ru:"фамилия"},
+  {cat:"Nomen", de:"die Frage, -en", ru:"вопрос"},
+  {cat:"Nomen", de:"die Frau, -en", ru:"женщина; госпожа"},
+  {cat:"Nomen", de:"der Herr, -en", ru:"господин, мужчина"},
+  {cat:"Nomen", de:"der Kurs, -e", ru:"курс"},
+  {cat:"Nomen", de:"der Kursleiter, –", ru:"руководитель курса (муж.)"},
+  {cat:"Nomen", de:"die Kursleiterin, -nen", ru:"руководитель курса (жен.)"},
+  {cat:"Nomen", de:"das Land, ¨-er", ru:"страна"},
+  {cat:"Nomen", de:"die Leute (Pl.)", ru:"люди"},
+  {cat:"Nomen", de:"der Nachbar, -n", ru:"сосед"},
+  {cat:"Nomen", de:"die Nachbarin, -nen", ru:"соседка"},
+  {cat:"Nomen", de:"der Name, -n", ru:"имя"},
+  {cat:"Nomen", de:"die Person, -en", ru:"человек, персона"},
+  {cat:"Nomen", de:"der Satz, ¨-e", ru:"предложение"},
+  {cat:"Nomen", de:"die Sprache, -n", ru:"язык"},
+  {cat:"Nomen", de:"die Stadt, ¨-e", ru:"город"},
+  {cat:"Nomen", de:"der Vorname, -n", ru:"имя (личное)"},
+
+  {cat:"Verben", de:"antworten", ru:"отвечать"},
+  {cat:"Verben", de:"begrüßen", ru:"приветствовать"},
+  {cat:"Verben", de:"buchstabieren", ru:"произносить по буквам"},
+  {cat:"Verben", de:"fragen", ru:"спрашивать"},
+  {cat:"Verben", de:"haben", ru:"иметь"},
+  {cat:"Verben", de:"heißen", ru:"зваться"},
+  {cat:"Verben", de:"hören", ru:"слышать, слушать"},
+  {cat:"Verben", de:"kommen", ru:"приходить, приезжать (откуда-то)"},
+  {cat:"Verben", de:"lernen", ru:"учить, изучать"},
+  {cat:"Verben", de:"lesen", ru:"читать"},
+  {cat:"Verben", de:"machen", ru:"делать"},
+  {cat:"Verben", de:"schreiben", ru:"писать"},
+  {cat:"Verben", de:"sein", ru:"быть"},
+  {cat:"Verben", de:"sprechen", ru:"говорить"},
+  {cat:"Verben", de:"(sich) verabschieden", ru:"прощаться"},
+  {cat:"Verben", de:"verstehen", ru:"понимать"},
+  {cat:"Verben", de:"(sich) vorstellen", ru:"представляться"},
+  {cat:"Verben", de:"wohnen", ru:"жить (проживать)"},
+
+  {cat:"Andere Wörter", de:"Auf Wiedersehen", ru:"до свидания"},
+  {cat:"Andere Wörter", de:"bitte", ru:"пожалуйста"},
+  {cat:"Andere Wörter", de:"Hallo!", ru:"привет!"},
+  {cat:"Andere Wörter", de:"man", ru:"безличное местоимение (кто-то, человек)"},
+  {cat:"Andere Wörter", de:"nein", ru:"нет"},
+  {cat:"Andere Wörter", de:"oder", ru:"или"},
+  {cat:"Andere Wörter", de:"aus", ru:"из"},
+  {cat:"Andere Wörter", de:"in", ru:"в"},
+  {cat:"Andere Wörter", de:"und", ru:"и"},
+  {cat:"Andere Wörter", de:"was", ru:"что"},
+  {cat:"Andere Wörter", de:"wer", ru:"кто"},
+  {cat:"Andere Wörter", de:"wie", ru:"как"},
+  {cat:"Andere Wörter", de:"wo", ru:"где"},
+  {cat:"Andere Wörter", de:"woher", ru:"откуда"}
+];
+
+/* ---------- SRS (simple 3-level spaced repetition) ---------- */
+const SRS_KEY = 'kapitel1-srs-v1';
+const SRS_INTERVALS = [0, 1, 3, 7, 14, 30];
+
+function loadSRS(){
+  try{ return JSON.parse(localStorage.getItem(SRS_KEY) || '{}'); }catch(e){ return {}; }
+}
+function saveSRS(data){
+  localStorage.setItem(SRS_KEY, JSON.stringify(data));
+}
+let srsData = loadSRS();
+
+function getCardState(de){
+  return srsData[de] || {level:0, due: todayStr(), seen:0};
+}
+function todayStr(){
+  return new Date().toISOString().slice(0,10);
+}
+function addDays(dateStr, days){
+  const d = new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate()+days);
+  return d.toISOString().slice(0,10);
+}
+function isDue(de){
+  const st = getCardState(de);
+  return st.due <= todayStr();
+}
+function statusLabel(de){
+  const st = getCardState(de);
+  if(st.seen===0) return {text:'🆕 neu', cls:'srs-new'};
+  if(st.level>=3) return {text:'✅ gelernt', cls:'srs-learned'};
+  return {text:'🔄 wiederholen', cls:'srs-learning'};
+}
+
+let currentDeck = [...vocab];
+let cardIndex = 0;
+let currentMode = 'all';
+let currentCat = 'all';
+let currentDirection = 'de-ru';
+
+function applyDeckFilter(){
+  let deck = currentCat==='all' ? [...vocab] : vocab.filter(v=>v.cat===currentCat);
+  if(currentMode==='due'){
+    deck = deck.filter(v=>isDue(v.de));
+  }
+  currentDeck = deck;
+  cardIndex = 0;
+}
+
+function renderCard(){
+  if(currentDeck.length===0){
+    document.getElementById('fc-word').textContent="—";
+    document.getElementById('fc-translation').textContent = currentMode==='due' ? "Für heute ist nichts fällig 🎉" : "Keine Karten in dieser Kategorie";
+    document.getElementById('fc-count').textContent="0 / 0";
+    document.getElementById('fc-status-front').textContent="";
+    updateProgress();
+    return;
+  }
+  const item = currentDeck[cardIndex];
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('fc-cat-front').textContent = item.cat;
+  document.getElementById('fc-cat-back').textContent = item.cat;
+  const frontText = currentDirection==='de-ru' ? item.de : item.ru;
+  const backText = currentDirection==='de-ru' ? item.ru : item.de;
+  document.getElementById('fc-word').textContent = frontText;
+  document.getElementById('fc-translation').textContent = backText;
+  document.getElementById('fc-count').textContent = `${cardIndex+1} / ${currentDeck.length}`;
+  const st = statusLabel(item.de);
+  document.getElementById('fc-status-front').innerHTML = `<span class="srs-pill ${st.cls}">${st.text}</span>`;
+  updateProgress();
+}
+function flipCard(){
+  document.getElementById('flashcard').classList.toggle('flipped');
+}
+function speakWord(evt){
+  evt.stopPropagation();
+  if(currentDeck.length===0) return;
+  const word = currentDeck[cardIndex].de.replace(/,.*$/,'').replace(/^\(sich\)\s*/,'').trim();
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.lang = 'de-DE';
+    utter.rate = 0.9;
+    window.speechSynthesis.speak(utter);
+  }
+}
+function nextCard(){
+  if(currentDeck.length===0) return;
+  cardIndex = (cardIndex+1) % currentDeck.length;
+  renderCard();
+}
+function prevCard(){
+  if(currentDeck.length===0) return;
+  cardIndex = (cardIndex-1+currentDeck.length) % currentDeck.length;
+  renderCard();
+}
+function markCard(result){
+  if(currentDeck.length===0) return;
+  const de = currentDeck[cardIndex].de;
+  const st = getCardState(de);
+  let newLevel;
+  if(result==='again'){
+    newLevel = 0;
+  } else if(result==='hard'){
+    newLevel = Math.max(1, st.level);
+  } else {
+    newLevel = Math.min(SRS_INTERVALS.length-1, st.level+1);
+  }
+  const days = SRS_INTERVALS[newLevel];
+  srsData[de] = { level:newLevel, due: addDays(todayStr(), days), seen:(st.seen||0)+1 };
+  saveSRS(srsData);
+
+  if(currentMode==='due'){
+    currentDeck.splice(cardIndex,1);
+    if(cardIndex>=currentDeck.length) cardIndex=0;
+    renderCard();
+  } else {
+    updateProgress();
+    nextCard();
+  }
+}
+function updateProgress(){
+  const total = currentDeck.length || 1;
+  const learnedInDeck = currentDeck.filter(c=>{
+    const st = getCardState(c.de);
+    return st.level>=3;
+  }).length;
+  document.getElementById('fc-progress').style.width = (learnedInDeck/total*100)+'%';
+  const dueCount = (currentCat==='all'?[...vocab]:vocab.filter(v=>v.cat===currentCat)).filter(v=>isDue(v.de)).length;
+  document.getElementById('fc-summary').textContent = `${learnedInDeck} von ${total} Karten gelernt · ${dueCount} heute fällig.`;
+}
+function shuffleCards(){
+  for(let i=currentDeck.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [currentDeck[i],currentDeck[j]] = [currentDeck[j],currentDeck[i]];
+  }
+  cardIndex=0;
+  renderCard();
+}
+function resetProgress(){
+  if(!confirm('Den gesamten Lernfortschritt (SRS) zurücksetzen?')) return;
+  srsData = {};
+  saveSRS(srsData);
+  applyDeckFilter();
+  renderCard();
+}
+document.querySelectorAll('#fc-filters button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#fc-filters button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = btn.dataset.cat;
+    applyDeckFilter();
+    renderCard();
+  });
+});
+document.querySelectorAll('#fc-mode button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#fc-mode button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = btn.dataset.mode;
+    applyDeckFilter();
+    renderCard();
+  });
+});
+document.querySelectorAll('#fc-direction button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#fc-direction button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentDirection = btn.dataset.dir;
+    renderCard();
+  });
+});
+applyDeckFilter();
+renderCard();
+
+/* ---------- NOTES (Aufgaben 5-8) with localStorage autosave ---------- */
+const NOTES_KEY = 'kapitel1-notes-v1';
+function loadNotes(){
+  let data = {};
+  try{ data = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}'); }catch(e){ data = {}; }
+  document.querySelectorAll('[data-note]').forEach(el=>{
+    const key = el.dataset.note;
+    if(data[key]) el.value = data[key];
+    el.addEventListener('input', ()=>{
+      const current = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+      current[key] = el.value;
+      localStorage.setItem(NOTES_KEY, JSON.stringify(current));
+    });
+  });
+}
+function clearAllNotes(){
+  if(!confirm('Alle Notizen (Aufgaben 5–8) löschen?')) return;
+  localStorage.removeItem(NOTES_KEY);
+  document.querySelectorAll('[data-note]').forEach(el=>{ el.value=''; });
+}
+loadNotes();
+
+/* ================= EXAM-STYLE FINAL TEST ================= */
+
+/* ---- Teil 1: Wortschatz & Grammatik (10 Punkte) ---- */
+const teil1Data = [
+  {type:"text", q:"Ich ___ Olga. (heißen)", ans:["heiße"]},
+  {type:"text", q:"Woher ___ du? (kommen)", ans:["kommst"]},
+  {type:"text", q:"Ich komme ___ Spanien.", ans:["aus"]},
+  {type:"text", q:"Die Stadt ___ in Korea. (liegen)", ans:["liegt"]},
+  {type:"mc", q:"Er spricht Schwedisch. Was ist richtig?", options:["England","Mehmet","Schwedisch"], ans:"Schwedisch"},
+  {type:"text", q:"Land: Türkei → Sprache:", ans:["türkisch","Türkisch"]},
+  {type:"mc", q:"«Auf Wiedersehen» bedeutet auf Russisch:", options:["привет","до свидания","пожалуйста"], ans:"до свидания"},
+  {type:"mc", q:"«der Vorname» bedeutet:", options:["фамилия","имя (личное)","город"], ans:"имя (личное)"},
+  {type:"text", q:"Wie ___ Sie bitte? (heißen)", ans:["heißen"]},
+  {type:"transform", q:"Schreiben Sie in der Sie-Form: «Woher kommst du?»", ans:["Woher kommen Sie?"]}
+];
+function renderTeil1(){
+  const c = document.getElementById('teil1');
+  c.innerHTML = teil1Data.map((item,i)=>{
+    if(item.type==='mc'){
+      const opts = item.options.map(o=>`<option value="${o}">${o}</option>`).join('');
+      return `<div class="row"><span class="label">${i+1}.</span> ${item.q}
+        <select class="t1-field" data-idx="${i}"><option value="">— wählen —</option>${opts}</select></div>`;
+    }
+    return `<div class="row"><span class="label">${i+1}.</span> ${item.q}
+      <input type="text" class="t1-field wide" data-idx="${i}"></div>`;
+  }).join('');
+}
+renderTeil1();
+function scoreTeil1(){
+  const fields = document.querySelectorAll('.t1-field');
+  let correct=0;
+  fields.forEach(f=>{
+    const idx = f.dataset.idx;
+    const item = teil1Data[idx];
+    const ans = item.ans.map(a=>normalize(a));
+    const isCorrect = ans.includes(normalize(f.value));
+    if(isCorrect){
+      f.style.borderColor='var(--ok)'; f.style.background='#eef7f2';
+      correct++;
+    } else {
+      f.style.borderColor='var(--bad)'; f.style.background='#fbeceb';
+    }
+  });
+  document.getElementById('t1-points').textContent = `${correct} / ${teil1Data.length} Punkte`;
+  return {correct, total: teil1Data.length};
+}
+function revealTeil1(){
+  document.querySelectorAll('.t1-field').forEach(f=>{
+    const item = teil1Data[f.dataset.idx];
+    f.value = item.ans[0];
+    f.style.borderColor='var(--ok)'; f.style.background='#eef7f2';
+  });
+  document.getElementById('t1-points').textContent = `${teil1Data.length} / ${teil1Data.length} Punkte (показано)`;
+}
+function clearTeil1(){
+  document.querySelectorAll('.t1-field').forEach(f=>{
+    f.value=''; f.style.borderColor=''; f.style.background='';
+  });
+  document.getElementById('t1-points').textContent = `0 / ${teil1Data.length} Punkte`;
+}
+
+/* ---- Teil 2: Leseverstehen (richtig/falsch, 4 Punkte) ---- */
+const teil2Data = [
+  {q:"Elena kommt aus Moskau.", ans:true},
+  {q:"Elena spricht nur Russisch.", ans:false},
+  {q:"Elena wohnt jetzt in Berlin.", ans:true},
+  {q:"Die Kursleiterin heißt Elena.", ans:false}
+];
+function renderTeil2(){
+  const c = document.getElementById('teil2');
+  c.innerHTML = teil2Data.map((item,i)=>{
+    return `<div class="rf-row">
+      <span class="rf-text">${i+1}. ${item.q}</span>
+      <div class="rf-choice" data-idx="${i}">
+        <button type="button" onclick="selectRF(this,'teil2',${i},true)">R</button>
+        <button type="button" onclick="selectRF(this,'teil2',${i},false)">F</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+renderTeil2();
+const rfAnswers = { teil2:{}, teil3:{} };
+function selectRF(btn, teilId, idx, value){
+  rfAnswers[teilId][idx] = value;
+  const group = btn.parentElement;
+  group.querySelectorAll('button').forEach(b=>b.classList.remove('selected-r','selected-f'));
+  btn.classList.add(value ? 'selected-r' : 'selected-f');
+}
+function scoreTeil2(){
+  let correct=0;
+  teil2Data.forEach((item,i)=>{
+    const chosen = rfAnswers.teil2[i];
+    const group = document.querySelector(`#teil2 .rf-choice[data-idx="${i}"]`);
+    const btns = group.querySelectorAll('button');
+    if(chosen === item.ans){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--ok)'; });
+      correct++;
+    } else if(chosen !== undefined){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--bad)'; });
+    }
+  });
+  document.getElementById('t2-points').textContent = `${correct} / ${teil2Data.length} Punkte`;
+  return {correct, total: teil2Data.length};
+}
+function revealTeil2(){
+  teil2Data.forEach((item,i)=>{
+    rfAnswers.teil2[i] = item.ans;
+    const group = document.querySelector(`#teil2 .rf-choice[data-idx="${i}"]`);
+    const btns = group.querySelectorAll('button');
+    btns.forEach(b=>b.classList.remove('selected-r','selected-f','style'));
+    btns[item.ans?0:1].classList.add(item.ans?'selected-r':'selected-f');
+  });
+  document.getElementById('t2-points').textContent = `${teil2Data.length} / ${teil2Data.length} Punkte (показано)`;
+}
+function clearTeil2(){
+  rfAnswers.teil2 = {};
+  document.querySelectorAll('#teil2 .rf-choice button').forEach(b=>{ b.classList.remove('selected-r','selected-f'); b.style.outline=''; });
+  document.getElementById('t2-points').textContent = `0 / ${teil2Data.length} Punkte`;
+}
+
+/* ---- Teil 3: Hörverstehen-style (4 Punkte) ---- */
+const hoertext = "Guten Tag! Ich heiße Marco und ich komme aus Italien, aus Rom. Ich wohne jetzt in München und lerne Deutsch. Ich spreche Italienisch und Englisch. Und du, wie heißt du und woher kommst du?";
+function playHoertext(){
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(hoertext);
+    utter.lang = 'de-DE';
+    utter.rate = 0.85;
+    window.speechSynthesis.speak(utter);
+  } else {
+    alert('Ihr Browser unterstützt leider keine Sprachausgabe.');
+  }
+}
+const teil3Data = [
+  {q:"Marco kommt aus Italien.", ans:true},
+  {q:"Marco wohnt in Rom.", ans:false},
+  {q:"Marco lernt Deutsch.", ans:true},
+  {q:"Marco spricht nur Italienisch.", ans:false}
+];
+function renderTeil3(){
+  const c = document.getElementById('teil3');
+  c.innerHTML = teil3Data.map((item,i)=>{
+    return `<div class="rf-row">
+      <span class="rf-text">${i+1}. ${item.q}</span>
+      <div class="rf-choice" data-idx="${i}">
+        <button type="button" onclick="selectRF(this,'teil3',${i},true)">R</button>
+        <button type="button" onclick="selectRF(this,'teil3',${i},false)">F</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+renderTeil3();
+function scoreTeil3(){
+  let correct=0;
+  teil3Data.forEach((item,i)=>{
+    const chosen = rfAnswers.teil3[i];
+    const group = document.querySelector(`#teil3 .rf-choice[data-idx="${i}"]`);
+    const btns = group.querySelectorAll('button');
+    if(chosen === item.ans){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--ok)'; });
+      correct++;
+    } else if(chosen !== undefined){
+      btns.forEach(b=>{ if(b.classList.contains('selected-r')||b.classList.contains('selected-f')) b.style.outline='2px solid var(--bad)'; });
+    }
+  });
+  document.getElementById('t3-points').textContent = `${correct} / ${teil3Data.length} Punkte`;
+  return {correct, total: teil3Data.length};
+}
+function revealTeil3(){
+  teil3Data.forEach((item,i)=>{
+    rfAnswers.teil3[i] = item.ans;
+    const group = document.querySelector(`#teil3 .rf-choice[data-idx="${i}"]`);
+    const btns = group.querySelectorAll('button');
+    btns.forEach(b=>b.classList.remove('selected-r','selected-f'));
+    btns[item.ans?0:1].classList.add(item.ans?'selected-r':'selected-f');
+  });
+  document.getElementById('t3-points').textContent = `${teil3Data.length} / ${teil3Data.length} Punkte (показано)`;
+}
+function clearTeil3(){
+  rfAnswers.teil3 = {};
+  document.querySelectorAll('#teil3 .rf-choice button').forEach(b=>{ b.classList.remove('selected-r','selected-f'); b.style.outline=''; });
+  document.getElementById('t3-points').textContent = `0 / ${teil3Data.length} Punkte`;
+}
+
+/* ---- Full exam scoring ---- */
+function checkFullExam(){
+  const r1 = scoreTeil1();
+  const r2 = scoreTeil2();
+  const r3 = scoreTeil3();
+  const totalCorrect = r1.correct + r2.correct + r3.correct;
+  const totalPoints = r1.total + r2.total + r3.total;
+  const pct = Math.round(totalCorrect/totalPoints*100);
+  const passed = pct >= 60;
+
+  const result = document.getElementById('examResult');
+  result.innerHTML = `
+    <div class="exam-final ${passed?'pass':'fail'}">
+      <div class="big">${pct}%</div>
+      <div class="verdict">${passed ? '✅ BESTANDEN' : '❌ NICHT BESTANDEN'}</div>
+      <div class="exam-breakdown">
+        <div><span>Teil 1 · Wortschatz &amp; Grammatik</span><span>${r1.correct} / ${r1.total}</span></div>
+        <div><span>Teil 2 · Leseverstehen</span><span>${r2.correct} / ${r2.total}</span></div>
+        <div><span>Teil 3 · Hörverstehen</span><span>${r3.correct} / ${r3.total}</span></div>
+        <div><span><b>Gesamt</b></span><span><b>${totalCorrect} / ${totalPoints}</b></span></div>
+      </div>
+      <p style="margin-top:14px;font-size:.85rem;color:var(--muted);">Teil 4 (Schreiben) wird nicht automatisch bewertet — bitte selbst mit Aufgabe 3d vergleichen. Bestehensgrenze: 60%.</p>
+    </div>
+  `;
+  result.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function clearFullExam(){
+  clearTeil1();
+  clearTeil2();
+  clearTeil3();
+  document.getElementById('examResult').innerHTML = '';
+}
+</script>
+</body>
+</html>

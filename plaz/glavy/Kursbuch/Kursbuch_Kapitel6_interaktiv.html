@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kursbuch Kapitel 6 — Familienleben — Interaktive Übungen</title>
+<style>
+  :root{--bg:#f6f4ef;--card:#ffffff;--ink:#2b2a28;--muted:#767268;--accent:#d98c1f;--accent2:#1f6f5c;--line:#e3ddd0;--ok:#1f6f5c;--bad:#c0392b;--chip:#efe9db;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Georgia','Iowan Old Style',serif;background:var(--bg);color:var(--ink);line-height:1.5;}
+  header{background:var(--ink);color:#fdfaf3;padding:28px 20px 22px;text-align:center;}
+  header h1{margin:0 0 4px;font-size:2rem;letter-spacing:.5px;}
+  header p{margin:0;color:#cfc8b8;font-size:.95rem;}
+  nav{position:sticky;top:0;z-index:50;background:#fffdf8;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;justify-content:center;}
+  nav button{font-family:inherit;border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:7px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;}
+  nav button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  main{max-width:840px;margin:0 auto;padding:24px 16px 80px;}
+  section{display:none;}
+  section.active{display:block;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 22px 24px;margin-bottom:22px;box-shadow:0 2px 6px rgba(0,0,0,.04);}
+  .card h2{margin-top:0;font-size:1.3rem;color:var(--accent);border-bottom:2px dotted var(--line);padding-bottom:8px;}
+  .instr{color:var(--muted);font-style:italic;margin-bottom:14px;font-size:.95rem;}
+  .row{display:flex;align-items:center;gap:10px;margin:10px 0;flex-wrap:wrap;}
+  .row .label{min-width:26px;color:var(--muted);font-size:.9rem;}
+  input[type=text]{font-family:inherit;font-size:1rem;padding:7px 10px;border:1.5px solid var(--line);border-radius:8px;background:#fffef9;color:var(--ink);min-width:120px;flex:1;}
+  input[type=text].wide{min-width:220px;}
+  input[type=text].narrow{min-width:60px;flex:none;width:80px;}
+  input[type=text]:focus{outline:none;border-color:var(--accent2);}
+  input.correct{border-color:var(--ok);background:#eef7f2;}
+  input.incorrect{border-color:var(--bad);background:#fbeceb;}
+  .btn-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .checkbtn, .revealbtn, .clearbtn{font-family:inherit;border:none;padding:9px 18px;border-radius:10px;cursor:pointer;font-size:.92rem;font-weight:bold;}
+  .checkbtn{background:var(--ink);color:#fdfaf3;}
+  .revealbtn, .clearbtn{background:var(--chip);color:var(--ink);}
+  .checkbtn:hover{opacity:.88;}
+  .revealbtn:hover, .clearbtn:hover{background:#e4dcc7;}
+  .feedback{margin-top:10px;font-size:.9rem;font-weight:bold;}
+  .feedback.ok{color:var(--ok);}
+  .feedback.bad{color:var(--bad);}
+  audio{width:100%;margin-bottom:12px;}
+  .abc-options{display:flex;gap:10px;flex-wrap:wrap;}
+  .abc-btn{font-family:inherit;border:1.5px solid var(--line);background:#fff;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:.95rem;flex:1;min-width:110px;text-align:center;}
+  .abc-btn.selected{background:var(--accent2);color:#fff;border-color:var(--accent2);}
+  .dialog-box{background:#fbf9f3;border-left:4px solid var(--accent2);padding:14px 16px;border-radius:6px;margin:10px 0 16px;}
+  .word-bank{background:var(--chip);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.92rem;color:var(--muted);}
+  .word-bank b{color:var(--ink);}
+  .srs-card{background:#fbf9f3;border:1px solid var(--line);border-radius:14px;padding:30px 24px;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;margin-bottom:16px;}
+  .srs-controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .srs-controls button{font-family:inherit;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:bold;color:#fff;}
+  .srs-meta{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:10px;}
+  .srs-toggle{display:flex;justify-content:center;gap:8px;margin-bottom:16px;}
+  .srs-toggle button{font-family:inherit;border:1px solid var(--line);background:var(--chip);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;}
+  .srs-toggle button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .spk-btn{border:none;background:var(--accent2);color:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:1rem;margin-left:8px;}
+  .notiz-box textarea{width:100%;font-family:inherit;font-size:.95rem;padding:10px;border:1.5px solid var(--line);border-radius:8px;min-height:90px;background:#fffef9;color:var(--ink);resize:vertical;}
+  .notiz-saved{font-size:.8rem;color:var(--muted);margin-top:6px;font-style:italic;}
+  table.vtable{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem;}
+  table.vtable th, table.vtable td{border:1px solid var(--line);padding:8px;text-align:left;}
+  table.vtable th{background:var(--chip);}
+  table.vtable input[type=text]{min-width:70px;padding:5px 7px;font-size:.9rem;}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px;}
+  .grammar-box{background:#eef7f2;border:1.5px solid var(--ok);border-radius:10px;padding:14px 16px;margin:10px 0;font-size:.9rem;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Kursbuch — Kapitel 6</h1>
+  <p>Berliner Platz 1 · Familienleben · Interaktive Übungen mit echtem Audio</p>
+</header>
+
+<nav id="tabs">
+  <button data-tab="uebungen" class="active">📝 Übungen</button>
+  <button data-tab="grammatik">📖 Grammatik & Aussprache</button>
+  <button data-tab="vokabeln">🃏 Vokabeln</button>
+  <button data-tab="notizen">✏️ Notizen</button>
+</nav>
+
+<main>
+
+<!-- ================= ÜBUNGEN ================= -->
+<section id="uebungen" class="active">
+
+  <div class="card">
+    <h2>1a Familienfotos — Hören Sie zu. Zu welchen Fotos passen die Hörtexte 1-4?</h2>
+    <audio controls src="audio_kb6/track1_49.mp3"></audio>
+    <div class="row"><span class="label">Hörtext 1</span>(Geburtstagslied für Oma) → <input type="text" class="fill wide" data-group="ex1a" data-ans="Lore Bertuch"></div>
+    <div class="row"><span class="label">Hörtext 2</span>(Kind fragt nach Mama, „Gute Nacht") → <input type="text" class="fill wide" data-group="ex1a" data-ans="Regine Kant"></div>
+    <div class="row"><span class="label">Hörtext 3</span>(Sohn zu Besuch, Restaurant) → <input type="text" class="fill wide" data-group="ex1a" data-ans="Lore Bertuch"></div>
+    <div class="row"><span class="label">Hörtext 4</span> (Hausaufgaben, Wochenende bei Papa) → <input type="text" class="fill wide" data-group="ex1a" data-ans="Regine Kant"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex1a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex1a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex1a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex1a"></div>
+  </div>
+
+  <div class="card">
+    <h2>1b Thema „Familie" — Sammeln Sie Wörter</h2>
+    <div class="word-bank">der Vater – die Mutter • der Sohn – die Tochter • alleinstehend • verheiratet • die Familie • die Geschwister • die Großeltern</div>
+    <div class="notiz-box"><textarea id="notiz1b" placeholder="Sammeln Sie weitere Familienwörter..."></textarea><div class="notiz-saved" id="saved1b"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>2a Wie groß ist Ihre Familie? — Hören Sie und ordnen Sie die Antworten den Fragen zu</h2>
+    <audio controls src="audio_kb6/track1_50.mp3"></audio>
+    <div class="row"><span class="label">1.</span>Bist du / Sind Sie verheiratet? → <input type="text" class="fill narrow" data-group="ex2a" data-ans="b"></div>
+    <div class="row"><span class="label">2.</span>Haben Sie / Hast du Kinder? → <input type="text" class="fill narrow" data-group="ex2a" data-ans="c"></div>
+    <div class="row"><span class="label">3.</span>Wie alt sind deine/Ihre Kinder? → <input type="text" class="fill narrow" data-group="ex2a" data-ans="d"></div>
+    <div class="row"><span class="label">4.</span>Wie groß ist deine/Ihre Familie? → <input type="text" class="fill narrow" data-group="ex2a" data-ans="f"></div>
+    <div class="row"><span class="label">5.</span>Hast du / Haben Sie Geschwister? → <input type="text" class="fill narrow" data-group="ex2a" data-ans="e"></div>
+    <div class="row"><span class="label">6.</span>Wohnen deine/Ihre Eltern auch hier? → <input type="text" class="fill narrow" data-group="ex2a" data-ans="g"></div>
+    <div class="row"><span class="label">7.</span>Leben dein/Ihr Großvater und deine/Ihre Großmutter noch? → <input type="text" class="fill narrow" data-group="ex2a" data-ans="a"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex2a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex2a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex2a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex2a"></div>
+    <div class="dialog-box" style="margin-top:14px;">
+      a) Meine Großmutter lebt noch. Mein Großvater ist schon lange tot.<br>
+      b) Nein, ich bin ledig, aber ich heirate bald. In zwei Wochen ist meine Hochzeit!<br>
+      c) Ja, zwei.<br>
+      d) Kira ist 12 und Samira ist fast 6.<br>
+      e) Ich habe einen Bruder in Kenia und eine Schwester in Berlin.<br>
+      f) Meine Familie hier ist klein. Aber meine Familie in der Türkei ist groß. 40 Verwandte.<br>
+      g) Nein, meine Eltern leben in Bochum.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2c Ergänzen Sie mein oder meine und die Verwandtschaftsbezeichnungen</h2>
+    <div class="row"><span class="label">1.</span><input type="text" class="fill narrow" data-group="ex2c" data-ans="Mein"> Vater und <input type="text" class="fill narrow" data-group="ex2c" data-ans="meine"> Mutter sind <input type="text" class="fill narrow" data-group="ex2c" data-ans="meine"> Eltern.</div>
+    <div class="row"><span class="label">2.</span><input type="text" class="fill narrow" data-group="ex2c" data-ans="Mein"> Sohn und <input type="text" class="fill narrow" data-group="ex2c" data-ans="meine"> Tochter sind meine <input type="text" class="fill narrow" data-group="ex2c" data-ans="Kinder"></div>
+    <div class="row"><span class="label">3.</span>Mein <input type="text" class="fill narrow" data-group="ex2c" data-ans="Bruder"> und <input type="text" class="fill narrow" data-group="ex2c" data-ans="meine"> <input type="text" class="fill narrow" data-group="ex2c" data-ans="Schwester"> sind <input type="text" class="fill narrow" data-group="ex2c" data-ans="meine"> Geschwister.</div>
+    <div class="row"><span class="label">4.</span><input type="text" class="fill narrow" data-group="ex2c" data-ans="Mein"> Großvater und meine Groß<input type="text" class="fill narrow" data-group="ex2c" data-ans="mutter"> sind <input type="text" class="fill narrow" data-group="ex2c" data-ans="meine"> Groß<input type="text" class="fill narrow" data-group="ex2c" data-ans="eltern"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex2c')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex2c')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex2c')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex2c"></div>
+  </div>
+
+  <div class="card">
+    <h2>3b Ersetzen Sie die markierten Wörter durch sein/e, ihr/e, unser/e</h2>
+    <div class="row"><span class="label">1.</span>Georg ist gut in der Schule. Er macht die Hausaufgaben allein. → <input type="text" class="fill wide" data-group="ex3b" data-ans="Er macht seine Hausaufgaben allein"></div>
+    <div class="row"><span class="label">2.</span>Maria mag Deutsch. Marias Deutschlehrer ist sehr gut. → <input type="text" class="fill wide" data-group="ex3b" data-ans="Ihr Deutschlehrer ist sehr gut"></div>
+    <div class="row"><span class="label">3.</span>Wir machen die Salate und die Männer grillen. → <input type="text" class="fill wide" data-group="ex3b" data-ans="Wir machen die Salate und unsere Männer grillen"></div>
+    <div class="row"><span class="label">4.</span>Tim lebt in Bonn und Tims Vater in Berlin. → <input type="text" class="fill wide" data-group="ex3b" data-ans="Tim lebt in Bonn und sein Vater in Berlin"></div>
+    <div class="row"><span class="label">5.</span>Sibylle studiert in Köln. Sibylles Eltern leben in Frankfurt. → <input type="text" class="fill wide" data-group="ex3b" data-ans="Ihre Eltern leben in Frankfurt"></div>
+    <div class="row"><span class="label">6.</span>Igor ist Kanadier. Igors Großvater kommt aus Russland. → <input type="text" class="fill wide" data-group="ex3b" data-ans="Sein Großvater kommt aus Russland"></div>
+    <div class="row"><span class="label">7.</span>Wo wohnst du und wo wohnt der Bruder? → <input type="text" class="fill wide" data-group="ex3b" data-ans="Wo wohnst du und wo wohnt dein Bruder?"></div>
+    <div class="row"><span class="label">8.</span>Mein Bruder und ich besuchen den Vater jeden Monat ein Mal. → <input type="text" class="fill wide" data-group="ex3b" data-ans="Mein Bruder und ich besuchen unseren Vater jeden Monat ein Mal"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex3b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex3b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex3b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex3b"></div>
+  </div>
+
+  <div class="card">
+    <h2>4a Interviews im Kurs — Schreiben Sie Ihren Familienstammbaum</h2>
+    <div class="notiz-box"><textarea id="notiz4a" placeholder="meine Geschwister: ...&#10;meine Eltern: mein Vater (...), meine Mutter (...)&#10;meine Verwandten: ..."></textarea><div class="notiz-saved" id="saved4a"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>4b Fragen Sie im Kurs. Berichten Sie</h2>
+    <div class="dialog-box">
+      ● Bist du verheiratet?<br>○ Nein, ich bin nicht verheiratet. / Darüber möchte ich nicht sprechen. / Das fragt man bei uns nicht.<br><br>
+      Bericht: „Olga ist nicht verheiratet. Ihre Schwester heißt Anastasia und ihr Vater Ilja."
+    </div>
+    <div class="notiz-box"><textarea id="notiz4b" placeholder="Schreiben Sie hier Ihren Bericht..."></textarea><div class="notiz-saved" id="saved4b"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>5. Aussprache: -er(n) und ver- — Hören Sie und sprechen Sie nach</h2>
+    <audio controls src="audio_kb6/track1_51.mp3"></audio>
+    <div class="dialog-box">
+      meine Mutter • mein Vater • meine Geschwister • unser Bruder • meine Eltern • meine Tochter • meine Kinder • euer Sohn • hier ist meine Schwester • meine Verwandten • verheiratet<br><br>
+      Das ist meine Mutter und hier sind meine Geschwister. Ich habe zwei Brüder und eine Schwester.<br>
+      Das sind meine Eltern. Meine Kinder sind verheiratet.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>6b Geburtstage im Kurs — Lesen Sie die Beispiele und die Tabelle. Was ist anders?</h2>
+    <div class="dialog-box">
+      „Wann bist du geboren?" — „Am 1.2.1988." (Am ersten Zweiten neunzehnhundertachtundachtzig)<br>
+      „Wann hast du Geburtstag?" — „Am 24.8." (Am vierundzwanzigsten Achten)
+    </div>
+    <p class="instr">Am ersten, zweiten, dritten, vierten, fünften, sechsten, siebten ... Am achten, neunten, zehnten, elften, zwölften, dreizehnten ... Am zwanzigsten, einundzwanzigsten ... dreißigsten, einunddreißigsten.</p>
+  </div>
+
+  <div class="card">
+    <h2>6c Fragen Sie im Kurs und machen Sie eine Geburtstagsliste</h2>
+    <div class="notiz-box"><textarea id="notiz6c" placeholder="Name — Geburtstag (Datum) — Jahreszeit&#10;..."></textarea><div class="notiz-saved" id="saved6c"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>7a Bens Geburtstag — Anrufbeantworter (AB). Lesen Sie die SMS und hören Sie zu. Was passt zusammen?</h2>
+    <audio controls src="audio_kb6/track1_52.mp3"></audio>
+    <div class="row"><span class="label">SMS 1 (Ben lädt alle ein) →</span>AB <input type="text" class="fill narrow" data-group="ex7a" data-ans="1"></div>
+    <div class="row"><span class="label">SMS 2 (Sigrid, Danke für Einladung, kann nicht) →</span>AB <input type="text" class="fill narrow" data-group="ex7a" data-ans="2"></div>
+    <div class="row"><span class="label">SMS 3 (Anne fragt Kati wegen Geschenk) →</span>AB <input type="text" class="fill narrow" data-group="ex7a" data-ans="3"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex7a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex7a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex7a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex7a"></div>
+  </div>
+
+  <div class="card">
+    <h2>7b Hören Sie den Anrufbeantworter noch einmal. Was ist richtig? Kreuzen Sie an</h2>
+    <div class="row"><span class="label">AB 1:</span><input type="text" class="fill wide" data-group="ex7b" data-ans="Sigrid gratuliert Ben"></div>
+    <div class="row"><span class="label">AB 2:</span><input type="text" class="fill wide" data-group="ex7b" data-ans="Max kommt später"></div>
+    <div class="row"><span class="label">AB 3:</span><input type="text" class="fill wide" data-group="ex7b" data-ans="Kati bringt Kuchen"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex7b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex7b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex7b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex7b"></div>
+    <div class="dialog-box" style="margin-top:14px;">
+      <b>Nachricht 1 (Sigrid):</b> Hallo, Ben! Hier ist Sigrid. Es ist Donnerstag. Es ist 18 Uhr. Wo bist du denn? Arbeitest du etwa noch? Am Geburtstag? Also, dann sag ich es erst einmal dem Anrufbeantworter: Lieber Ben, alles Liebe und Gute zu deinem Geburtstag! Liebe, Glück, Gesundheit, Erfolg und so weiter. Ist mein Geschenk schon da? Hoffentlich hast du am Samstag ein schönes Fest. Und hier dein Geburtstagslied ... Feier schön! Tschüs und bis bald.<br><br>
+      <b>Nachricht 2 (Max):</b> Hi, hier ist Max. Ich habe deine SMS bekommen. Danke für die Einladung. Ich komme auf jeden Fall. Aber ich komme leider erst um zehn Uhr. Ich arbeite am Samstag bis neun. Tschüs.<br><br>
+      <b>Nachricht 3 (Kati):</b> Hallo, Anne, hier ist Kati. Ich rufe wegen deiner SMS an: Ich habe kein Geld und kein Geschenk, aber ich habe eine Idee. Ich backe einen Kuchen. Einen Käsekuchen. Ben liebt doch Käsekuchen. Bis bald!
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>7c Schreiben Sie SMS-Einladungen. Tauschen Sie im Kurs</h2>
+    <div class="notiz-box"><textarea id="notiz7c" placeholder="Hi, ihr Alle! Ich habe Geburtstag am ...&#10;Das Fest ist am ..., ... Uhr. Kommt alle!"></textarea><div class="notiz-saved" id="saved7c"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>7d Glückwünsche — Hören Sie und ordnen Sie dann 1-4 und a-d zu</h2>
+    <audio controls src="audio_kb6/track1_53.mp3"></audio>
+    <div class="row"><span class="label">1.</span>Herzlichen Glückwunsch → <input type="text" class="fill narrow" data-group="ex7d" data-ans="b"></div>
+    <div class="row"><span class="label">2.</span>Alles Gute und → <input type="text" class="fill narrow" data-group="ex7d" data-ans="d"></div>
+    <div class="row"><span class="label">3.</span>Vielen Dank für → <input type="text" class="fill narrow" data-group="ex7d" data-ans="a"></div>
+    <div class="row"><span class="label">4.</span>Vielen Dank für das → <input type="text" class="fill narrow" data-group="ex7d" data-ans="c"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex7d')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex7d')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex7d')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex7d"></div>
+    <p class="instr">a) Ihre Glückwünsche. b) zum Geburtstag! c) Geschenk. d) Liebe zum Geburtstag!</p>
+  </div>
+
+  <div class="card">
+    <h2>8a Danke sagen — Bens E-Mail. Was sagt Ben: zum Cognac, zum Fest, zum Essen, zum Käsekuchen?</h2>
+    <div class="dialog-box">
+      Liebe Sigrid,<br>
+      vielen Dank für deine Glückwünsche und dein Geschenk. Der Cognac ist super! Mein Fest war sehr schön, aber du warst leider nicht da. Schade! Ich hatte viel Spaß. Alle Freunde waren da und meine Eltern und Geschwister auch. Das Essen war toll. Wir hatten viele Salate und einen super Käsekuchen von Kati. Wir waren bis drei Uhr zusammen!<br>
+      Liebe Grüße, Ben
+    </div>
+    <div class="row"><span class="label">Cognac:</span><input type="text" class="fill wide" data-group="ex8a" data-ans="super"></div>
+    <div class="row"><span class="label">Fest:</span><input type="text" class="fill wide" data-group="ex8a" data-ans="sehr schön"></div>
+    <div class="row"><span class="label">Essen:</span><input type="text" class="fill wide" data-group="ex8a" data-ans="toll"></div>
+    <div class="row"><span class="label">Käsekuchen:</span><input type="text" class="fill wide" data-group="ex8a" data-ans="super"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex8a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex8a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex8a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex8a"></div>
+  </div>
+
+  <div class="card">
+    <h2>8c Schreiben Sie die Sätze 1-8 in der Vergangenheit</h2>
+    <div class="row"><span class="label">1.</span>Ich habe Geburtstag. → <input type="text" class="fill wide" data-group="ex8c" data-ans="Ich hatte Geburtstag"></div>
+    <div class="row"><span class="label">2.</span>Wir sind zu Hause. → <input type="text" class="fill wide" data-group="ex8c" data-ans="Wir waren zu Hause"></div>
+    <div class="row"><span class="label">3.</span>Meine Freundin hat keine Zeit. → <input type="text" class="fill wide" data-group="ex8c" data-ans="Meine Freundin hatte keine Zeit"></div>
+    <div class="row"><span class="label">4.</span>Sie ist in Frankreich. → <input type="text" class="fill wide" data-group="ex8c" data-ans="Sie war in Frankreich"></div>
+    <div class="row"><span class="label">5.</span>Habt ihr Musik? → <input type="text" class="fill wide" data-group="ex8c" data-ans="Hattet ihr Musik?"></div>
+    <div class="row"><span class="label">6.</span>Wir haben Live-Musik. → <input type="text" class="fill wide" data-group="ex8c" data-ans="Wir hatten Live-Musik"></div>
+    <div class="row"><span class="label">7.</span>Das Fest ist schön. → <input type="text" class="fill wide" data-group="ex8c" data-ans="Das Fest war schön"></div>
+    <div class="row"><span class="label">8.</span>Seid ihr auch da? → <input type="text" class="fill wide" data-group="ex8c" data-ans="Wart ihr auch da?"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex8c')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex8c')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex8c')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex8c"></div>
+  </div>
+
+  <div class="card">
+    <h2>8d Schreiben Sie vier Sätze im Präsens. Schreiben Sie die Sätze im Präteritum</h2>
+    <div class="notiz-box"><textarea id="notiz8d" placeholder="Ich habe keine Zeit. → Ich hatte keine Zeit.&#10;..."></textarea><div class="notiz-saved" id="saved8d"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>9b Geburtstage in Deutschland — Markieren Sie mit R (richtig), F (falsch) oder 0 (nicht im Text)</h2>
+    <div class="row"><span class="label">1.</span>Der Geburtstag ist wichtig. → <input type="text" class="fill narrow" data-group="ex9b" data-ans="R"></div>
+    <div class="row"><span class="label">2.</span>Zum Geburtstag bekommt man Geschenke. → <input type="text" class="fill narrow" data-group="ex9b" data-ans="R"></div>
+    <div class="row"><span class="label">3.</span>Die Geschenke sind meistens teuer. → <input type="text" class="fill narrow" data-group="ex9b" data-ans="F"></div>
+    <div class="row"><span class="label">4.</span>Der 15. Geburtstag ist für Jugendliche sehr wichtig. → <input type="text" class="fill narrow" data-group="ex9b" data-ans="F"></div>
+    <div class="row"><span class="label">5.</span>„Geburtstagskind" sagt man auch noch zu 40- oder 50-Jährigen. → <input type="text" class="fill narrow" data-group="ex9b" data-ans="R"></div>
+    <div class="row"><span class="label">6.</span>Kindergeburtstage feiert man am Morgen. → <input type="text" class="fill narrow" data-group="ex9b" data-ans="F"></div>
+    <div class="row"><span class="label">7.</span>Zum Kindergeburtstag kommen nur die Freunde. → <input type="text" class="fill narrow" data-group="ex9b" data-ans="F"></div>
+    <div class="row"><span class="label">8.</span>Am Ende vom Kindergeburtstag gibt es Abendessen. → <input type="text" class="fill narrow" data-group="ex9b" data-ans="0"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex9b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex9b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex9b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex9b"></div>
+  </div>
+
+  <div class="card">
+    <h2>9c Geburtstagswörter — Wie viele Kombinationen finden Sie im Text? Kennen Sie noch mehr?</h2>
+    <div class="word-bank">das Kind • die Torte • das Geschenk • die Kerze + GEBURTSTAG(S) + die Kinder • der Kaffee • die Anzeige • der Kuchen</div>
+    <div class="notiz-box"><textarea id="notiz9c" placeholder="die Geburtstagstorte, das Geburtstagskind, der Geburtstagskuchen, ..."></textarea><div class="notiz-saved" id="saved9c"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Projekt: Geburtstag bei Ihnen</h2>
+    <p class="instr">Haben Sie Fotos? Wie feiert man bei Ihnen?</p>
+    <div class="notiz-box"><textarea id="notiz-projekt" placeholder="Der erste Geburtstag ist bei uns sehr wichtig. / Zum Geburtstag lädt man ... ein. / Bei uns isst man ... / trinkt man ..."></textarea><div class="notiz-saved" id="saved-projekt"></div></div>
+  </div>
+
+</section>
+
+<!-- ================= GRAMMATIK & AUSSPRACHE ================= -->
+<section id="grammatik">
+  <div class="card">
+    <h2>📖 Auf einen Blick — Grammatik</h2>
+
+    <div class="grammar-box">
+      <b>1. Possessivartikel: Formen</b><br>
+      <table class="vtable">
+        <tr><th></th><th>der Bruder</th><th>das Kind</th><th>die Schwester</th><th>Plural: die Eltern</th></tr>
+        <tr><td>ich</td><td>mein</td><td>mein</td><td>meine</td><td>meine</td></tr>
+        <tr><td>du</td><td>dein</td><td>dein</td><td>deine</td><td>deine</td></tr>
+        <tr><td>er/es</td><td>sein</td><td>sein</td><td>seine</td><td>seine</td></tr>
+        <tr><td>sie/Sie</td><td>ihr/Ihr</td><td>ihr/Ihr</td><td>ihre/Ihre</td><td>ihre/Ihre</td></tr>
+        <tr><td>wir</td><td>unser</td><td>unser</td><td>unsere</td><td>unsere</td></tr>
+        <tr><td>ihr</td><td>euer</td><td>euer</td><td>eure</td><td>eure</td></tr>
+        <tr><td>sie/Sie</td><td>ihr/Ihr</td><td>ihr/Ihr</td><td>ihre/Ihre</td><td>ihre/Ihre</td></tr>
+      </table>
+      <b>Achtung:</b> die Schwester → ich meine Schwester (die → meine); der Bruder → du dein Bruder (der → dein).
+    </div>
+
+    <div class="grammar-box">
+      <b>2. Possessivartikel: Nominativ – Akkusativ</b><br>
+      <table class="vtable">
+        <tr><th></th><th>Maskulinum</th><th>Neutrum</th><th>Femininum</th><th>Plural</th></tr>
+        <tr><td>Nominativ: Das ist/sind ...</td><td>mein Bruder</td><td>mein Kind</td><td>meine Schwester</td><td>meine Eltern</td></tr>
+        <tr><td>Akkusativ: Ich besuche ...</td><td>meinen Bruder</td><td>mein Kind</td><td>meine Schwester</td><td>meine Eltern</td></tr>
+      </table>
+    </div>
+
+    <div class="grammar-box">
+      <b>3. Ordinalzahlen und Datum</b><br>
+      Am ersten, zweiten, dritten, vierten, fünften, sechsten, siebten ... Mai<br>
+      Am achten, neunten, zehnten, elften, zwölften, dreizehnten ... Oktober<br>
+      Am zwanzigsten, einundzwanzigsten ... dreißigsten, einunddreißigsten April
+    </div>
+
+    <div class="grammar-box">
+      <b>4. Verben: Präteritum von sein und haben</b><br>
+      <table class="vtable">
+        <tr><th></th><th>sein</th><th>haben</th></tr>
+        <tr><td>ich</td><td>war</td><td>hatte</td></tr>
+        <tr><td>du</td><td>warst</td><td>hattest</td></tr>
+        <tr><td>er/es/sie</td><td>war</td><td>hatte</td></tr>
+        <tr><td>wir</td><td>waren</td><td>hatten</td></tr>
+        <tr><td>ihr</td><td>wart</td><td>hattet</td></tr>
+        <tr><td>sie/Sie</td><td>waren</td><td>hatten</td></tr>
+      </table>
+      Ausdrücke für Vergangenheit: gestern, vorgestern, letzten Montag/Mittwoch ..., letzten Monat/März ..., letzte Woche/Ferien
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🗣️ Aussprache</h2>
+    <div class="grammar-box">
+      Sie sprechen kein „r". Sie sprechen ein (schwaches) „a".<br>
+      am Wortende: -er(n) — die Eltern, der Bruder, hier, die Kinder<br>
+      Vorsilbe: ver- — die Verwandten, verheiratet, verkaufen
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💬 Im Alltag — Nützliche Sätze</h2>
+    <div class="grammar-box">
+      <b>1. Die Familie vorstellen</b><br>
+      Meine Familie ist groß/klein. Mein Sohn ist achteinhalb Jahre alt. Meine Tochter ist zwölf.<br>
+      Wir sind fünf Kinder. Jürgen ist unser zweiter Papa. Seine erste Frau lebt in Berlin.<br>
+      Ich habe einen Bruder und zwei Schwestern. Mein Bruder lebt in Russland. Meine Schwester wohnt in Berlin.<br>
+      Bist du verheiratet? — Nein, ich bin nicht verheiratet. Ich bin ledig/verheiratet/getrennt/geschieden.<br>
+      „Sind Sie geschieden?" — „Darüber möchte ich nicht sprechen." / „Das fragt man bei uns nicht."
+    </div>
+    <div class="grammar-box">
+      <b>2. Datum</b><br>
+      Wann bist du geboren? — Am 31. Oktober 1989.<br>
+      Wann hast du Geburtstag? — Am 24.8. (vierundzwanzigsten Achten). Da ist in Tansania Winter.
+    </div>
+    <div class="grammar-box">
+      <b>3. Einladungen und Glückwünsche zum Geburtstag</b><br>
+      „Liebe Freunde! Ich habe am Samstag, dem 31.10. Geburtstag und möchte euch alle zu meiner Geburtstagsparty einladen. Sie beginnt um 20 Uhr. Bitte bringt etwas zum Essen mit: Salate, Nachtisch ... Ich freue mich auf euch. Robert"<br>
+      Herzlichen Glückwunsch zum Geburtstag. Gesundheit und viel Erfolg. Alles Gute und Liebe zum Geburtstag.
+    </div>
+    <div class="grammar-box">
+      <b>4. Danke sagen</b><br>
+      Vielen Dank für deine Einladung. Vielen Dank für euer Geschenk. Es ist toll. Danke für Ihre Geburtstagskarte. Ich habe mich sehr gefreut!
+    </div>
+  </div>
+</section>
+
+<!-- ================= VOKABELN (SRS) ================= -->
+<section id="vokabeln">
+  <div class="card">
+    <h2>🃏 Vokabeltrainer</h2>
+    <div class="srs-toggle">
+      <button id="dirDE" class="active" onclick="setDirection('de')">DE → RU</button>
+      <button id="dirRU" onclick="setDirection('ru')">RU → DE</button>
+    </div>
+    <div class="srs-meta" id="srsMeta"></div>
+    <div class="srs-card" id="srsCard" onclick="flipCard()"></div>
+    <div class="srs-controls" id="srsControls" style="display:none;">
+      <button style="background:var(--bad);" onclick="srsAnswer(0)">Забыл(а)</button>
+      <button style="background:#c98a2f;" onclick="srsAnswer(1)">Трудно</button>
+      <button style="background:var(--ok);" onclick="srsAnswer(2)">Легко</button>
+    </div>
+    <div class="btn-group" style="justify-content:center;">
+      <button class="clearbtn" onclick="resetSRS()">Сбросить прогресс карточек</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NOTIZEN ================= -->
+<section id="notizen">
+  <div class="card">
+    <h2>✏️ Notizen — freie / mündliche Übungen</h2>
+    <p class="instr">Diese Aufgaben haben keine feste Lösung. Ihre Antworten werden automatisch gespeichert.</p>
+
+    <h3 style="font-size:1rem;">4b Berichten Sie im Kurs (weitere Beispiele)</h3>
+    <div class="notiz-box"><textarea id="notiz1" placeholder="Wer in deiner Familie ist verheiratet/ledig/geschieden?"></textarea><div class="notiz-saved" id="saved1"></div></div>
+
+    <h3 style="font-size:1rem;">9a Sehen Sie die Bilder an. Was kennen Sie und was nicht?</h3>
+    <div class="notiz-box"><textarea id="notiz2" placeholder="Ich kenne ... Bei uns ist das anders: ..."></textarea><div class="notiz-saved" id="saved2"></div></div>
+
+    <h3 style="font-size:1rem;">Weitere Notizen</h3>
+    <div class="notiz-box"><textarea id="notiz3" placeholder="Schreiben Sie hier..."></textarea><div class="notiz-saved" id="saved3"></div></div>
+  </div>
+</section>
+
+</main>
+
+<footer>Berliner Platz 1 · Kursbuch · Kapitel 6 — Familienleben · echtes Audio aus dem Lehrwerk</footer>
+
+<script>
+/* ---------- TAB NAVIGATION ---------- */
+document.querySelectorAll('#tabs button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+function normalize(s){
+  return s.trim().toLowerCase().replace(/\s+/g,' ').replace(/[.,!?]/g,'').replace(/ß/g,'ss');
+}
+
+/* ---------- GENERIC FILL-IN CHECKER ---------- */
+function checkGroup(cls){
+  const inputs = document.querySelectorAll(`.fill[data-group="${cls}"]`);
+  let correct=0;
+  inputs.forEach(inp=>{
+    const answers = inp.dataset.ans.split(';').map(a=>normalize(a));
+    const val = normalize(inp.value);
+    if(answers.includes(val) && val.length>0){
+      inp.classList.add('correct'); inp.classList.remove('incorrect');
+      correct++;
+    } else {
+      inp.classList.add('incorrect'); inp.classList.remove('correct');
+    }
+  });
+  showResult(cls, correct, inputs.length);
+}
+function showResult(cls, correct, total){
+  const fb = document.getElementById('fb-'+cls);
+  if(!fb) return;
+  fb.textContent = `${correct} von ${total} richtig.` + (correct===total?' 🎉':'');
+  fb.className = 'feedback ' + (correct===total?'ok':'bad');
+}
+function revealGroup(cls){
+  const inputs = document.querySelectorAll(`.fill[data-group="${cls}"]`);
+  inputs.forEach(inp=>{
+    inp.value = inp.dataset.ans.split(';')[0];
+    inp.classList.add('correct'); inp.classList.remove('incorrect');
+  });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent = 'Ответы показаны.'; fb.className = 'feedback'; }
+}
+function clearGroup(cls){
+  const inputs = document.querySelectorAll(`.fill[data-group="${cls}"]`);
+  inputs.forEach(inp=>{ inp.value=''; inp.classList.remove('correct','incorrect'); });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent=''; fb.className='feedback'; }
+}
+
+/* ---------- SRS VOCAB TRAINER ---------- */
+const vocabData = [
+  {de:"der Vater / die Mutter", ru:"отец / мать"},
+  {de:"der Sohn / die Tochter", ru:"сын / дочь"},
+  {de:"der Bruder / die Schwester", ru:"брат / сестра"},
+  {de:"die Geschwister", ru:"братья и сёстры"},
+  {de:"die Großeltern / der Großvater / die Großmutter", ru:"бабушка и дедушка / дед / бабушка"},
+  {de:"der Onkel / die Tante", ru:"дядя / тётя"},
+  {de:"der Neffe / die Nichte", ru:"племянник / племянница"},
+  {de:"der Cousin / die Cousine", ru:"двоюродный брат / двоюродная сестра"},
+  {de:"alleinstehend / verheiratet", ru:"одинокий / женатый (замужняя)"},
+  {de:"ledig / geschieden / getrennt", ru:"холост(а) / разведён(а) / раздельно живущие"},
+  {de:"die Verwandten", ru:"родственники"},
+  {de:"heiraten / die Hochzeit", ru:"жениться/выходить замуж / свадьба"},
+  {de:"geboren sein", ru:"родиться, быть рождённым"},
+  {de:"der Geburtstag", ru:"день рождения"},
+  {de:"die Geburtstagsparty / das Fest", ru:"вечеринка / праздник"},
+  {de:"einladen / die Einladung", ru:"приглашать / приглашение"},
+  {de:"das Geschenk", ru:"подарок"},
+  {de:"Herzlichen Glückwunsch!", ru:"сердечно поздравляю!"},
+  {de:"Alles Gute!", ru:"всего наилучшего!"},
+  {de:"gratulieren", ru:"поздравлять"},
+  {de:"die Kerze / die Torte", ru:"свеча / торт"},
+  {de:"gestern / vorgestern", ru:"вчера / позавчера"},
+  {de:"letzte Woche / letzten Monat", ru:"на прошлой неделе / в прошлом месяце"},
+  {de:"war / hatte (Präteritum)", ru:"был(а) / имел(а) (прошедшее время)"},
+  {de:"der Ausflug / das Picknick", ru:"экскурсия / пикник"}
+];
+
+const SRS_INTERVALS=[0,1,3,7,14,30];
+let srsDirection = 'de';
+let srsState = JSON.parse(localStorage.getItem('kb6_srsState') || '{}');
+let srsQueue = [];
+let srsCurrent = null;
+let srsFlipped = false;
+
+function getCardState(idx){
+  if(!srsState[idx]) srsState[idx] = {level:0, due:0};
+  return srsState[idx];
+}
+function saveSRS(){ localStorage.setItem('kb6_srsState', JSON.stringify(srsState)); }
+
+function buildQueue(){
+  const now = Date.now();
+  srsQueue = vocabData.map((v,i)=>i).filter(i=>{
+    const st = getCardState(i);
+    return st.due <= now;
+  });
+  if(srsQueue.length===0){
+    srsQueue = vocabData.map((v,i)=>i);
+  }
+  srsQueue.sort(()=>Math.random()-0.5);
+}
+function setDirection(dir){
+  srsDirection = dir;
+  document.getElementById('dirDE').classList.toggle('active', dir==='de');
+  document.getElementById('dirRU').classList.toggle('active', dir==='ru');
+  nextCard();
+}
+function nextCard(){
+  if(srsQueue.length===0) buildQueue();
+  srsCurrent = srsQueue.pop();
+  srsFlipped = false;
+  renderCard();
+}
+function renderCard(){
+  const card = document.getElementById('srsCard');
+  const v = vocabData[srsCurrent];
+  const front = srsDirection==='de' ? v.de : v.ru;
+  card.innerHTML = front + (srsDirection==='de' ? ` <button class="spk-btn" onclick="event.stopPropagation();speak('${v.de.replace(/'/g,"\\'")}')">🔊</button>` : '');
+  document.getElementById('srsControls').style.display = 'none';
+  const total = vocabData.length;
+  const due = vocabData.filter((v,i)=>getCardState(i).due<=Date.now()).length;
+  document.getElementById('srsMeta').textContent = `Карточек к повторению: ${due} / ${total}`;
+}
+function flipCard(){
+  if(srsFlipped) return;
+  srsFlipped = true;
+  const card = document.getElementById('srsCard');
+  const v = vocabData[srsCurrent];
+  const back = srsDirection==='de' ? v.ru : v.de;
+  card.innerHTML = back + (srsDirection==='ru' ? ` <button class="spk-btn" onclick="event.stopPropagation();speak('${v.de.replace(/'/g,"\\'")}')">🔊</button>` : '');
+  document.getElementById('srsControls').style.display = 'flex';
+}
+function srsAnswer(quality){
+  const st = getCardState(srsCurrent);
+  if(quality===0){ st.level = 0; }
+  else if(quality===1){ st.level = Math.max(0, st.level); }
+  else { st.level = Math.min(SRS_INTERVALS.length-1, st.level+1); }
+  const days = SRS_INTERVALS[st.level];
+  st.due = Date.now() + days*24*60*60*1000;
+  saveSRS();
+  nextCard();
+}
+function resetSRS(){
+  srsState = {};
+  saveSRS();
+  buildQueue();
+  nextCard();
+}
+function speak(text){
+  if(!window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  speechSynthesis.speak(u);
+}
+buildQueue();
+nextCard();
+
+/* ---------- NOTIZEN AUTOSAVE ---------- */
+['notiz1','notiz2','notiz3','notiz1b','notiz4a','notiz4b','notiz6c','notiz7c','notiz8d','notiz9c','notiz-projekt'].forEach(id=>{
+  const ta = document.getElementById(id);
+  if(!ta) return;
+  const savedId = 'saved'+id.replace('notiz','');
+  const saved = document.getElementById(savedId);
+  const key = 'kb6_'+id;
+  ta.value = localStorage.getItem(key) || '';
+  if(ta.value) saved.textContent = 'Сохранено.';
+  ta.addEventListener('input', ()=>{
+    localStorage.setItem(key, ta.value);
+    saved.textContent = 'Сохранено ✓';
+  });
+});
+</script>
+</body>
+</html>

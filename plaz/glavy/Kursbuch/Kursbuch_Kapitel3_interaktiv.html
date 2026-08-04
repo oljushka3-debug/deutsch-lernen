@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kursbuch Kapitel 3 — Was kostet das? — Interaktive Übungen</title>
+<style>
+  :root{--bg:#f6f4ef;--card:#ffffff;--ink:#2b2a28;--muted:#767268;--accent:#d98c1f;--accent2:#1f6f5c;--line:#e3ddd0;--ok:#1f6f5c;--bad:#c0392b;--chip:#efe9db;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Georgia','Iowan Old Style',serif;background:var(--bg);color:var(--ink);line-height:1.5;}
+  header{background:var(--ink);color:#fdfaf3;padding:28px 20px 22px;text-align:center;}
+  header h1{margin:0 0 4px;font-size:2rem;letter-spacing:.5px;}
+  header p{margin:0;color:#cfc8b8;font-size:.95rem;}
+  nav{position:sticky;top:0;z-index:50;background:#fffdf8;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;justify-content:center;}
+  nav button{font-family:inherit;border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:7px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;}
+  nav button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  main{max-width:840px;margin:0 auto;padding:24px 16px 80px;}
+  section{display:none;}
+  section.active{display:block;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 22px 24px;margin-bottom:22px;box-shadow:0 2px 6px rgba(0,0,0,.04);}
+  .card h2{margin-top:0;font-size:1.3rem;color:var(--accent);border-bottom:2px dotted var(--line);padding-bottom:8px;}
+  .instr{color:var(--muted);font-style:italic;margin-bottom:14px;font-size:.95rem;}
+  .row{display:flex;align-items:center;gap:10px;margin:10px 0;flex-wrap:wrap;}
+  .row .label{min-width:26px;color:var(--muted);font-size:.9rem;}
+  input[type=text]{font-family:inherit;font-size:1rem;padding:7px 10px;border:1.5px solid var(--line);border-radius:8px;background:#fffef9;color:var(--ink);min-width:120px;flex:1;}
+  input[type=text].wide{min-width:220px;}
+  input[type=text].narrow{min-width:60px;flex:none;width:70px;}
+  input[type=text]:focus{outline:none;border-color:var(--accent2);}
+  input.correct{border-color:var(--ok);background:#eef7f2;}
+  input.incorrect{border-color:var(--bad);background:#fbeceb;}
+  .btn-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .checkbtn, .revealbtn, .clearbtn{font-family:inherit;border:none;padding:9px 18px;border-radius:10px;cursor:pointer;font-size:.92rem;font-weight:bold;}
+  .checkbtn{background:var(--ink);color:#fdfaf3;}
+  .revealbtn, .clearbtn{background:var(--chip);color:var(--ink);}
+  .checkbtn:hover{opacity:.88;}
+  .revealbtn:hover, .clearbtn:hover{background:#e4dcc7;}
+  .feedback{margin-top:10px;font-size:.9rem;font-weight:bold;}
+  .feedback.ok{color:var(--ok);}
+  .feedback.bad{color:var(--bad);}
+  .hoer-item{background:#fbf9f3;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:18px;}
+  .hoer-item h3{margin:0 0 10px;font-size:1rem;}
+  audio{width:100%;margin-bottom:12px;}
+  .abc-options{display:flex;gap:10px;flex-wrap:wrap;}
+  .abc-btn{font-family:inherit;border:1.5px solid var(--line);background:#fff;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:.95rem;flex:1;min-width:110px;text-align:center;}
+  .abc-btn.selected{background:var(--accent2);color:#fff;border-color:var(--accent2);}
+  .dialog-box{background:#fbf9f3;border-left:4px solid var(--accent2);padding:14px 16px;border-radius:6px;margin:10px 0 16px;}
+  .word-bank{background:var(--chip);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.92rem;color:var(--muted);}
+  .word-bank b{color:var(--ink);}
+  .srs-card{background:#fbf9f3;border:1px solid var(--line);border-radius:14px;padding:30px 24px;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;margin-bottom:16px;}
+  .srs-controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .srs-controls button{font-family:inherit;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:.88rem;font-weight:bold;color:#fff;}
+  .srs-meta{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:10px;}
+  .srs-toggle{display:flex;justify-content:center;gap:8px;margin-bottom:16px;}
+  .srs-toggle button{font-family:inherit;border:1px solid var(--line);background:var(--chip);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.85rem;}
+  .srs-toggle button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .spk-btn{border:none;background:var(--accent2);color:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:1rem;margin-left:8px;}
+  .notiz-box textarea{width:100%;font-family:inherit;font-size:.95rem;padding:10px;border:1.5px solid var(--line);border-radius:8px;min-height:90px;background:#fffef9;color:var(--ink);resize:vertical;}
+  .notiz-saved{font-size:.8rem;color:var(--muted);margin-top:6px;font-style:italic;}
+  table.vtable{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem;}
+  table.vtable th, table.vtable td{border:1px solid var(--line);padding:8px;text-align:left;}
+  table.vtable th{background:var(--chip);}
+  table.vtable input[type=text]{min-width:70px;padding:5px 7px;font-size:.9rem;}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px;}
+  .tipps-box{background:#fdf5e8;border:1px solid #e8d5ab;border-radius:10px;padding:14px 16px;margin-top:14px;font-size:.88rem;}
+  .tipps-box b{color:var(--accent);}
+  .grammar-box{background:#eef7f2;border:1.5px solid var(--ok);border-radius:10px;padding:14px 16px;margin:10px 0;font-size:.9rem;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Kursbuch — Kapitel 3</h1>
+  <p>Berliner Platz 1 · Was kostet das? · Interaktive Übungen mit echtem Audio</p>
+</header>
+
+<nav id="tabs">
+  <button data-tab="uebungen" class="active">📝 Übungen</button>
+  <button data-tab="raststaette">🚏 Raststätte</button>
+  <button data-tab="grammatik">📖 Grammatik & Aussprache</button>
+  <button data-tab="vokabeln">🃏 Vokabeln</button>
+  <button data-tab="notizen">✏️ Notizen</button>
+</nav>
+
+<main>
+
+<!-- ================= ÜBUNGEN ================= -->
+<section id="uebungen" class="active">
+
+  <div class="card">
+    <h2>1b/1c Gegenstände — Hören Sie und sprechen Sie mit</h2>
+    <audio controls src="audio_kb3/track1_26.mp3"></audio>
+    <p class="instr">der Computer • der Drucker • der Fernseher • der MP3-Player • das Handy • die DVD • der Kuli • der Bleistift • das Heft • das Wörterbuch • die Schere • der Herd • der Wasserkocher • das Bügeleisen • die Kaffeemaschine • die Waschmaschine • der Stuhl • der Tisch • die Lampe</p>
+  </div>
+
+  <div class="card">
+    <h2>2a Was kostet was? — Hören Sie und ergänzen Sie die Preise</h2>
+    <audio controls src="audio_kb3/track1_27.mp3"></audio>
+    <div class="row"><span class="label">Dialog 1:</span>Die Lampe kostet nur <input type="text" class="fill narrow" data-group="ex2a" data-ans="20"> Euro.</div>
+    <div class="row"><span class="label">Dialog 2:</span>Der Drucker kostet nur <input type="text" class="fill narrow" data-group="ex2a" data-ans="5"> Euro.</div>
+    <div class="row"><span class="label">Dialog 3:</span>Der Fernseher kostet am Ende <input type="text" class="fill narrow" data-group="ex2a" data-ans="140"> Euro.</div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex2a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex2a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex2a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex2a"></div>
+  </div>
+
+  <div class="card">
+    <h2>3. Nomen und Artikel: der/das/die</h2>
+    <p class="instr">Sammeln Sie Nomen aus dem Kapitel und ordnen Sie sie den Artikeln zu. Freie Übung — nutzen Sie die Notizen-Seite.</p>
+    <div class="word-bank">Beispiele: der Kaffee, der Computer • das Buch, das Handy • die Tasche, die Waschmaschine</div>
+  </div>
+
+  <div class="card">
+    <h2>4a Was kostet wie viel? — Hören Sie und ordnen Sie die Ziffern den Wörtern zu</h2>
+    <audio controls src="audio_kb3/track1_28.mp3"></audio>
+    <div class="row"><span class="label">a) 65 €</span>→ <input type="text" class="fill wide" data-group="ex4a" data-ans="fünfundsechzig"></div>
+    <div class="row"><span class="label">b) 139 €</span>→ <input type="text" class="fill wide" data-group="ex4a" data-ans="einhundertneununddreißig"></div>
+    <div class="row"><span class="label">c) 289 €</span>→ <input type="text" class="fill wide" data-group="ex4a" data-ans="zweihundertneunundachtzig"></div>
+    <div class="row"><span class="label">d) 717 €</span>→ <input type="text" class="fill wide" data-group="ex4a" data-ans="siebenhundertsiebzehn"></div>
+    <div class="row"><span class="label">e) 2.312 €</span>→ <input type="text" class="fill wide" data-group="ex4a" data-ans="zweitausenddreihundertzwölf"></div>
+    <div class="row"><span class="label">f) 3.800 €</span>→ <input type="text" class="fill wide" data-group="ex4a" data-ans="dreitausendachthundert"></div>
+    <div class="row"><span class="label">g) 745.600 €</span>→ <input type="text" class="fill wide" data-group="ex4a" data-ans="siebenhundertfünfundvierzigtausend sechshundert"></div>
+    <div class="row"><span class="label">h) 3.265.170 €</span>→ <input type="text" class="fill wide" data-group="ex4a" data-ans="drei Millionen zweihundertfünfundsechzigtausend einhundertsiebzig"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex4a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex4a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex4a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex4a"></div>
+  </div>
+
+  <div class="card">
+    <h2>4b/4c Welcher Preis passt zum Gegenstand? Hören Sie zur Kontrolle</h2>
+    <audio controls src="audio_kb3/track1_29.mp3"></audio>
+    <div class="row"><span class="label">A der Staubsauger</span><input type="text" class="fill narrow" data-group="ex4b" data-ans="139"> €</div>
+    <div class="row"><span class="label">B das Fahrrad</span><input type="text" class="fill" data-group="ex4b" data-ans="2312;2.312"> €</div>
+    <div class="row"><span class="label">C das Auto</span><input type="text" class="fill" data-group="ex4b" data-ans="3800;3.800"> €</div>
+    <div class="row"><span class="label">D der Kühlschrank</span><input type="text" class="fill narrow" data-group="ex4b" data-ans="289"> €</div>
+    <div class="row"><span class="label">E der Kinderwagen</span><input type="text" class="fill narrow" data-group="ex4b" data-ans="65"> €</div>
+    <div class="row"><span class="label">F das Haus</span><input type="text" class="fill" data-group="ex4b" data-ans="745600;745.600"> €</div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex4b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex4b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex4b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex4b"></div>
+  </div>
+
+  <div class="card">
+    <h2>5a Das ist ein/eine, kein/keine — Hören Sie und ordnen Sie die Bilder den Dialogen zu</h2>
+    <audio controls src="audio_kb3/track1_30.mp3"></audio>
+    <div class="row"><span class="label">Dialog 1</span>(Fernseher? Nein, Monitor, 35€) → Bild <input type="text" class="fill narrow" data-group="ex5a" data-ans="C"></div>
+    <div class="row"><span class="label">Dialog 2</span>(Handy, 25€) → Bild <input type="text" class="fill narrow" data-group="ex5a" data-ans="B"></div>
+    <div class="row"><span class="label">Dialog 3</span>(dein Handy? Nein, Digitalkamera) → Bild <input type="text" class="fill narrow" data-group="ex5a" data-ans="A"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex5a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex5a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex5a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex5a"></div>
+  </div>
+
+  <div class="card">
+    <h2>5b Was ist das? — Schreiben Sie die Antworten</h2>
+    <div class="row"><span class="label">1.</span>Ist das ein Bleistift? — Nein, das ist <input type="text" class="fill wide" data-group="ex5b" data-ans="kein Bleistift, das ist ein Kuli"></div>
+    <div class="row"><span class="label">2.</span>Ist das eine Schere? — Nein, das ist <input type="text" class="fill wide" data-group="ex5b" data-ans="keine Schere"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex5b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex5b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex5b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex5b"></div>
+  </div>
+
+  <div class="card">
+    <h2>6b Mein/e, dein/e — Ergänzen Sie</h2>
+    <table class="vtable">
+      <tr><th>der Bleistift</th><td>ein Bleistift</td><td>m<input type="text" class="fill narrow" data-group="ex6b" data-ans="ein"> Bleistift</td></tr>
+      <tr><th>das Handy</th><td><input type="text" class="fill narrow" data-group="ex6b" data-ans="ein"> Handy</td><td><input type="text" class="fill narrow" data-group="ex6b" data-ans="mein"> Handy</td></tr>
+      <tr><th>die Schere</th><td>ein<input type="text" class="fill narrow" data-group="ex6b" data-ans="e"> Schere</td><td><input type="text" class="fill narrow" data-group="ex6b" data-ans="meine"> Schere</td></tr>
+    </table>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex6b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex6b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex6b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex6b"></div>
+  </div>
+
+  <div class="card">
+    <h2>7b Dialog auf dem Flohmarkt — Hören Sie und sprechen Sie</h2>
+    <audio controls src="audio_kb3/track1_31.mp3"></audio>
+    <div class="dialog-box">
+      ● Ist das eine Kaffeekanne oder eine Teekanne?<br>
+      ○ Das ist eine Kaffeekanne, eine Thermoskanne.<br>
+      ● Was kostet sie?<br>
+      ○ Nur zwei Euro!<br>
+      ● Das ist aber billig!<br>
+      ○ Ja, ein Schnäppchen ...<br>
+      ● Funktioniert sie?<br>
+      ○ Na klar!
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>8b Artikel und Personalpronomen — Ergänzen Sie</h2>
+    <div class="row"><span class="label">1.</span>Der Computer ist sehr teuer. <input type="text" class="fill narrow" data-group="ex8b" data-ans="Er"> kostet fast 300 Euro.</div>
+    <div class="row"><span class="label">2.</span>Das Handy kostet 100 Euro. <input type="text" class="fill narrow" data-group="ex8b" data-ans="Es"> ist fast neu.</div>
+    <div class="row"><span class="label">3.</span>Die Lampe kaufe ich. <input type="text" class="fill narrow" data-group="ex8b" data-ans="Sie"> ist sehr schön.</div>
+    <div class="row"><span class="label">4.</span>Ich mag deine Brille. <input type="text" class="fill narrow" data-group="ex8b" data-ans="Sie"> ist super.</div>
+    <div class="row"><span class="label">5.</span>Dein Kugelschreiber ist toll. Wie teuer ist <input type="text" class="fill narrow" data-group="ex8b" data-ans="er"> ?</div>
+    <div class="row"><span class="label">6.</span>Ist das dein Handy? <input type="text" class="fill narrow" data-group="ex8b" data-ans="Es"> ist toll.</div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex8b')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex8b')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex8b')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex8b"></div>
+  </div>
+
+  <div class="card">
+    <h2>11. Was möchten Sie kaufen? — Ordnen Sie zu</h2>
+    <p class="instr">Beispiel: Sie brauchen Sachen für Ihre Kinder → billige Kindersachen (Flohmarkt). Ordnen Sie den Situationen 2-4 passende Angebote aus den Anzeigen zu (freie Übung mit Notizen).</p>
+    <div class="word-bank">2. Ihre Waschmaschine ist kaputt. → z.B. „Waschmaschine, neu! Nur 250 €" oder „Kühlschrank und Waschmaschine, fast neu!"<br>3. Sie möchten fernsehen. → z.B. „Fernsehapparat und DVD-Recorder, zusammen nur 150 €"<br>4. Sie hören gern Musik. → z.B. „Stereoanlage 100 €"</div>
+    <div class="notiz-box"><textarea id="notiz11" placeholder="2. ...&#10;3. ...&#10;4. ..."></textarea><div class="notiz-saved" id="saved11"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>12. Zwei Gespräche — Hören Sie</h2>
+    <audio controls src="audio_kb3/track1_35.mp3"></audio>
+    <div class="row"><span class="label">Dialog 1:</span>Was sucht die Person? <input type="text" class="fill wide" data-group="ex12" data-ans="Kinderwagen (und Stuhl)"></div>
+    <div class="row"><span class="label">Dialog 1:</span>Was zahlt der Käufer? <input type="text" class="fill narrow" data-group="ex12" data-ans="95"> €</div>
+    <div class="row"><span class="label">Dialog 2:</span>Was sucht die Person? <input type="text" class="fill wide" data-group="ex12" data-ans="Waschmaschine"></div>
+    <div class="row"><span class="label">Dialog 2:</span>Was zahlt der Käufer? <input type="text" class="fill narrow" data-group="ex12" data-ans="120"> €</div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex12')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex12')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex12')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex12"></div>
+  </div>
+
+  <div class="card">
+    <h2>13a Lange Wörter verstehen</h2>
+    <p class="instr">Welche zwei Wörter finden Sie in jedem langen Wort? Schreiben Sie wie im Beispiel.</p>
+    <div class="row"><span class="label">1.</span>der Kühlschrank → kühl + <input type="text" class="fill wide" data-group="ex13a" data-ans="der Schrank"></div>
+    <div class="row"><span class="label">2.</span>der Wasserkocher → das Wasser + <input type="text" class="fill wide" data-group="ex13a" data-ans="der Kocher"></div>
+    <div class="row"><span class="label">3.</span>das Wörterbuch → die Wörter + <input type="text" class="fill wide" data-group="ex13a" data-ans="das Buch"></div>
+    <div class="row"><span class="label">4.</span>die Kaffeemaschine → der Kaffee + <input type="text" class="fill wide" data-group="ex13a" data-ans="die Maschine"></div>
+    <div class="row"><span class="label">5.</span>das Kinderbett → das Kind + <input type="text" class="fill wide" data-group="ex13a" data-ans="das Bett"></div>
+    <div class="row"><span class="label">6.</span>die Teekanne → der Tee + <input type="text" class="fill wide" data-group="ex13a" data-ans="die Kanne"></div>
+    <div class="row"><span class="label">7.</span>der Papierkorb → das Papier + <input type="text" class="fill wide" data-group="ex13a" data-ans="der Korb"></div>
+    <div class="row"><span class="label">8.</span>die Satellitenantenne → der Satellit + <input type="text" class="fill wide" data-group="ex13a" data-ans="die Antenne"></div>
+    <div class="row"><span class="label">9.</span>der Lieferwagen → liefern + <input type="text" class="fill wide" data-group="ex13a" data-ans="der Wagen"></div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkGroup('ex13a')">Проверить</button>
+      <button class="revealbtn" onclick="revealGroup('ex13a')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearGroup('ex13a')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-ex13a"></div>
+  </div>
+
+</section>
+
+<!-- ================= RASTSTÄTTE (nach Kapitel 1-3) ================= -->
+<section id="raststaette">
+
+  <div class="card">
+    <h2>🚏 Raststätte — Zehn Wörter und viele Sätze</h2>
+    <p class="instr">Spielregel: A sagt ein Wort, B notiert 30 Sekunden lang Sätze dazu (pro Satz ein Punkt). Dann wechseln. Spielzeit: 10 Minuten. Freies Spiel — keine Auswertung im System nötig.</p>
+    <div class="word-bank">A: wer • Heft • heißen • Russland • Deutschlehrerin • kommen • wo • kosten • Tee • wohnen<br>B: wie • Hallo • ist • woher • Telefonnummer • aus • sprechen • Englisch • trinken • Kuli</div>
+  </div>
+
+  <div class="card">
+    <h2>2. Dialoge — Hören Sie, ordnen Sie und lesen Sie vor</h2>
+    <audio controls src="audio_kb3/track1_36.mp3"></audio>
+    <h3 style="font-size:1rem;">Dialog 1</h3>
+    <ul class="order-list" id="d1List"></ul>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkOrder('d1r')">Проверить</button>
+      <button class="revealbtn" onclick="revealOrder('d1r')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearOrder('d1r')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-d1r"></div>
+
+    <h3 style="font-size:1rem;margin-top:20px;">Dialog 2</h3>
+    <ul class="order-list" id="d2List"></ul>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkOrder('d2r')">Проверить</button>
+      <button class="revealbtn" onclick="revealOrder('d2r')">Показать ответ</button>
+      <button class="clearbtn" onclick="clearOrder('d2r')">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-d2r"></div>
+  </div>
+
+  <div class="card">
+    <h2>3. Bilder und Dialoge</h2>
+    <p class="instr">Sehen Sie die drei Bilder an (Begrüßung im Büro / Kaffeepause / Toaster-Verkauf auf dem Flohmarkt) und schreiben Sie passende Dialoge. Freie Aufgabe — nutzen Sie die Notizen.</p>
+  </div>
+
+  <div class="card">
+    <h2>4. Würfelspiel — Verben konjugieren</h2>
+    <p class="instr">A würfelt (1-6 für Personalpronomen), B wählt ein Verb aus der Liste, A bildet einen Satz. Freies Spiel — mündliche Übung.</p>
+    <div class="word-bank">brauchen • lesen • ordnen • ergänzen • heißen • machen • sprechen • haben • trinken • kosten • nehmen • wohnen • lernen • möchten • schreiben • suchen • hören • kaufen • kommen • spielen • sein • liegen</div>
+  </div>
+
+  <div class="card">
+    <h2>5a Das Wortschatz-Bild — Raten Sie</h2>
+    <p class="instr">Wie viele Gegenstände zeigt das Bild — 28, 36 oder 44?</p>
+    <div class="abc-options" data-q="wsb">
+      <button class="abc-btn" onclick="selectABC(this,'wsb','a')">28</button>
+      <button class="abc-btn" onclick="selectABC(this,'wsb','b')">36</button>
+      <button class="abc-btn" onclick="selectABC(this,'wsb','c')">44</button>
+    </div>
+    <div class="btn-group">
+      <button class="checkbtn" onclick="checkWSB()">Проверить</button>
+      <button class="revealbtn" onclick="revealWSB()">Показать ответ</button>
+      <button class="clearbtn" onclick="clearWSB()">Очистить</button>
+    </div>
+    <div class="feedback" id="fb-wsb"></div>
+    <p class="instr" style="margin-top:10px;">Wörter im Bild: das Auto, das Bild, der Bleistift, die Brille, das Buch, das Bügeleisen, die CD, der Computer, die Digitalkamera, der Drucker, das DVD, der Fernseher, der Fußball, das Handy, das Heft, der Herd, die Kaffeemaschine, der Kinderwagen, der Kuli, die Lampe, das MP3-Player, der Papierkorb, das Radio, der Fahrrad, der Wasserkocher, die Waschmaschine, die Schere, die Spülmaschine, der Staubsauger, der Stuhl, die Tasche, der Tisch, die Uhr, die Tasse, der Kühlschrank, das Wörterbuch.</p>
+  </div>
+
+  <div class="card">
+    <h2>Video Teil 1 — Ergänzen Sie die Sätze</h2>
+    <p class="instr">Freie Aufgabe zum Video (falls verfügbar). Ergänzen Sie mit Ihren eigenen Notizen, wenn Sie das Video gesehen haben.</p>
+    <div class="notiz-box"><textarea id="videoNotiz1" placeholder="Er heißt Florian Stützel. Er ist ... Jahre alt. Er kommt aus ... Er mag ... und ...&#10;Sie heißt Jenny Stölken. Sie kommt aus ... Sie hat ... Kinder.&#10;Er heißt Gasan. Seine Eltern kommen aus der ... Er spricht Türkisch, ..., ... und ..."></textarea><div class="notiz-saved" id="savedVideo1"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Video Teil 2 — Beantworten Sie die Fragen</h2>
+    <div class="notiz-box"><textarea id="videoNotiz2" placeholder="1. Was sucht die Frau?&#10;2. Wie ist die Adresse von Frau Noll?&#10;3. Wie viel zahlt sie?"></textarea><div class="notiz-saved" id="savedVideo2"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>Was kann ich schon? — Selbsttest</h2>
+    <p class="instr">Machen Sie die Aufgaben 1 bis 6 und kontrollieren Sie im Kurs.</p>
+    <div class="word-bank">1. Name und Adresse: „Ich..." • 2. Buchstabieren: A-L-O-I-S L-E-I-N-E-B-E-R-G-E-R • 3. „Wie geht es Ihnen?" beantworten • 4. Nach der Telefonnummer fragen (892187) • 5. Preise (Wörterbuch: 30,10 Euro) • 6. Im Unterricht: Schreiben Sie... / Sprechen Sie... / Wiederholen Sie...</div>
+  </div>
+
+  <div class="card">
+    <h2>Ich über mich</h2>
+    <p class="instr">Lesen Sie das Beispiel von Jana und stellen Sie sich vor.</p>
+    <div class="word-bank">Beispiel: Ich heiße Jana Romanova und komme aus Russland, aus Petersburg. Ich bin 26 Jahre alt. Ich wohne jetzt in Ludwigshafen in Rheinland-Pfalz. Meine Adresse ist: Berliner Platz 2, 67059 Ludwigshafen. Meine Handynummer ist 0161/42 89 93 20. Ich spreche Russisch und Englisch. Ich bin im Deutschkurs A1, in der VHS Ludwigshafen.</div>
+    <div class="notiz-box"><textarea id="ichNotiz" placeholder="Mein Name ist ...&#10;Ich bin ... Jahre alt.&#10;Ich komme aus ...&#10;Ich wohne (jetzt) in ...&#10;Meine Telefonnummer ist ...&#10;Ich spreche ...&#10;Ich bin im Deutschkurs ...&#10;Mein/e Lehrerin ..."></textarea><div class="notiz-saved" id="savedIch"></div></div>
+  </div>
+
+</section>
+
+<!-- ================= GRAMMATIK & AUSSPRACHE ================= -->
+<section id="grammatik">
+  <div class="card">
+    <h2>📖 Auf einen Blick — Grammatik</h2>
+
+    <div class="grammar-box">
+      <b>1. Artikel: unbestimmter (ein/eine) und bestimmter Artikel (der/das/die)</b><br>
+      ... ein Herd → Der Herd ist alt.<br>
+      ... ein Bügeleisen → Das Bügeleisen ist kaputt.<br>
+      ... eine Waschmaschine → Die Waschmaschine ist neu.
+    </div>
+
+    <div class="grammar-box">
+      <b>2. Artikel: der/das/die – ein/eine – kein/keine – mein/meine, dein/deine</b><br>
+      der Kuli: Das ist ein/kein/mein/dein Kuli.<br>
+      das Heft: Das ist ein/kein/mein/dein Heft.<br>
+      die Schere: Das ist eine/keine/meine/deine Schere.<br><br>
+      <b>TIPP:</b> Nomen immer mit Artikel lernen.
+    </div>
+
+    <div class="grammar-box">
+      <b>3. Artikel und Personalpronomen (er/es/sie)</b><br>
+      Der Kuli ist sehr schön und → er funktioniert auch gut.<br>
+      Mein Fernseher ist gut. → Er ist fast neu.<br>
+      Das Handy kostet 95 Euro. → Es hat auch eine Kamera.<br>
+      Dein Handy ist super! → Es hat auch Internet.<br>
+      Die Waschmaschine ist neu. → Sie wäscht sehr gut.<br>
+      Rolf hat eine Digitalkamera. → Sie ist super.
+    </div>
+
+    <div class="grammar-box">
+      <b>Die Zahlen bis eine Million</b><br>
+      0 null, 1 eins, 2 zwei ... 12 zwölf, 13 dreizehn ... 20 zwanzig, 21 einundzwanzig ... 100 (ein)hundert, 101 (ein)hunderteins, 113 (ein)hundertdreizehn, 221 zweihunderteinundzwanzig, 866 achthundertsechsundsechzig, 1.000 (ein)tausend, 1.113 (ein)tausendeinhundertdreizehn, 100.000 (ein)hunderttausend, 1.000.000 eine Million
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🗣️ Aussprache</h2>
+    <div class="grammar-box">
+      <b>Vokale: a, e, i, o, u</b><br>
+      Vokal + h: zehn, wohnen (lang)<br>
+      Zwei Vokale: Tee, sieben (lang)<br>
+      Vokal + ein Konsonant: Tag, Name, hören (lang)<br>
+      Vokal + mehrere Konsonanten: Heft, Tabelle (kurz)
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💬 Im Alltag — Nützliche Sätze</h2>
+    <div class="grammar-box">
+      <b>Was kostet ...?</b><br>
+      Was kostet der Fernsehapparat? — 249 Euro.<br>
+      Das ist sehr teuer. — Nein, er ist fast neu.<br>
+      Wie viel kostet die CD? — Nur 8 Euro und 50 Cent.<br>
+      Das ist sehr teuer. — Nein, das ist sehr billig.<br>
+      Ist der Staubsauger neu? — Nein, er ist gebraucht. Zwei Jahre alt.<br>
+      Ist das ein Papierkorb? — Nein, eine Lampe.<br>
+      Funktioniert der Drucker? — Ja, er druckt gut.<br>
+      Funktioniert die Uhr? — Nein, sie funktioniert nicht.<br>
+      Ist das Bügeleisen kaputt? — Nein, es funktioniert.
+    </div>
+    <div class="grammar-box">
+      <b>Kaufen und verkaufen</b><br>
+      Käufer/in: Was/Wie viel kostet ...? So viel? Das ist sehr teuer! Ich zahle ... ... ist bestimmt kaputt. Funktioniert er/es/sie/...? Gut, den/das/die nehme ich.<br>
+      Verkäufer/in: (Er/Es/Sie kostet) ... Euro/Cent. Das ist kein/e ..., das ist ein/e ... Alles zusammen ... Sehr billig! Für Sie nur ... Nur heute! Er/Es/Sie funktioniert prima.
+    </div>
+  </div>
+</section>
+
+<!-- ================= VOKABELN (SRS) ================= -->
+<section id="vokabeln">
+  <div class="card">
+    <h2>🃏 Vokabeltrainer</h2>
+    <div class="srs-toggle">
+      <button id="dirDE" class="active" onclick="setDirection('de')">DE → RU</button>
+      <button id="dirRU" onclick="setDirection('ru')">RU → DE</button>
+    </div>
+    <div class="srs-meta" id="srsMeta"></div>
+    <div class="srs-card" id="srsCard" onclick="flipCard()"></div>
+    <div class="srs-controls" id="srsControls" style="display:none;">
+      <button style="background:var(--bad);" onclick="srsAnswer(0)">Забыл(а)</button>
+      <button style="background:#c98a2f;" onclick="srsAnswer(1)">Трудно</button>
+      <button style="background:var(--ok);" onclick="srsAnswer(2)">Легко</button>
+    </div>
+    <div class="btn-group" style="justify-content:center;">
+      <button class="clearbtn" onclick="resetSRS()">Сбросить прогресс карточек</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NOTIZEN ================= -->
+<section id="notizen">
+  <div class="card">
+    <h2>✏️ Notizen — freie / mündliche Übungen</h2>
+    <p class="instr">Diese Aufgaben haben keine feste Lösung. Ihre Antworten werden automatisch gespeichert.</p>
+
+    <h3 style="font-size:1rem;">1a Gegenstände — was kennen Sie?</h3>
+    <div class="notiz-box"><textarea id="notiz1" placeholder="Nummer 16: der Computer&#10;..."></textarea><div class="notiz-saved" id="saved1"></div></div>
+
+    <h3 style="font-size:1rem;">2b/2c Preise nennen — Fragen Sie im Kurs</h3>
+    <div class="notiz-box"><textarea id="notiz2" placeholder="Was kostet der/das/die ...? — Nur ... Euro.&#10;... Euro? — Aber er/es/sie ist fast neu."></textarea><div class="notiz-saved" id="saved2"></div></div>
+
+    <h3 style="font-size:1rem;">6a/6c Zeigen und sprechen, Gegenstände beschreiben</h3>
+    <div class="notiz-box"><textarea id="notiz3" placeholder="Ist das dein Bleistift? — Nein, das ist mein Kuli.&#10;Das ist mein Kuli. Der Kuli ist kaputt.&#10;Das ist eine Lampe. Die Lampe ist ..."></textarea><div class="notiz-saved" id="saved3"></div></div>
+
+    <h3 style="font-size:1rem;">7a Flohmarkt-Objekte auf Deutsch benennen</h3>
+    <div class="notiz-box"><textarea id="notiz4" placeholder="1. die Digitalkamera&#10;2. die Brille&#10;3. das Handy&#10;..."></textarea><div class="notiz-saved" id="saved4"></div></div>
+
+    <h3 style="font-size:1rem;">9. Kaufen und verkaufen — Rollenspiel Flohmarkt</h3>
+    <div class="notiz-box"><textarea id="notiz5" placeholder="Was kostet der Fernseher? — Er kostet ..."></textarea><div class="notiz-saved" id="saved5"></div></div>
+
+    <h3 style="font-size:1rem;">13b Weitere lange Wörter sammeln</h3>
+    <div class="notiz-box"><textarea id="notiz6" placeholder="Schreiben Sie hier..."></textarea><div class="notiz-saved" id="saved6"></div></div>
+
+    <h3 style="font-size:1rem;">Projekt: Flohmärkte in der Region</h3>
+    <p class="instr">Wo? Wann? Was? Internetsuchwörter: Flohmärkte Deutschland/Schweiz/Österreich ...</p>
+    <div class="notiz-box"><textarea id="notiz7" placeholder="Schreiben Sie hier Ihre Rechercheergebnisse..."></textarea><div class="notiz-saved" id="saved7"></div></div>
+  </div>
+</section>
+
+</main>
+
+<footer>Berliner Platz 1 · Kursbuch · Kapitel 3 — Was kostet das? · echtes Audio aus dem Lehrwerk</footer>
+
+<script>
+/* ---------- TAB NAVIGATION ---------- */
+document.querySelectorAll('#tabs button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+function normalize(s){
+  return s.trim().toLowerCase().replace(/\s+/g,' ').replace(/[.,!?]/g,'').replace(/ß/g,'ss');
+}
+
+/* ---------- GENERIC FILL-IN CHECKER ---------- */
+function checkGroup(cls){
+  const inputs = document.querySelectorAll(`.fill[data-group="${cls}"]`);
+  let correct=0;
+  inputs.forEach(inp=>{
+    const answers = inp.dataset.ans.split(';').map(a=>normalize(a));
+    const val = normalize(inp.value);
+    if(answers.includes(val) && val.length>0){
+      inp.classList.add('correct'); inp.classList.remove('incorrect');
+      correct++;
+    } else {
+      inp.classList.add('incorrect'); inp.classList.remove('correct');
+    }
+  });
+  showResult(cls, correct, inputs.length);
+}
+function showResult(cls, correct, total){
+  const fb = document.getElementById('fb-'+cls);
+  if(!fb) return;
+  fb.textContent = `${correct} von ${total} richtig.` + (correct===total?' 🎉':'');
+  fb.className = 'feedback ' + (correct===total?'ok':'bad');
+}
+function revealGroup(cls){
+  const inputs = document.querySelectorAll(`.fill[data-group="${cls}"]`);
+  inputs.forEach(inp=>{
+    inp.value = inp.dataset.ans.split(';')[0];
+    inp.classList.add('correct'); inp.classList.remove('incorrect');
+  });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent = 'Ответы показаны.'; fb.className = 'feedback'; }
+}
+function clearGroup(cls){
+  const inputs = document.querySelectorAll(`.fill[data-group="${cls}"]`);
+  inputs.forEach(inp=>{ inp.value=''; inp.classList.remove('correct','incorrect'); });
+  const fb = document.getElementById('fb-'+cls);
+  if(fb){ fb.textContent=''; fb.className='feedback'; }
+}
+
+/* ---------- ABC SELECT ---------- */
+const abcAnswers = {};
+function selectABC(btn, qId, val){
+  abcAnswers[qId] = val;
+  const group = document.querySelector(`.abc-options[data-q="${qId}"]`);
+  group.querySelectorAll('button').forEach(b=>{ b.classList.remove('selected'); b.style.outline=''; });
+  btn.classList.add('selected');
+}
+
+/* --- 5a Wortschatz-Bild --- */
+const wsbCorrect = 'c';
+function checkWSB(){
+  const group = document.querySelector('.abc-options[data-q="wsb"]');
+  const btns = group.querySelectorAll('button');
+  btns.forEach(b=>b.style.outline='');
+  const selBtn = group.querySelector('button.selected');
+  const fb = document.getElementById('fb-wsb');
+  if(abcAnswers['wsb'] === wsbCorrect){
+    if(selBtn) selBtn.style.outline = '2px solid var(--ok)';
+    fb.textContent = 'Richtig! 🎉'; fb.className='feedback ok';
+  } else if(abcAnswers['wsb']){
+    if(selBtn) selBtn.style.outline = '2px solid var(--bad)';
+    fb.textContent = 'Leider falsch.'; fb.className='feedback bad';
+  }
+}
+function revealWSB(){
+  abcAnswers['wsb'] = wsbCorrect;
+  const group = document.querySelector('.abc-options[data-q="wsb"]');
+  const btns = group.querySelectorAll('button');
+  btns.forEach(b=>{ b.classList.remove('selected'); b.style.outline=''; });
+  btns[2].classList.add('selected');
+  document.getElementById('fb-wsb').textContent = 'Ответ показан.';
+  document.getElementById('fb-wsb').className = 'feedback';
+}
+function clearWSB(){
+  delete abcAnswers['wsb'];
+  document.querySelectorAll('.abc-options[data-q="wsb"] button').forEach(b=>{ b.classList.remove('selected'); b.style.outline=''; });
+  document.getElementById('fb-wsb').textContent=''; document.getElementById('fb-wsb').className='feedback';
+}
+
+/* ---------- DIALOG ORDERING (Raststätte Ex.2) ---------- */
+const dialogData = {
+  d1r: {
+    lines: [
+      "Woher kommen Sie?",
+      "Guten Tag, mein Name ist Nikos Koukidis.",
+      "Ich komme aus Griechenland, aus Athen.",
+      "Und ich bin Boris Bogdanow.",
+      "Ich komme aus der Ukraine, und Sie?",
+      "Und ich bin aus Kiew."
+    ],
+    correct: [4,1,5,2,6,3]
+  },
+  d2r: {
+    lines: [
+      "Wo wohnst du?",
+      "In der Blumenstraße 34.",
+      "In der Kaiserstraße, und du?",
+      "Hast du Telefon?",
+      "Nur Handy. Die Nummer ist 0172 5480808."
+    ],
+    correct: [1,3,2,4,5]
+  }
+};
+const orderAnswers = {};
+function initDialog(id, listId){
+  orderAnswers[id] = {};
+  const data = dialogData[id];
+  const shuffled = data.lines.map((line,i)=>({line, origIdx:i}));
+  shuffled.sort(()=>Math.random()-0.5);
+  const list = document.getElementById(listId);
+  list.innerHTML = shuffled.map((item)=>{
+    let options = '<option value="">–</option>';
+    for(let n=1;n<=data.lines.length;n++){
+      options += `<option value="${n}">${n}</option>`;
+    }
+    return `<li class="order-item" data-orig="${item.origIdx}">
+      <select onchange="setOrderVal('${id}', ${item.origIdx}, this.value)">${options}</select>
+      <span>${item.line}</span>
+    </li>`;
+  }).join('');
+}
+function setOrderVal(id, origIdx, val){
+  orderAnswers[id][origIdx] = val;
+}
+function checkOrder(id){
+  const data = dialogData[id];
+  const listId = id==='d1r'?'d1List':'d2List';
+  const items = document.querySelectorAll(`#${listId} .order-item`);
+  let correct=0;
+  items.forEach(item=>{
+    const origIdx = parseInt(item.dataset.orig);
+    const select = item.querySelector('select');
+    const val = orderAnswers[id][origIdx];
+    const isCorrect = parseInt(val) === data.correct[origIdx];
+    select.style.outline = isCorrect ? '2px solid var(--ok)' : '2px solid var(--bad)';
+    if(isCorrect) correct++;
+  });
+  const fb = document.getElementById('fb-'+id);
+  fb.textContent = `${correct} von ${data.lines.length} richtig.` + (correct===data.lines.length?' 🎉':'');
+  fb.className = 'feedback ' + (correct===data.lines.length?'ok':'bad');
+}
+function revealOrder(id){
+  const data = dialogData[id];
+  const listId = id==='d1r'?'d1List':'d2List';
+  const items = document.querySelectorAll(`#${listId} .order-item`);
+  items.forEach(item=>{
+    const origIdx = parseInt(item.dataset.orig);
+    const select = item.querySelector('select');
+    select.value = data.correct[origIdx];
+    orderAnswers[id][origIdx] = String(data.correct[origIdx]);
+    select.style.outline = '2px solid var(--ok)';
+  });
+  document.getElementById('fb-'+id).textContent = 'Ответы показаны.';
+  document.getElementById('fb-'+id).className = 'feedback';
+}
+function clearOrder(id){
+  const listId = id==='d1r'?'d1List':'d2List';
+  orderAnswers[id] = {};
+  document.querySelectorAll(`#${listId} select`).forEach(s=>{ s.value=''; s.style.outline=''; });
+  document.getElementById('fb-'+id).textContent=''; document.getElementById('fb-'+id).className='feedback';
+}
+initDialog('d1r','d1List');
+initDialog('d2r','d2List');
+
+/* ---------- SRS VOCAB TRAINER ---------- */
+const vocabData = [
+  {de:"der Computer / der Drucker", ru:"компьютер / принтер"},
+  {de:"der Fernseher", ru:"телевизор"},
+  {de:"das Handy", ru:"мобильный телефон"},
+  {de:"der Kuli / der Bleistift", ru:"ручка / карандаш"},
+  {de:"das Heft / das Wörterbuch", ru:"тетрадь / словарь"},
+  {de:"die Schere", ru:"ножницы"},
+  {de:"der Herd / der Wasserkocher", ru:"плита / чайник"},
+  {de:"das Bügeleisen", ru:"утюг"},
+  {de:"die Kaffeemaschine", ru:"кофемашина"},
+  {de:"die Waschmaschine", ru:"стиральная машина"},
+  {de:"der Stuhl / der Tisch", ru:"стул / стол"},
+  {de:"die Lampe", ru:"лампа"},
+  {de:"Was kostet das?", ru:"Сколько это стоит?"},
+  {de:"billig / teuer", ru:"дешёвый / дорогой"},
+  {de:"neu / gebraucht / kaputt", ru:"новый / б.у. / сломанный"},
+  {de:"funktionieren", ru:"работать (об устройстве)"},
+  {de:"kein / keine", ru:"не (никакой)"},
+  {de:"mein / dein", ru:"мой / твой"},
+  {de:"der Flohmarkt", ru:"блошиный рынок"},
+  {de:"verkaufen / kaufen", ru:"продавать / покупать"},
+  {de:"der Käufer / die Verkäuferin", ru:"покупатель / продавщица"},
+  {de:"das Schnäppchen", ru:"выгодная покупка"},
+  {de:"null ... eine Million", ru:"0 ... миллион"},
+  {de:"der Euro / der Cent", ru:"евро / цент"},
+  {de:"die Anzeige", ru:"объявление"}
+];
+
+const SRS_INTERVALS=[0,1,3,7,14,30];
+let srsDirection = 'de';
+let srsState = JSON.parse(localStorage.getItem('kb3_srsState') || '{}');
+let srsQueue = [];
+let srsCurrent = null;
+let srsFlipped = false;
+
+function getCardState(idx){
+  if(!srsState[idx]) srsState[idx] = {level:0, due:0};
+  return srsState[idx];
+}
+function saveSRS(){ localStorage.setItem('kb3_srsState', JSON.stringify(srsState)); }
+
+function buildQueue(){
+  const now = Date.now();
+  srsQueue = vocabData.map((v,i)=>i).filter(i=>{
+    const st = getCardState(i);
+    return st.due <= now;
+  });
+  if(srsQueue.length===0){
+    srsQueue = vocabData.map((v,i)=>i);
+  }
+  srsQueue.sort(()=>Math.random()-0.5);
+}
+function setDirection(dir){
+  srsDirection = dir;
+  document.getElementById('dirDE').classList.toggle('active', dir==='de');
+  document.getElementById('dirRU').classList.toggle('active', dir==='ru');
+  nextCard();
+}
+function nextCard(){
+  if(srsQueue.length===0) buildQueue();
+  srsCurrent = srsQueue.pop();
+  srsFlipped = false;
+  renderCard();
+}
+function renderCard(){
+  const card = document.getElementById('srsCard');
+  const v = vocabData[srsCurrent];
+  const front = srsDirection==='de' ? v.de : v.ru;
+  card.innerHTML = front + (srsDirection==='de' ? ` <button class="spk-btn" onclick="event.stopPropagation();speak('${v.de.replace(/'/g,"\\'")}')">🔊</button>` : '');
+  document.getElementById('srsControls').style.display = 'none';
+  const total = vocabData.length;
+  const due = vocabData.filter((v,i)=>getCardState(i).due<=Date.now()).length;
+  document.getElementById('srsMeta').textContent = `Карточек к повторению: ${due} / ${total}`;
+}
+function flipCard(){
+  if(srsFlipped) return;
+  srsFlipped = true;
+  const card = document.getElementById('srsCard');
+  const v = vocabData[srsCurrent];
+  const back = srsDirection==='de' ? v.ru : v.de;
+  card.innerHTML = back + (srsDirection==='ru' ? ` <button class="spk-btn" onclick="event.stopPropagation();speak('${v.de.replace(/'/g,"\\'")}')">🔊</button>` : '');
+  document.getElementById('srsControls').style.display = 'flex';
+}
+function srsAnswer(quality){
+  const st = getCardState(srsCurrent);
+  if(quality===0){ st.level = 0; }
+  else if(quality===1){ st.level = Math.max(0, st.level); }
+  else { st.level = Math.min(SRS_INTERVALS.length-1, st.level+1); }
+  const days = SRS_INTERVALS[st.level];
+  st.due = Date.now() + days*24*60*60*1000;
+  saveSRS();
+  nextCard();
+}
+function resetSRS(){
+  srsState = {};
+  saveSRS();
+  buildQueue();
+  nextCard();
+}
+function speak(text){
+  if(!window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'de-DE';
+  speechSynthesis.speak(u);
+}
+buildQueue();
+nextCard();
+
+/* ---------- NOTIZEN AUTOSAVE ---------- */
+['notiz1','notiz2','notiz3','notiz4','notiz5','notiz6','notiz7','notiz11','videoNotiz1','videoNotiz2','ichNotiz'].forEach(id=>{
+  const ta = document.getElementById(id);
+  if(!ta) return;
+  const savedId = id==='notiz11' ? 'saved11' : (id==='videoNotiz1' ? 'savedVideo1' : (id==='videoNotiz2' ? 'savedVideo2' : (id==='ichNotiz' ? 'savedIch' : 'saved'+id.replace('notiz',''))));
+  const saved = document.getElementById(savedId);
+  const key = 'kb3_'+id;
+  ta.value = localStorage.getItem(key) || '';
+  if(ta.value) saved.textContent = 'Сохранено.';
+  ta.addEventListener('input', ()=>{
+    localStorage.setItem(key, ta.value);
+    saved.textContent = 'Сохранено ✓';
+  });
+});
+</script>
+</body>
+</html>

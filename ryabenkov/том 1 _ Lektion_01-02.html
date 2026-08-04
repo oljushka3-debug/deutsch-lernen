@@ -1,0 +1,2020 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рябенков A1 — Lektion 01-02 | Интерактивный учебник</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .sidebar h2 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .lesson-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #34495e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .lesson-btn:hover {
+            background: #3d5a73;
+            border-left-color: #3498db;
+        }
+        
+        .lesson-btn.active {
+            background: #3498db;
+            border-left-color: #2ecc71;
+        }
+        
+        .main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            color: #7f8c8d;
+        }
+        
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section h3 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .toggle-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .toggle-btn:hover {
+            background: #2980b9;
+        }
+        
+        .toggle-btn.show::after {
+            content: ' ▼';
+        }
+        
+        .toggle-btn.hide::after {
+            content: ' ▲';
+        }
+        
+        .content {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .content.visible {
+            display: block;
+        }
+        
+        .theory-block {
+            background: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .example {
+            background: #ecf0f1;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 3px solid #e67e22;
+        }
+        
+        .example-text {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+        
+        .translation {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+        
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        table th {
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .vocab-card {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #16a085;
+        }
+        
+        .vocab-de {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .vocab-ru {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .dialog {
+            background: #fef5e7;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border-left: 4px solid #f39c12;
+            line-height: 1.8;
+        }
+        
+        .dialog-person {
+            font-weight: bold;
+            color: #e67e22;
+        }
+        
+        .exercise {
+            background: #f0f8ff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .exercise-instruction {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .exercise-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+        
+        .exercise-label {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #2c3e50;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .check-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+        
+        .check-btn:hover {
+            background: #229954;
+        }
+        
+        .result {
+            margin-top: 8px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result.correct {
+            background: #d5f4e6;
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .result.incorrect {
+            background: #fadbd8;
+            color: #c0392b;
+            border-left: 4px solid #c0392b;
+        }
+        
+        .keys {
+            background: #fffacd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #f1c40f;
+            margin-top: 15px;
+        }
+        
+        .keys h3 {
+            margin-top: 0;
+        }
+        
+        .keys ol, .keys ul {
+            margin-left: 20px;
+        }
+        
+        .keys li {
+            margin-bottom: 8px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .goals {
+            background: #e8f8f5;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #16a085;
+            margin-bottom: 15px;
+        }
+        
+        .goals ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .goals li {
+            padding: 6px 0;
+            color: #2c3e50;
+        }
+        
+        .goals li::before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 10px 0;
+            color: #856404;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .speak-sentence, .speak-vocab { position: relative; display: inline-block; padding-right: 30px; margin-right: 5px; margin-bottom: 4px; }
+        .speak-vocab { font-weight: bold; color: #2c3e50; }
+        .play-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: #e8f4f8; border: none; cursor: pointer; font-size: 14px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2c3e50; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>📚 Лекции</h2>
+            <button class="lesson-btn active" onclick="loadLesson(1)">Lektion 01<br><small>Правила чтения, Präsens</small></button>
+            <button class="lesson-btn" onclick="loadLesson(2)">Lektion 02<br><small>Сильные глаголы, sein, вопросы</small></button>
+        </div>
+        
+        <div class="main">
+            <div class="header">
+                <h1 id="lessonTitle">Lektion 01</h1>
+                <p class="subtitle" id="lessonSubtitle">Правила чтения и Präsens</p>
+            </div>
+            
+            <div id="content"></div>
+        </div>
+    </div>
+
+    <script>
+        const lessons = [
+            {
+                id: 1,
+                title: 'Lektion 01',
+                subtitle: 'Правила чтения и Präsens (настоящее время)',
+                goals: [
+                    'познакомитесь с основными правилами чтения',
+                    'научитесь употреблять глаголы в настоящем времени',
+                    'познакомитесь с личными местоимениями',
+                    'научитесь строить простые повествовательные предложения',
+                    'научитесь рассказывать о себе'
+                ],
+                sections: [
+                    {
+                        title: 'Правила чтения',
+                        content: `
+                            <div class="theory-block">
+                                <p>Большинство звуков в немецком языке произносится так же, как и в русском: например <strong><span class="speak-vocab">Frau</span> [фрáу], <span class="speak-vocab">Mann</span> [ман]</strong>.</p>
+                                <p style="margin-top: 10px;">В немецком языке есть сочетания букв, которые образуют отдельные звуки и произносятся особым образом.</p>
+                            </div>
+                            
+                            <h3>Основные правила чтения:</h3>
+                            <table>
+                                <tr>
+                                    <th>Буквы/Сочетания</th>
+                                    <th>Произношение</th>
+                                    <th>Пример</th>
+                                    <th>Перевод</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>S/s</strong> перед гласным</td>
+                                    <td>«з»</td>
+                                    <td><span class="speak-vocab">singen</span></td>
+                                    <td>петь</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ß</strong> (эсцет)</td>
+                                    <td>«с»</td>
+                                    <td><span class="speak-vocab">Fuß</span></td>
+                                    <td>ступня</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>sch</strong></td>
+                                    <td>«ш»</td>
+                                    <td><span class="speak-vocab">Schrank</span></td>
+                                    <td>шкаф</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ck</strong></td>
+                                    <td>«к»</td>
+                                    <td><span class="speak-vocab">nicken</span></td>
+                                    <td>кивать</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>tsch</strong></td>
+                                    <td>«ч»</td>
+                                    <td><span class="speak-vocab">Quatsch</span></td>
+                                    <td>чепуха</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ch</strong> (после a, o, u)</td>
+                                    <td>близко к русскому «х»</td>
+                                    <td><span class="speak-vocab">Buch</span></td>
+                                    <td>книга</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>sp, st</strong> в начале слога</td>
+                                    <td>«шп», «шт»</td>
+                                    <td><span class="speak-vocab">Straße, springen</span></td>
+                                    <td>улица, прыгать</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>qu</strong></td>
+                                    <td>«кв»</td>
+                                    <td><span class="speak-vocab">Quark</span></td>
+                                    <td>творог</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>J/j</strong></td>
+                                    <td>«й»</td>
+                                    <td><span class="speak-vocab">ja</span></td>
+                                    <td>да</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>V/v</strong> в исконно немецких словах</td>
+                                    <td>«ф»</td>
+                                    <td><span class="speak-vocab">Vater</span></td>
+                                    <td>отец</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>W/w</strong></td>
+                                    <td>«в»</td>
+                                    <td><span class="speak-vocab">was</span></td>
+                                    <td>что</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Z/z</strong></td>
+                                    <td>«ц»</td>
+                                    <td><span class="speak-vocab">Zoo</span></td>
+                                    <td>зоопарк</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ei</strong></td>
+                                    <td>«ай»</td>
+                                    <td><span class="speak-vocab">klein</span></td>
+                                    <td>маленький</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ie</strong></td>
+                                    <td>долгий «и»</td>
+                                    <td><span class="speak-vocab">vier</span></td>
+                                    <td>четыре</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>au</strong></td>
+                                    <td>«ау»</td>
+                                    <td><span class="speak-vocab">Pause</span></td>
+                                    <td>пауза</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>äu, eu</strong></td>
+                                    <td>«ой»</td>
+                                    <td><span class="speak-vocab">Deutsch</span></td>
+                                    <td>немецкий</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ä</strong></td>
+                                    <td>«э»</td>
+                                    <td><span class="speak-vocab">Käse</span></td>
+                                    <td>сыр</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ö</strong></td>
+                                    <td>между «о» и «ё»</td>
+                                    <td><span class="speak-vocab">böse</span></td>
+                                    <td>сердитый</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ü</strong></td>
+                                    <td>между «у» и «ю»</td>
+                                    <td><span class="speak-vocab">süß</span></td>
+                                    <td>сладкий</td>
+                                </tr>
+                            </table>
+                        `
+                    },
+                    {
+                        title: 'Глагол (VERB)',
+                        content: `
+                            <div class="theory-block">
+                                <p><strong>Основная форма глагола называется ИНФИНИТИВ</strong> — это базовая форма глагола, на основе которой образуются различные времена и формы.</p>
+                                <p style="margin-top: 10px;">Глаголы изменяют свое окончание «en» («ть» в русском) в зависимости от лица и числа. Этот процесс называется <strong>спряжением</strong>.</p>
+                            </div>
+                            
+                            <div class="example">
+                                <div class="example-text"><span class="speak-vocab">lesen</span>, <span class="speak-vocab">schreiben</span>, <span class="speak-vocab">Ski laufen</span>, <span class="speak-vocab">kaufen</span>, <span class="speak-vocab">kochen</span>, <span class="speak-vocab">Fußball spielen</span>, <span class="speak-vocab">laufen</span></div>
+                                <div class="translation">(читать, писать, кататься на лыжах, покупать, готовить, играть в футбол, бежать)</div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Настоящее время (Präsens)',
+                        content: `
+                            <div class="theory-block">
+                                <p>В немецком языке <strong>всего одно настоящее время — Präsens</strong>. Это значит, что для выражения действий, которые происходят в настоящем времени, нужно употребить глагол в Präsens.</p>
+                            </div>
+                            
+                            <h3>Инфинитив и его основа</h3>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-vocab">kommen</span></div>
+                                <div class="translation">(приходить)</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-vocab">hören</span></div>
+                                <div class="translation">(слушать)</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-vocab">wohnen</span></div>
+                                <div class="translation">(жить)</div>
+                            </div>
+                            
+                            <p style="margin-top: 15px;"><strong>Почти все глаголы в немецком языке в начальной форме имеют окончание «en»</strong> (аналог «ть» в русском языке).</p>
+                            
+                            <h3>Процесс спряжения на примере глагола "machen" (делать)</h3>
+                            <table>
+                                <tr>
+                                    <th>Немецкий</th>
+                                    <th>Русский</th>
+                                </tr>
+                                <tr>
+                                    <td><span class="speak-sentence">ich mache</span></td>
+                                    <td>я делаю</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="speak-sentence">du machst</span></td>
+                                    <td>ты делаешь</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="speak-sentence">er, sie, es macht</span></td>
+                                    <td>он, она, оно делает</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="speak-sentence">wir machen</span></td>
+                                    <td>мы делаем</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="speak-sentence">ihr macht</span></td>
+                                    <td>вы делаете</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="speak-sentence">sie machen</span></td>
+                                    <td>они делают</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="speak-sentence">Sie machen</span></td>
+                                    <td>Вы делаете (вежливо)</td>
+                                </tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Исключение 1: Глаголы с основой на d, t, dm, tm, chn, ffn, gn</h3>
+                            <p>К основе добавляется -e в формах du, er/sie/es, ihr</p>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-vocab">arbeiten</span> (работать):</div>
+                            </div>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich arbeite</span></td><td>я работаю</td></tr>
+                                <tr><td><span class="speak-sentence">du arbeitest</span></td><td>ты работаешь</td></tr>
+                                <tr><td><span class="speak-sentence">er/sie/es arbeitet</span></td><td>он/она/оно работает</td></tr>
+                                <tr><td><span class="speak-sentence">wir arbeiten</span></td><td>мы работаем</td></tr>
+                                <tr><td><span class="speak-sentence">ihr arbeitet</span></td><td>вы работаете</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie arbeiten</span></td><td>они/Вы работают</td></tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Исключение 2: Глаголы с основой на s, ss, ß, z, zt, x</h3>
+                            <p>В du окончание -t</p>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-vocab">heißen</span> (называться):</div>
+                            </div>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich heiße</span></td><td>я называюсь</td></tr>
+                                <tr><td><span class="speak-sentence">du heißt</span></td><td>ты называешься</td></tr>
+                                <tr><td><span class="speak-sentence">er/sie/es heißt</span></td><td>он/она/оно называется</td></tr>
+                                <tr><td><span class="speak-sentence">wir heißen</span></td><td>мы называемся</td></tr>
+                                <tr><td><span class="speak-sentence">ihr heißt</span></td><td>вы называетесь</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie heißen</span></td><td>они/Вы называются</td></tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Исключение 3: Глаголы на -eln</h3>
+                            <p>Теряют в ich букву e</p>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-vocab">sammeln</span> (собирать):</div>
+                            </div>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich sammle</span></td><td>я собираю</td></tr>
+                                <tr><td><span class="speak-sentence">du sammelst</span></td><td>ты собираешь</td></tr>
+                                <tr><td><span class="speak-sentence">er/sie/es sammelt</span></td><td>он/она/оно собирает</td></tr>
+                                <tr><td><span class="speak-sentence">wir sammeln</span></td><td>мы собираем</td></tr>
+                                <tr><td><span class="speak-sentence">ihr sammelt</span></td><td>вы собираете</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie sammeln</span></td><td>они/Вы собирают</td></tr>
+                            </table>
+                        `
+                    },
+                    {
+                        title: 'Личные местоимения',
+                        content: `
+                            <div class="theory-block">
+                                <p>Личные местоимения в именительном падеже (кто? что?):</p>
+                            </div>
+                            <table>
+                                <tr>
+                                    <th>Немецкий</th>
+                                    <th>Произношение</th>
+                                    <th>Русский</th>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">ich</span></strong></td>
+                                    <td>[ихь]</td>
+                                    <td>я</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">du</span></strong></td>
+                                    <td>[ду]</td>
+                                    <td>ты</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">er</span></strong></td>
+                                    <td>[эа]</td>
+                                    <td>он</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">sie</span></strong></td>
+                                    <td>[зи]</td>
+                                    <td>она</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">es</span></strong></td>
+                                    <td>[эс]</td>
+                                    <td>оно</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">wir</span></strong></td>
+                                    <td>[вúа]</td>
+                                    <td>мы</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">ihr</span></strong></td>
+                                    <td>[úа]</td>
+                                    <td>вы</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">sie</span></strong></td>
+                                    <td>[зи]</td>
+                                    <td>они</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Sie</span></strong></td>
+                                    <td>[зи]</td>
+                                    <td>Вы (вежливо)</td>
+                                </tr>
+                            </table>
+                        `
+                    },
+                    {
+                        title: 'Порядок слов в простом повествовательном предложении',
+                        content: `
+                            <div class="theory-block">
+                                <p>В немецком простом повествовательном предложении есть два типа порядка слов: <strong>прямой</strong> и <strong>обратный</strong>.</p>
+                            </div>
+                            
+                            <h3>Прямой порядок (V2 — Verb-Zweit-Stellung)</h3>
+                            <p><strong>Глагол занимает вторую позицию в утвердительном предложении</strong></p>
+                            <table>
+                                <tr>
+                                    <td>1 место (подлежащее)</td>
+                                    <td>2 место (глагол)</td>
+                                    <td>3+ место (второстепенные члены)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ich</strong></td>
+                                    <td><strong>wohne</strong></td>
+                                    <td><strong>in Berlin</strong></td>
+                                </tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Обратный порядок</h3>
+                            <p>При обратном порядке слов выносится на 1 место один любой второстепенный член. Иногда это необходимо для акцента на этом члене.</p>
+                            <table>
+                                <tr>
+                                    <td>1 место (второстепенный член)</td>
+                                    <td>2 место (глагол)</td>
+                                    <td>3+ место</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>In Berlin</strong></td>
+                                    <td><strong>wohne</strong></td>
+                                    <td><strong>ich</strong></td>
+                                </tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Примеры простых утвердительных предложений:</h3>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Ich komme.</span></div>
+                                <div class="translation">Я прихожу.</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Du wohnst in Berlin.</span></div>
+                                <div class="translation">Ты живешь в Берлине.</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Er macht Hausaufgaben.</span></div>
+                                <div class="translation">Он делает домашнее задание.</div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Практический текст (Практика)',
+                        content: `
+                            <button class="check-btn" onclick="speakFullText(this)" style="margin-bottom: 15px;">🔊 Озвучить весь текст</button>
+                            <div class="dialog">
+                                <p><strong><span class="speak-sentence">Ich heiße Maria</span></strong></p>
+                                <p><span class="speak-sentence">Hallo!</span> <span class="speak-sentence">Ich heiße Maria.</span> <span class="speak-sentence">Ich komme aus Russland, aber ich wohne jetzt in der Schweiz.</span> <span class="speak-sentence">Ich arbeite nicht.</span> <span class="speak-sentence">Ich studiere Fremdsprachen und Literatur.</span> <span class="speak-sentence">Ich lerne Deutsch, Englisch, Italienisch und Spanisch.</span> <span class="speak-sentence">Ich spreche auch Französisch.</span> <span class="speak-sentence">Ich schwimme gern.</span> <span class="speak-sentence">Ich sammle Tassen.</span> <span class="speak-sentence">Ich höre gern Musik, singe, schaue Filme und mache Sport.</span> <span class="speak-sentence">Ich lese viel, oft und gern Bücher.</span> <span class="speak-sentence">Manchmal gehe ich ins Kino oder ins Café.</span></p>
+                            </div>
+
+                            <h3 style="margin-top: 20px;">Словарь к тексту:</h3>
+                            <ul>
+                                <li><strong><span class="speak-vocab">heißen</span></strong> – называться (по имени)</li>
+                                <li><strong><span class="speak-vocab">aus (Russland) kommen</span></strong> – быть родом из (России)</li>
+                                <li><strong><span class="speak-vocab">aber</span></strong> – но</li>
+                                <li><strong><span class="speak-vocab">in (der Schweiz) wohnen</span></strong> – жить в (Швейцарии)</li>
+                                <li><strong><span class="speak-vocab">jetzt</span></strong> – сейчас</li>
+                                <li><strong><span class="speak-vocab">arbeiten</span></strong> – работать</li>
+                                <li><strong><span class="speak-vocab">Fremdsprachen und Literatur studieren</span></strong> – изучать иностранные языки и литературу</li>
+                                <li><strong><span class="speak-vocab">Deutsch, Englisch, Italienisch und Spanisch lernen</span></strong> – учить немецкий, английский, итальянский, испанский</li>
+                                <li><strong><span class="speak-vocab">Französisch sprechen</span></strong> – говорить по-французски</li>
+                                <li><strong><span class="speak-vocab">auch</span></strong> – тоже</li>
+                                <li><strong><span class="speak-vocab">schwimmen</span></strong> – плавать</li>
+                                <li><strong><span class="speak-vocab">gern</span></strong> – с удовольствием</li>
+                                <li><strong><span class="speak-vocab">Tassen sammeln</span></strong> – коллекционировать чашки</li>
+                                <li><strong><span class="speak-vocab">Musik hören</span></strong> – слушать музыку</li>
+                                <li><strong><span class="speak-vocab">singen</span></strong> – петь</li>
+                                <li><strong><span class="speak-vocab">Filme schauen</span></strong> – смотреть фильмы</li>
+                                <li><strong><span class="speak-vocab">Sport machen</span></strong> – заниматься спортом</li>
+                                <li><strong><span class="speak-vocab">Bücher lesen</span></strong> – читать книги</li>
+                                <li><strong><span class="speak-vocab">viel</span></strong> – много</li>
+                                <li><strong><span class="speak-vocab">oft</span></strong> – часто</li>
+                                <li><strong><span class="speak-vocab">manchmal</span></strong> – иногда</li>
+                                <li><strong><span class="speak-vocab">ins Kino gehen</span></strong> – ходить в кино</li>
+                                <li><strong><span class="speak-vocab">ins Café gehen</span></strong> – ходить в кафе</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: 'Задания',
+                        content: `
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 1: Кто выполняет действия? Составьте и запишите предложения по образцу (проспрягайте глаголы)</div>
+                                <p style="margin-bottom: 15px;">Глаголы: <span class="speak-vocab">kommen</span>, <span class="speak-vocab">wohnen</span>, <span class="speak-vocab">kochen</span>, <span class="speak-vocab">lächeln</span>, <span class="speak-vocab">schwimmen</span>, <span class="speak-vocab">studieren</span>, <span class="speak-vocab">hören</span>, <span class="speak-vocab">arbeiten</span>, <span class="speak-vocab">gehen</span>, <span class="speak-vocab">zeichnen</span></p>
+                                <div id="ex1"></div>
+                            </div>
+                            
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 2: Скажите по-немецки следующие фразы. Составьте и запишите предложения. Помните про порядок слов и спряжение глаголов!</div>
+                                <div id="ex2"></div>
+                            </div>
+                            
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 3: Заполните пропуски правильными формами глаголов</div>
+                                <div id="ex3"></div>
+                            </div>
+                            
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 4: Поставьте слова в правильном порядке, используя прямой порядок слов</div>
+                                <div id="ex4"></div>
+                            </div>
+                            
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 5: Составьте предложения на немецком языке, используя обратный порядок слов</div>
+                                <div id="ex5"></div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Ключи (ответы)',
+                        content: `
+                            <div class="keys">
+                                <h3>ЗАДАНИЕ № 1 — Спряжение глаголов</h3>
+                                <table>
+                                    <tr>
+                                        <th>Лицо</th>
+                                        <th>kommen</th>
+                                        <th>wohnen</th>
+                                        <th>kochen</th>
+                                        <th>schwimmen</th>
+                                        <th>studieren</th>
+                                        <th>arbeiten</th>
+                                        <th>lächeln</th>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ich</strong></td>
+                                        <td><span class="speak-vocab">komme</span></td>
+                                        <td><span class="speak-vocab">wohne</span></td>
+                                        <td><span class="speak-vocab">koche</span></td>
+                                        <td><span class="speak-vocab">schwimme</span></td>
+                                        <td><span class="speak-vocab">studiere</span></td>
+                                        <td><span class="speak-vocab">arbeite</span></td>
+                                        <td><span class="speak-vocab">lächle</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>du</strong></td>
+                                        <td><span class="speak-vocab">kommst</span></td>
+                                        <td><span class="speak-vocab">wohnst</span></td>
+                                        <td><span class="speak-vocab">kochst</span></td>
+                                        <td><span class="speak-vocab">schwimmst</span></td>
+                                        <td><span class="speak-vocab">studierst</span></td>
+                                        <td><span class="speak-vocab">arbeitest</span></td>
+                                        <td><span class="speak-vocab">lächelst</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>er/sie/es</strong></td>
+                                        <td><span class="speak-vocab">kommt</span></td>
+                                        <td><span class="speak-vocab">wohnt</span></td>
+                                        <td><span class="speak-vocab">kocht</span></td>
+                                        <td><span class="speak-vocab">schwimmt</span></td>
+                                        <td><span class="speak-vocab">studiert</span></td>
+                                        <td><span class="speak-vocab">arbeitet</span></td>
+                                        <td><span class="speak-vocab">lächelt</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>wir</strong></td>
+                                        <td><span class="speak-vocab">kommen</span></td>
+                                        <td><span class="speak-vocab">wohnen</span></td>
+                                        <td><span class="speak-vocab">kochen</span></td>
+                                        <td><span class="speak-vocab">schwimmen</span></td>
+                                        <td><span class="speak-vocab">studieren</span></td>
+                                        <td><span class="speak-vocab">arbeiten</span></td>
+                                        <td><span class="speak-vocab">lächeln</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>ihr</strong></td>
+                                        <td><span class="speak-vocab">kommt</span></td>
+                                        <td><span class="speak-vocab">wohnt</span></td>
+                                        <td><span class="speak-vocab">kocht</span></td>
+                                        <td><span class="speak-vocab">schwimmt</span></td>
+                                        <td><span class="speak-vocab">studiert</span></td>
+                                        <td><span class="speak-vocab">arbeitet</span></td>
+                                        <td><span class="speak-vocab">lächelt</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>sie/Sie</strong></td>
+                                        <td><span class="speak-vocab">kommen</span></td>
+                                        <td><span class="speak-vocab">wohnen</span></td>
+                                        <td><span class="speak-vocab">kochen</span></td>
+                                        <td><span class="speak-vocab">schwimmen</span></td>
+                                        <td><span class="speak-vocab">studieren</span></td>
+                                        <td><span class="speak-vocab">arbeiten</span></td>
+                                        <td><span class="speak-vocab">lächeln</span></td>
+                                    </tr>
+                                </table>
+                                
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 2 — Переводы</h3>
+                                <ol>
+                                    <li><span class="speak-sentence">Ich heiße Galina.</span></li>
+                                    <li><span class="speak-sentence">Ich komme aus Russland, aber jetzt wohne ich in Deutschland.</span></li>
+                                    <li><span class="speak-sentence">Ich arbeite und studiere Fremdsprachen: Englisch und Französisch.</span></li>
+                                    <li><span class="speak-sentence">Ich lerne Deutsch und spreche auch Italienisch.</span></li>
+                                    <li><span class="speak-sentence">Ich lese gern Bücher, schaue Filme und schwimme.</span></li>
+                                    <li><span class="speak-sentence">Manchmal mache ich Sport.</span></li>
+                                    <li><span class="speak-sentence">Ich gehe oft ins Kino, singe und höre Musik.</span></li>
+                                </ol>
+                                
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 3 — Заполните пропуски</h3>
+                                <ol>
+                                    <li><span class="speak-sentence">Ich <strong>heiße</strong> Peter.</span></li>
+                                    <li><span class="speak-sentence">Du <strong>kommst</strong> aus Russland.</span></li>
+                                    <li><span class="speak-sentence">Er <strong>wohnt</strong> in Berlin.</span></li>
+                                    <li><span class="speak-sentence">Sie <strong>arbeitet</strong> als Lehrerin.</span></li>
+                                    <li><span class="speak-sentence">Wir <strong>studieren</strong> Literatur und Fremdsprachen.</span></li>
+                                    <li><span class="speak-sentence">Ihr <strong>lernt</strong> Deutsch.</span></li>
+                                    <li><span class="speak-sentence">Sie <strong>sprechen</strong> Französisch.</span></li>
+                                    <li><span class="speak-sentence">Ich <strong>höre</strong> Musik.</span></li>
+                                    <li><span class="speak-sentence">Du <strong>sammelst</strong> Tassen.</span></li>
+                                    <li><span class="speak-sentence">Er <strong>singt</strong> gern.</span></li>
+                                    <li><span class="speak-sentence">Wir <strong>schwimmen</strong> oft.</span></li>
+                                    <li><span class="speak-sentence">Ihr <strong>schaut</strong> Filme.</span></li>
+                                    <li><span class="speak-sentence">Ich <strong>lese</strong> Bücher.</span></li>
+                                    <li><span class="speak-sentence">Du <strong>gehst</strong> ins Kino.</span></li>
+                                    <li><span class="speak-sentence">Er <strong>macht</strong> Sport.</span></li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 4 — Прямой порядок</h3>
+                                <ol>
+                                    <li><span class="speak-sentence">Ich heiße Peter.</span></li>
+                                    <li><span class="speak-sentence">Er kommt aus Russland.</span></li>
+                                    <li><span class="speak-sentence">Sie wohnt in Berlin.</span></li>
+                                    <li><span class="speak-sentence">Wir studieren Literatur und Fremdsprachen.</span></li>
+                                    <li><span class="speak-sentence">Ihr lernt Deutsch.</span></li>
+                                    <li><span class="speak-sentence">Ich spreche Französisch.</span></li>
+                                    <li><span class="speak-sentence">Er hört Musik.</span></li>
+                                    <li><span class="speak-sentence">Wir sammeln Tassen.</span></li>
+                                    <li><span class="speak-sentence">Ihr singt gern.</span></li>
+                                    <li><span class="speak-sentence">Sie schwimmen oft.</span></li>
+                                    <li><span class="speak-sentence">Ich schaue Filme.</span></li>
+                                    <li><span class="speak-sentence">Wir lesen Bücher.</span></li>
+                                    <li><span class="speak-sentence">Wir gehen ins Kino.</span></li>
+                                    <li><span class="speak-sentence">Sie machen Sport.</span></li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 5 — Обратный порядок</h3>
+                                <ol>
+                                    <li><span class="speak-sentence">Manchmal lese ich Bücher.</span></li>
+                                    <li><span class="speak-sentence">Jetzt arbeitet er als Dolmetscher.</span></li>
+                                    <li><span class="speak-sentence">Oft hört sie Musik.</span></li>
+                                    <li><span class="speak-sentence">Viel und gern machen wir Sport.</span></li>
+                                    <li><span class="speak-sentence">Jetzt lernen sie Deutsch.</span></li>
+                                    <li><span class="speak-sentence">Manchmal schaut ihr Filme.</span></li>
+                                    <li><span class="speak-sentence">Jetzt wohnen wir in Berlin.</span></li>
+                                    <li><span class="speak-sentence">Oft sprechen sie Französisch.</span></li>
+                                    <li><span class="speak-sentence">Manchmal sammle ich Tassen.</span></li>
+                                </ol>
+                            </div>
+                        `
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: 'Lektion 02',
+                subtitle: 'Сильные глаголы, глагол sein и вопросительные предложения',
+                goals: [
+                    'познакомитесь с сильными глаголами и научитесь спрягать их',
+                    'познакомитесь с глаголом sein (быть)',
+                    'научитесь строить вопросительные предложения',
+                    'научитесь рассказывать при знакомстве о себе'
+                ],
+                sections: [
+                    {
+                        title: 'Слабые и сильные глаголы',
+                        content: `
+                            <div class="theory-block">
+                                <p>В немецком языке глаголы делятся на две группы:</p>
+                                <ul>
+                                    <li><strong>СЛАБЫЕ глаголы</strong> образуют свои формы путем добавления стандартных окончаний к основе глагола</li>
+                                    <li><strong>СИЛЬНЫЕ глаголы</strong> изменяют корневую гласную при спряжении</li>
+                                </ul>
+                            </div>
+                            
+                            <h3>Слабые глаголы (повторение)</h3>
+                            <p>Помните из предыдущей лекции: <strong><span class="speak-vocab">machen</span></strong> (делать)</p>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich mache</span></td><td>я делаю</td></tr>
+                                <tr><td><span class="speak-sentence">du machst</span></td><td>ты делаешь</td></tr>
+                                <tr><td><span class="speak-sentence">er, sie, es macht</span></td><td>он, она, оно делает</td></tr>
+                                <tr><td><span class="speak-sentence">wir machen</span></td><td>мы делаем</td></tr>
+                                <tr><td><span class="speak-sentence">ihr macht</span></td><td>вы делаете</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie machen</span></td><td>они/Вы делают</td></tr>
+                            </table>
+                            
+                            <h3 style="margin-top: 20px;">Сильные глаголы</h3>
+                            <p>Сильные глаголы образуют Präsens так же, как и слабые — меняют личные окончания. <strong>НО!</strong> Кроме этого <strong>изменяется корневая гласная!</strong></p>
+                            
+                            <h3 style="margin-top: 15px;">Правила изменения корневой гласной:</h3>
+                            <ul>
+                                <li>Корневая гласная <strong>a</strong> меняется на <strong>ä</strong> в du и er/sie/es</li>
+                                <li>Корневая гласная <strong>o</strong> меняется на <strong>ö</strong> в du и er/sie/es</li>
+                                <li>Корневая гласная <strong>e</strong> меняется на <strong>i</strong> или <strong>ie</strong> в du и er/sie/es</li>
+                            </ul>
+                            
+                            <h3 style="margin-top: 20px;">Пример 1: <span class="speak-vocab">schlafen</span> (спать)</h3>
+                            <p>Корневая гласная <strong>a</strong> → <strong>ä</strong></p>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich schlafe</span></td><td>я сплю</td></tr>
+                                <tr><td><span class="speak-sentence">du schläfst</span></td><td>ты спишь</td></tr>
+                                <tr><td><span class="speak-sentence">er, sie, es schläft</span></td><td>он, она, оно спит</td></tr>
+                                <tr><td><span class="speak-sentence">wir schlafen</span></td><td>мы спим</td></tr>
+                                <tr><td><span class="speak-sentence">ihr schlaft</span></td><td>вы спите</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie schlafen</span></td><td>они/Вы спят</td></tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Пример 2: <span class="speak-vocab">sehen</span> (видеть)</h3>
+                            <p>Корневая гласная <strong>e</strong> → <strong>ie</strong></p>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich sehe</span></td><td>я вижу</td></tr>
+                                <tr><td><span class="speak-sentence">du siehst</span></td><td>ты видишь</td></tr>
+                                <tr><td><span class="speak-sentence">er, sie, es sieht</span></td><td>он, она, оно видит</td></tr>
+                                <tr><td><span class="speak-sentence">wir sehen</span></td><td>мы видим</td></tr>
+                                <tr><td><span class="speak-sentence">ihr seht</span></td><td>вы видите</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie sehen</span></td><td>они/Вы видят</td></tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Пример 3: <span class="speak-vocab">lesen</span> (читать)</h3>
+                            <p>Корневая гласная <strong>e</strong> → <strong>i</strong></p>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich lese</span></td><td>я читаю</td></tr>
+                                <tr><td><span class="speak-sentence">du liest</span></td><td>ты читаешь</td></tr>
+                                <tr><td><span class="speak-sentence">er, sie, es liest</span></td><td>он, она, оно читает</td></tr>
+                                <tr><td><span class="speak-sentence">wir lesen</span></td><td>мы читаем</td></tr>
+                                <tr><td><span class="speak-sentence">ihr lest</span></td><td>вы читаете</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie lesen</span></td><td>они/Вы читают</td></tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Пример 4: <span class="speak-vocab">sprechen</span> (говорить)</h3>
+                            <p>Корневая гласная <strong>e</strong> → <strong>i</strong></p>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich spreche</span></td><td>я говорю</td></tr>
+                                <tr><td><span class="speak-sentence">du sprichst</span></td><td>ты говоришь</td></tr>
+                                <tr><td><span class="speak-sentence">er, sie, es spricht</span></td><td>он, она, оно говорит</td></tr>
+                                <tr><td><span class="speak-sentence">wir sprechen</span></td><td>мы говорим</td></tr>
+                                <tr><td><span class="speak-sentence">ihr sprecht</span></td><td>вы говорите</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie sprechen</span></td><td>они/Вы говорят</td></tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Пример 5: <span class="speak-vocab">fahren</span> (ехать)</h3>
+                            <p>Корневая гласная <strong>a</strong> → <strong>ä</strong></p>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich fahre</span></td><td>я еду</td></tr>
+                                <tr><td><span class="speak-sentence">du fährst</span></td><td>ты едешь</td></tr>
+                                <tr><td><span class="speak-sentence">er, sie, es fährt</span></td><td>он, она, оно едет</td></tr>
+                                <tr><td><span class="speak-sentence">wir fahren</span></td><td>мы едем</td></tr>
+                                <tr><td><span class="speak-sentence">ihr fahrt</span></td><td>вы едете</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie fahren</span></td><td>они/Вы едут</td></tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Пример 6: <span class="speak-vocab">laufen</span> (бежать)</h3>
+                            <p>Корневая гласная <strong>au</strong> → <strong>äu</strong></p>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich laufe</span></td><td>я бегу</td></tr>
+                                <tr><td><span class="speak-sentence">du läufst</span></td><td>ты бежишь</td></tr>
+                                <tr><td><span class="speak-sentence">er, sie, es läuft</span></td><td>он, она, оно бежит</td></tr>
+                                <tr><td><span class="speak-sentence">wir laufen</span></td><td>мы бежим</td></tr>
+                                <tr><td><span class="speak-sentence">ihr lauft</span></td><td>вы бежите</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie laufen</span></td><td>они/Вы бегут</td></tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Пример 7: <span class="speak-vocab">stoßen</span> (толкать)</h3>
+                            <p>Корневая гласная <strong>o</strong> → <strong>ö</strong></p>
+                            <table>
+                                <tr><td><span class="speak-sentence">ich stoße</span></td><td>я толкаю</td></tr>
+                                <tr><td><span class="speak-sentence">du stößt</span></td><td>ты толкаешь</td></tr>
+                                <tr><td><span class="speak-sentence">er, sie, es stößt</span></td><td>он, она, оно толкает</td></tr>
+                                <tr><td><span class="speak-sentence">wir stoßen</span></td><td>мы толкаем</td></tr>
+                                <tr><td><span class="speak-sentence">ihr stoßt</span></td><td>вы толкаете</td></tr>
+                                <tr><td><span class="speak-sentence">sie/Sie stoßen</span></td><td>они/Вы толкают</td></tr>
+                            </table>
+                            
+                            <div class="note">
+                                <p><strong>⚠️ Как понять, какой глагол слабый, а какой сильный?</strong> Такие глаголы нужно заучивать! Нет четких правил.</p>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Глагол sein (быть, являться)',
+                        content: `
+                            <div class="theory-block">
+                                <p>В русском языке мы говорим: <em>я учитель, он врач, мы умные, она красивая</em> — и даже не замечаем, что нет глагола.</p>
+                                <p style="margin-top: 10px;">В немецком предложении глагол должен быть всегда! В предложениях такого типа этим глаголом будет <strong>sein</strong> [зайн] (быть, являться).</p>
+                                <p style="margin-top: 10px;">Глагол «sein» соответствует английскому глаголу «to be».</p>
+                            </div>
+                            
+                            <h3>Спряжение глагола sein</h3>
+                            <p>Глагол "sein" не спрягается по общим правилам, поэтому его спряжение нужно запомнить:</p>
+                            <table>
+                                <tr>
+                                    <th>Немецкий</th>
+                                    <th>Русский</th>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">ich bin</span></strong></td>
+                                    <td>я есть (являюсь)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">du bist</span></strong></td>
+                                    <td>ты есть</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">er/sie/es ist</span></strong></td>
+                                    <td>он/она/оно есть</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">wir sind</span></strong></td>
+                                    <td>мы есть</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">ihr seid</span></strong></td>
+                                    <td>вы есть</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">sie sind</span></strong></td>
+                                    <td>они есть</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">Sie sind</span></strong></td>
+                                    <td>Вы есть (вежливо)</td>
+                                </tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Примеры использования глагола sein:</h3>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Ich bin Lehrer.</span></div>
+                                <div class="translation">Я (являюсь) учитель.</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Du bist lustig.</span></div>
+                                <div class="translation">Ты веселый.</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Ist sie Studentin?</span></div>
+                                <div class="translation">Она (является) студентка?</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Wir sind in Berlin.</span></div>
+                                <div class="translation">Мы находимся в Берлине.</div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Общий вопрос (Ja/Nein-Frage)',
+                        content: `
+                            <div class="theory-block">
+                                <p>Чтобы построить вопросительное предложение, нужно <strong>поставить глагол на первое место</strong>:</p>
+                            </div>
+                            
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Sie kommen.</span> → <span class="speak-sentence">Kommen Sie?</span></div>
+                                <div class="translation">Вы приходите? → Вы приходите? (вопрос)</div>
+                            </div>
+
+                            <p style="margin-top: 15px;">Такой вопрос называется <strong>«общий»</strong>. На общий вопрос может быть два варианта ответа: <strong>ДА/НЕТ</strong>. Поэтому он называется <strong>(Ja/Nein-Frage)</strong></p>
+
+                            <h3>Ответы на общий вопрос:</h3>
+                            <table>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">Kommen Sie?</span></strong></td>
+                                    <td>Вы придете?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">Ja, ich komme.</span></strong></td>
+                                    <td>Да, я приду.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-sentence">Nein, ich komme nicht.</span></strong></td>
+                                    <td>Нет, я не приду.</td>
+                                </tr>
+                            </table>
+                            
+                            <div class="note">
+                                <p><strong>⚠️ Слово "nicht" (не)</strong></p>
+                                <p>В русском языке «не» ставится перед глаголом, а в немецком «nicht» стоит ПОСЛЕ глагола.</p>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Специальный вопрос (W-Frage)',
+                        content: `
+                            <div class="theory-block">
+                                <p>Чтобы построить специальный вопрос (т.е. с вопросительным словом), нужно <strong>поставить вопросительное слово на первое место</strong>, а затем глагол:</p>
+                            </div>
+                            
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">kommen Sie?</span> → <span class="speak-sentence">Wann kommen Sie?</span></div>
+                                <div class="translation">Вы приходите? → Когда Вы приходите?</div>
+                            </div>
+
+                            <h3>Вопросительные слова (W-FRAGEN):</h3>
+                            <table>
+                                <tr>
+                                    <th>Немецкий</th>
+                                    <th>Русский</th>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Wer?</span></strong></td>
+                                    <td>кто?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Was?</span></strong></td>
+                                    <td>что?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Wie?</span></strong></td>
+                                    <td>как?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Wo?</span></strong></td>
+                                    <td>где?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Wem?</span></strong></td>
+                                    <td>кому?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Wen?</span></strong></td>
+                                    <td>кого?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Wann?</span></strong></td>
+                                    <td>когда?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Wessen?</span></strong></td>
+                                    <td>чей?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Warum?</span></strong></td>
+                                    <td>почему?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Wozu?</span></strong></td>
+                                    <td>зачем?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Woher?</span></strong></td>
+                                    <td>откуда?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong><span class="speak-vocab">Wohin?</span></strong></td>
+                                    <td>куда?</td>
+                                </tr>
+                            </table>
+
+                            <h3 style="margin-top: 20px;">Важно!</h3>
+                            <p>Вопросительное слово <strong>«wer»</strong> спрягает глагол так же как «er, sie, es»:</p>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">er kommt</span> (он приходит) → <span class="speak-sentence">wer kommt?</span> (кто приходит?)</div>
+                            </div>
+
+                            <h3 style="margin-top: 20px;">Примеры специальных вопросов:</h3>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Wer ist Lehrer?</span></div>
+                                <div class="translation">Кто (является) учитель?</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Wo sind sie?</span></div>
+                                <div class="translation">Где они?</div>
+                            </div>
+                            <div class="example">
+                                <div class="example-text"><span class="speak-sentence">Wie singt sie?</span></div>
+                                <div class="translation">Как она поет?</div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Практический диалог (Kennenlernen — Знакомство)',
+                        content: `
+                            <button class="check-btn" onclick="speakFullText(this)" style="margin-bottom: 15px;">🔊 Озвучить весь текст</button>
+                            <div class="dialog">
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Hallo, ich heiße Anna.</span> <span class="speak-sentence">Wie heißt du?</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Hallo Anna, ich heiße Tom.</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Freut mich, dich kennenzulernen, Tom.</span> <span class="speak-sentence">Woher kommst du?</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Ich komme aus Deutschland.</span> <span class="speak-sentence">Und du?</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Ich komme aus England.</span> <span class="speak-sentence">Wohnst du in Berlin?</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Ja, ich wohne in Berlin.</span> <span class="speak-sentence">Und du?</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Ich wohne auch in Berlin, aber ich bin neu hier.</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Oh, wie lange bist du schon hier?</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Ich bin seit drei Monaten hier.</span> <span class="speak-sentence">Was machst du in Berlin?</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Ich studiere an der Universität.</span> <span class="speak-sentence">Und du?</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Ich arbeite hier und lerne Deutsch.</span> <span class="speak-sentence">Ich bin Friseurin von Beruf.</span> <span class="speak-sentence">Ich besuche einen Sprachkurs.</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Was machst du in der Freizeit?</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Ich gehe oft spazieren.</span> <span class="speak-sentence">Manchmal koche ich.</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Was kochst du am liebsten?</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Ich koche gerne Pasta.</span> <span class="speak-sentence">Machst du Sport?</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Ja, ich treibe gerne Sport.</span> <span class="speak-sentence">Ich spiele Tennis.</span> <span class="speak-sentence">Und du?</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Ich schwimme gern.</span> <span class="speak-sentence">Was machst du noch gerne?</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Ich lese gerne Bücher.</span> <span class="speak-sentence">Liest du Bücher?</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Oh, ja klar!</span> <span class="speak-sentence">Ich schaue auch gerne Filme.</span> <span class="speak-sentence">Siehst du Filme?</span></p>
+                                <p><span class="dialog-person">Tom:</span> <span class="speak-sentence">Ja, sehr gerne!</span> <span class="speak-sentence">Bis später, Anna!</span></p>
+                                <p><span class="dialog-person">Anna:</span> <span class="speak-sentence">Tschüss!</span></p>
+                            </div>
+
+                            <h3 style="margin-top: 20px;">Словарь к диалогу:</h3>
+                            <ul>
+                                <li><strong><span class="speak-vocab">Freut mich, dich kennenzulernen!</span></strong> – Приятно познакомиться! (в неформальной обстановке)</li>
+                                <li><strong><span class="speak-vocab">auch</span></strong> – тоже</li>
+                                <li><strong><span class="speak-vocab">neu</span></strong> – новый (в контексте "новый здесь" означает "новый в этом месте")</li>
+                                <li><strong><span class="speak-vocab">hier</span></strong> – здесь</li>
+                                <li><strong><span class="speak-vocab">wie lange</span></strong> – как долго</li>
+                                <li><strong><span class="speak-vocab">schon</span></strong> – уже</li>
+                                <li><strong><span class="speak-vocab">seit drei Monaten</span></strong> – уже три месяца</li>
+                                <li><strong><span class="speak-vocab">der Friseur</span></strong> - парикмахер (муж.), <strong><span class="speak-vocab">die Friseurin</span></strong> - парикмахер (жен.)</li>
+                                <li><strong><span class="speak-vocab">von Beruf sein</span></strong> – работать/быть ... по профессии</li>
+                                <li><strong><span class="speak-vocab">einen Sprachkurs besuchen</span></strong> – посещать языковой курс</li>
+                                <li><strong><span class="speak-vocab">in der Freizeit</span></strong> – в свободное время</li>
+                                <li><strong><span class="speak-vocab">spazieren gehen</span></strong> – гулять</li>
+                                <li><strong><span class="speak-vocab">kochen</span></strong> – готовить</li>
+                                <li><strong><span class="speak-vocab">am liebsten</span></strong> – больше всего</li>
+                                <li><strong><span class="speak-vocab">die Pasta</span></strong> – паста</li>
+                                <li><strong><span class="speak-vocab">Sport machen / Sport treiben</span></strong> – заниматься спортом</li>
+                                <li><strong><span class="speak-vocab">Tennis spielen</span></strong> – играть в теннис</li>
+                                <li><strong><span class="speak-vocab">ja klar!</span></strong> – да, конечно!</li>
+                                <li><strong><span class="speak-vocab">Filme schauen / Filme sehen</span></strong> – смотреть фильмы</li>
+                                <li><strong><span class="speak-vocab">sehr gerne!</span></strong> – с большим удовольствием!</li>
+                                <li><strong><span class="speak-vocab">Bis später!</span></strong> – До скорого!</li>
+                                <li><strong><span class="speak-vocab">Tschüss!</span></strong> – Пока!</li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: 'Задания',
+                        content: `
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 1: Ответьте на вопросы по диалогу</div>
+                                <div id="ex_l2_1"></div>
+                            </div>
+                            
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 2: Заполните пропуски правильными формами глаголов</div>
+                                <div id="ex_l2_2"></div>
+                            </div>
+                            
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 3: Переведите на немецкий язык (вопросы)</div>
+                                <div id="ex_l2_3"></div>
+                            </div>
+                            
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 4: Постройте вопросы с вопросительными словами</div>
+                                <div id="ex_l2_4"></div>
+                            </div>
+                            
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 5: Употребите глаголы в правильной форме</div>
+                                <div id="ex_l2_5"></div>
+                            </div>
+                            
+                            <div class="exercise">
+                                <div class="exercise-instruction">ЗАДАНИЕ № 6: Преобразуйте утвердительные предложения в вопросительные</div>
+                                <div id="ex_l2_6"></div>
+                            </div>
+                        `
+                    },
+                    {
+                        title: 'Ключи (ответы)',
+                        content: `
+                            <div class="keys">
+                                <h3>ЗАДАНИЕ № 1 — Ответы на вопросы по диалогу</h3>
+                                <ol>
+                                    <li><strong><span class="speak-sentence">Woher kommt Tom?</span></strong> <span class="speak-sentence">Tom kommt aus Deutschland.</span></li>
+                                    <li><strong><span class="speak-sentence">Wo wohnt Anna?</span></strong> <span class="speak-sentence">Anna wohnt in Berlin.</span></li>
+                                    <li><strong><span class="speak-sentence">Was macht Anna in Berlin?</span></strong> <span class="speak-sentence">Anna arbeitet in Berlin und lernt Deutsch.</span></li>
+                                    <li><strong><span class="speak-sentence">Was macht Tom in Berlin?</span></strong> <span class="speak-sentence">Tom studiert an der Universität in Berlin.</span></li>
+                                    <li><strong><span class="speak-sentence">Wie lange ist Anna schon in Berlin?</span></strong> <span class="speak-sentence">Anna ist seit drei Monaten in Berlin.</span></li>
+                                    <li><strong><span class="speak-sentence">Besucht Anna einen Sprachkurs?</span></strong> <span class="speak-sentence">Ja, Anna besucht einen Sprachkurs.</span></li>
+                                    <li><strong><span class="speak-sentence">Was ist Anna von Beruf?</span></strong> <span class="speak-sentence">Anna ist Friseurin von Beruf.</span></li>
+                                    <li><strong><span class="speak-sentence">Wie oft kocht Anna?</span></strong> <span class="speak-sentence">Manchmal kocht Anna.</span> / <span class="speak-sentence">Anna kocht manchmal.</span></li>
+                                    <li><strong><span class="speak-sentence">Was kocht Anna am liebsten?</span></strong> <span class="speak-sentence">Anna kocht gerne Pasta.</span> / <span class="speak-sentence">Am liebsten kocht Anna Pasta.</span></li>
+                                    <li><strong><span class="speak-sentence">Was liest Tom gerne?</span></strong> <span class="speak-sentence">Tom liest gerne Bücher.</span></li>
+                                    <li><strong><span class="speak-sentence">Sieht Anna Filme?</span></strong> <span class="speak-sentence">Ja, Anna sieht gerne Filme.</span></li>
+                                    <li><strong><span class="speak-sentence">Was macht Tom in der Freizeit?</span></strong> <span class="speak-sentence">In der Freizeit spielt Tom Tennis und treibt Sport.</span> / <span class="speak-sentence">Tom spielt Tennis und treibt Sport in der Freizeit.</span></li>
+                                    <li><strong><span class="speak-sentence">Schwimmt Anna gerne?</span></strong> <span class="speak-sentence">Ja, Anna schwimmt gerne.</span></li>
+                                </ol>
+                                
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 2 — Заполните пропуски</h3>
+                                <ol>
+                                    <li><span class="speak-sentence">Ich <strong>sehe</strong> oft Filme.</span></li>
+                                    <li><span class="speak-sentence">Du <strong>läufst</strong> jeden Morgen im Park.</span></li>
+                                    <li><span class="speak-sentence">Er <strong>schläft</strong> nur fünf Stunden.</span></li>
+                                    <li><span class="speak-sentence">Er <strong>stößt</strong> den Stuhl.</span></li>
+                                    <li><span class="speak-sentence">Ihr <strong>seht</strong> den neuen Film.</span></li>
+                                    <li><span class="speak-sentence">Du <strong>läufst</strong> schnell.</span></li>
+                                    <li><span class="speak-sentence">Ihr <strong>schlaft</strong> gut.</span></li>
+                                    <li><span class="speak-sentence">Ich <strong>spreche</strong> Deutsch und Englisch.</span></li>
+                                    <li><span class="speak-sentence">Du <strong>liest</strong> jeden Tag ein Buch.</span></li>
+                                    <li><span class="speak-sentence">Wir <strong>laufen</strong> im Park.</span></li>
+                                    <li><span class="speak-sentence">Er <strong>spricht</strong> Französisch.</span></li>
+                                    <li><span class="speak-sentence">Sie (она) <strong>liest</strong> gern Romane.</span></li>
+                                    <li><span class="speak-sentence">Du <strong>läufst</strong> sehr schnell.</span></li>
+                                    <li><span class="speak-sentence">Wir <strong>lesen</strong> viele Bücher.</span></li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 3 — Переводы (вопросы)</h3>
+                                <ol>
+                                    <li><span class="speak-sentence">Siehst du oft Filme?</span></li>
+                                    <li><span class="speak-sentence">Bist du Ingenieur von Beruf?</span></li>
+                                    <li><span class="speak-sentence">Schläft er nur fünf Stunden?</span></li>
+                                    <li><span class="speak-sentence">Treiben Sie Sport?</span></li>
+                                    <li><span class="speak-sentence">Bist du jetzt in Berlin?</span></li>
+                                    <li><span class="speak-sentence">Wann läufst du?</span></li>
+                                    <li><span class="speak-sentence">Warum schläft sie?</span></li>
+                                    <li><span class="speak-sentence">Wer ist Arzt von Beruf?</span></li>
+                                    <li><span class="speak-sentence">Wo ist sie jetzt?</span></li>
+                                    <li><span class="speak-sentence">Was studiert er?</span></li>
+                                    <li><span class="speak-sentence">Liest du Bücher?</span></li>
+                                    <li><span class="speak-sentence">Wer wohnt in Berlin?</span></li>
+                                    <li><span class="speak-sentence">Was lesen Sie gerade?</span></li>
+                                    <li><span class="speak-sentence">Wer treibt Sport?</span></li>
+                                    <li><span class="speak-sentence">Spielt sie Tennis?</span></li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 4 — Вопросы с вопросительными словами</h3>
+                                <ol>
+                                    <li><span class="speak-sentence">Wann läufst du?</span></li>
+                                    <li><span class="speak-sentence">Warum schläft sie kaum?</span></li>
+                                    <li><span class="speak-sentence">Wie oft seht ihr Filme?</span></li>
+                                    <li><span class="speak-sentence">Wer ist Arzt von Beruf?</span></li>
+                                    <li><span class="speak-sentence">Wo ist sie jetzt?</span></li>
+                                    <li><span class="speak-sentence">Was studiert er?</span></li>
+                                    <li><span class="speak-sentence">Welche Bücher liest du?</span></li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 5 — Правильные формы глаголов</h3>
+                                <ol>
+                                    <li><span class="speak-sentence">Er <strong>ist</strong> Sascha.</span></li>
+                                    <li><span class="speak-sentence">Sie <strong>liest</strong> Bücher.</span></li>
+                                    <li><span class="speak-sentence"><strong>Liest</strong> du Bücher gern?</span></li>
+                                    <li><span class="speak-sentence">Ja, ich <strong>lese</strong> Bücher gern.</span></li>
+                                    <li><span class="speak-sentence"><strong>Sieht</strong> Florian Filme gern?</span></li>
+                                    <li><span class="speak-sentence">Nein, er <strong>sieht</strong> Filme nicht gern.</span></li>
+                                    <li><span class="speak-sentence"><strong>Läufst</strong> du Ski?</span></li>
+                                    <li><span class="speak-sentence">Ja, ich <strong>laufe</strong> Ski oft und gern.</span></li>
+                                    <li><span class="speak-sentence"><strong>Sprichst</strong> du Englisch?</span></li>
+                                    <li><span class="speak-sentence">Nein, ich <strong>spreche</strong> Deutsch.</span></li>
+                                    <li><span class="speak-sentence">Er <strong>spricht</strong> auch Deutsch.</span></li>
+                                    <li><span class="speak-sentence"><strong>Bist</strong> du Anna?</span></li>
+                                    <li><span class="speak-sentence">Nein, ich <strong>bin</strong> Christian.</span></li>
+                                </ol>
+
+                                <h3 style="margin-top: 20px;">ЗАДАНИЕ № 6 — Преобразование в вопросительные</h3>
+                                <ol>
+                                    <li><span class="speak-sentence">Du läufst.</span> → <strong><span class="speak-sentence">Läufst du?</span></strong></li>
+                                    <li><span class="speak-sentence">Er sieht.</span> → <strong><span class="speak-sentence">Sieht er?</span></strong></li>
+                                    <li><span class="speak-sentence">Sie sieht Filme.</span> → <strong><span class="speak-sentence">Was sieht sie?</span></strong></li>
+                                    <li><span class="speak-sentence">Ich mache.</span> → <strong><span class="speak-sentence">Mache ich?</span></strong></li>
+                                    <li><span class="speak-sentence">Wir sprechen.</span> → <strong><span class="speak-sentence">Sprechen wir?</span></strong></li>
+                                    <li><span class="speak-sentence">Ihr sprecht Deutsch.</span> → <strong><span class="speak-sentence">Sprecht ihr Deutsch?</span></strong></li>
+                                    <li><span class="speak-sentence">Er spricht Englisch.</span> → <strong><span class="speak-sentence">Spricht er Englisch?</span></strong></li>
+                                    <li><span class="speak-sentence">Sie liest Bücher.</span> → <strong><span class="speak-sentence">Was liest sie?</span></strong></li>
+                                    <li><span class="speak-sentence">Er kommt aus Deutschland.</span> → <strong><span class="speak-sentence">Kommt er aus Deutschland?</span></strong></li>
+                                </ol>
+                            </div>
+                        `
+                    }
+                ]
+            }
+        ];
+
+        function loadLesson(id) {
+            const lesson = lessons.find(l => l.id === id);
+            if (!lesson) return;
+
+            document.querySelectorAll('.lesson-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.lesson-btn').classList.add('active');
+
+            document.getElementById('lessonTitle').textContent = lesson.title;
+            document.getElementById('lessonSubtitle').textContent = lesson.subtitle;
+
+            let html = `
+                <div class="section">
+                    <h2>✓ Цели лекции</h2>
+                    <div class="goals">
+                        <ul>
+            `;
+
+            lesson.goals.forEach(goal => {
+                html += `<li>${goal}</li>`;
+            });
+
+            html += `
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            lesson.sections.forEach((section, idx) => {
+                html += `
+                    <div class="section">
+                        <h2>
+                            <span>${section.title}</span>
+                            <button class="toggle-btn show" onclick="toggleSection(this)"></button>
+                        </h2>
+                        <div class="content visible">
+                            ${section.content}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('content').innerHTML = html;
+
+            // Initialize exercises
+            if (id === 1) {
+                initExercises1();
+            } else if (id === 2) {
+                initExercises2();
+            }
+
+            document.getElementById('content').scrollTop = 0;
+
+            initAudio();
+        }
+
+        function toggleSection(btn) {
+            const content = btn.parentElement.parentElement.querySelector('.content');
+            content.classList.toggle('visible');
+            btn.classList.toggle('show');
+            btn.classList.toggle('hide');
+        }
+
+        function initExercises1() {
+            // Задание 1 — спряжение 10 глаголов (кто выполняет действие)
+            const ex1Verbs = [
+                { verb: 'kommen', ru: 'приходить' },
+                { verb: 'wohnen', ru: 'жить' },
+                { verb: 'kochen', ru: 'готовить' },
+                { verb: 'lächeln', ru: 'улыбаться' },
+                { verb: 'schwimmen', ru: 'плавать' },
+                { verb: 'studieren', ru: 'изучать' },
+                { verb: 'hören', ru: 'слушать' },
+                { verb: 'arbeiten', ru: 'работать' },
+                { verb: 'gehen', ru: 'ходить' },
+                { verb: 'zeichnen', ru: 'чертить' }
+            ];
+            const ex1Answers = {
+                kommen: ['komme','kommst','kommt','kommen','kommt','kommen'],
+                wohnen: ['wohne','wohnst','wohnt','wohnen','wohnt','wohnen'],
+                kochen: ['koche','kochst','kocht','kochen','kocht','kochen'],
+                lächeln: ['lächle','lächelst','lächelt','lächeln','lächelt','lächeln'],
+                schwimmen: ['schwimme','schwimmst','schwimmt','schwimmen','schwimmt','schwimmen'],
+                studieren: ['studiere','studierst','studiert','studieren','studiert','studieren'],
+                hören: ['höre','hörst','hört','hören','hört','hören'],
+                arbeiten: ['arbeite','arbeitest','arbeitet','arbeiten','arbeitet','arbeiten'],
+                gehen: ['gehe','gehst','geht','gehen','geht','gehen'],
+                zeichnen: ['zeichne','zeichnest','zeichnet','zeichnen','zeichnet','zeichnen']
+            };
+            const pronouns = ['ich','du','er/sie/es','wir','ihr','sie/Sie'];
+
+            let html = '';
+            ex1Verbs.forEach((v, vi) => {
+                html += `<div class="exercise-item"><div class="exercise-label">${v.verb} (${v.ru})</div>`;
+                pronouns.forEach((p, pi) => {
+                    const ans = ex1Answers[v.verb][pi];
+                    html += `
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                            <span style="min-width:90px;">${p}</span>
+                            <input type="text" data-answer="${ans}" placeholder="форма глагола" style="margin-bottom:0;">
+                            <button class="check-btn" style="margin-right:0; white-space:nowrap;" onclick="checkAnswer(this, '${ans}')">Проверить</button>
+                            <span class="result" style="margin-top:0; padding:4px 8px;"></span>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            });
+            document.getElementById('ex1').innerHTML = html;
+
+            // Задание 2 — перевод фраз на немецкий
+            const ex2Items = [
+                { ru: 'Меня зовут Галина.', a: 'Ich heiße Galina.' },
+                { ru: 'Я родом из России, но сейчас я живу в Германии.', a: 'Ich komme aus Russland, aber jetzt wohne ich in Deutschland.' },
+                { ru: 'Я работаю и изучаю (в ВУЗе) иностранные языки: английский и французский.', a: 'Ich arbeite und studiere Fremdsprachen: Englisch und Französisch.' },
+                { ru: 'Я учу немецкий язык и еще говорю на итальянском языке.', a: 'Ich lerne Deutsch und spreche auch Italienisch.' },
+                { ru: 'Я с удовольствием читаю книги, смотрю фильмы, плаваю.', a: 'Ich lese gern Bücher, schaue Filme und schwimme.' },
+                { ru: 'Иногда я занимаюсь спортом.', a: 'Manchmal mache ich Sport.' },
+                { ru: 'Я часто хожу в кино, пою и слушаю музыку.', a: 'Ich gehe oft ins Kino, singe und höre Musik.' }
+            ];
+            html = '';
+            ex2Items.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.ru}</div>
+                        <textarea placeholder="Ваш ответ на немецком"></textarea>
+                        <button class="check-btn" data-answer="${item.a}" onclick="checkTextAnswer(this)">Проверить</button>
+                        <button class="check-btn" data-answer="${item.a}" onclick="revealAnswer(this)">Показать ответ</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex2').innerHTML = html;
+
+            // Задание 3 — заполнить пропуски формами глаголов
+            const ex3Data = [
+                { text: 'Ich ___ (heißen) Peter.', answer: 'heiße' },
+                { text: 'Du ___ (kommen) aus Russland.', answer: 'kommst' },
+                { text: 'Er ___ (wohnen) in Berlin.', answer: 'wohnt' },
+                { text: 'Sie ___ (arbeiten) als Lehrerin.', answer: 'arbeitet' },
+                { text: 'Wir ___ (studieren) Literatur und Fremdsprachen.', answer: 'studieren' },
+                { text: 'Ihr ___ (lernen) Deutsch.', answer: 'lernt' },
+                { text: 'Sie ___ (sprechen) Französisch.', answer: 'sprechen' },
+                { text: 'Ich ___ (hören) Musik.', answer: 'höre' },
+                { text: 'Du ___ (sammeln) Tassen.', answer: 'sammelst' },
+                { text: 'Er ___ (singen) gern.', answer: 'singt' },
+                { text: 'Wir ___ (schwimmen) oft.', answer: 'schwimmen' },
+                { text: 'Ihr ___ (schauen) Filme.', answer: 'schaut' },
+                { text: 'Ich ___ (lesen) Bücher.', answer: 'lese' },
+                { text: 'Du ___ (gehen) ins Kino.', answer: 'gehst' },
+                { text: 'Er ___ (machen) Sport.', answer: 'macht' }
+            ];
+            html = '';
+            ex3Data.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.text}</div>
+                        <input type="text" data-answer="${item.answer}" placeholder="Ответ">
+                        <button class="check-btn" onclick="checkAnswer(this, '${item.answer}')">Проверить</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex3').innerHTML = html;
+
+            // Задание 4 — прямой порядок слов
+            const ex4Items = [
+                { given: 'heiße / Peter / ich.', a: 'Ich heiße Peter.' },
+                { given: 'Er / aus / kommt / Russland.', a: 'Er kommt aus Russland.' },
+                { given: 'In / wohnt / sie / Berlin.', a: 'Sie wohnt in Berlin.' },
+                { given: 'Literatur / studieren / wir / und Fremdsprachen.', a: 'Wir studieren Literatur und Fremdsprachen.' },
+                { given: 'Deutsch / ihr / lernt.', a: 'Ihr lernt Deutsch.' },
+                { given: 'Französisch / ich / spreche.', a: 'Ich spreche Französisch.' },
+                { given: 'Musik / hört / er.', a: 'Er hört Musik.' },
+                { given: 'Tassen / sammeln / wir.', a: 'Wir sammeln Tassen.' },
+                { given: 'Gern / singt / ihr.', a: 'Ihr singt gern.' },
+                { given: 'Schwimmen / sie / oft.', a: 'Sie schwimmen oft.' },
+                { given: 'Filme / schaue / ich.', a: 'Ich schaue Filme.' },
+                { given: 'Bücher / lesen / wir.', a: 'Wir lesen Bücher.' },
+                { given: 'Ins / gehen / wir / Kino.', a: 'Wir gehen ins Kino.' },
+                { given: 'Sport / machen / sie.', a: 'Sie machen Sport.' }
+            ];
+            html = '';
+            ex4Items.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.given}</div>
+                        <textarea placeholder="Составьте предложение (прямой порядок)"></textarea>
+                        <button class="check-btn" data-answer="${item.a}" onclick="checkTextAnswer(this)">Проверить</button>
+                        <button class="check-btn" data-answer="${item.a}" onclick="revealAnswer(this)">Показать ответ</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex4').innerHTML = html;
+
+            // Задание 5 — обратный порядок слов
+            const ex5Items = [
+                { ru: 'Сейчас я учу немецкий язык.', a: 'Jetzt lerne ich Deutsch.' },
+                { ru: 'Иногда он слушает музыку.', a: 'Manchmal hört er Musik.' },
+                { ru: 'В Берлине мы живем.', a: 'In Berlin wohnen wir.' },
+                { ru: 'Часто она ходит в кино.', a: 'Oft geht sie ins Kino.' },
+                { ru: 'Ты часто много и с удовольствием занимаешься спортом.', a: 'Oft, viel und gern machst du Sport.' },
+                { ru: 'Иногда мы смотрим фильмы.', a: 'Manchmal schauen wir Filme.' },
+                { ru: 'Сейчас он изучает (в ВУЗе) литературу и иностранные языки.', a: 'Jetzt studiert er Literatur und Fremdsprachen.' },
+                { ru: 'Иногда я говорю на французском языке.', a: 'Manchmal spreche ich Französisch.' },
+                { ru: 'Часто я коллекционирую чашки.', a: 'Oft sammle ich Tassen.' }
+            ];
+            html = '';
+            ex5Items.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.ru}</div>
+                        <textarea placeholder="Составьте предложение (обратный порядок)"></textarea>
+                        <button class="check-btn" data-answer="${item.a}" onclick="checkTextAnswer(this)">Проверить</button>
+                        <button class="check-btn" data-answer="${item.a}" onclick="revealAnswer(this)">Показать ответ</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex5').innerHTML = html;
+        }
+
+        function initExercises2() {
+            // Задание 1 — ответы на вопросы по диалогу (с мгновенным показом правильного ответа)
+            const ex1Items = [
+                { q: 'Woher kommt Tom?', a: 'Tom kommt aus Deutschland.' },
+                { q: 'Wo wohnt Anna?', a: 'Anna wohnt in Berlin.' },
+                { q: 'Was macht Anna in Berlin?', a: 'Anna arbeitet in Berlin und lernt Deutsch.' },
+                { q: 'Was macht Tom in Berlin?', a: 'Tom studiert an der Universität in Berlin.' },
+                { q: 'Wie lange ist Anna schon in Berlin?', a: 'Anna ist seit drei Monaten in Berlin.' },
+                { q: 'Besucht Anna einen Sprachkurs?', a: 'Ja, Anna besucht einen Sprachkurs.' },
+                { q: 'Was ist Anna von Beruf?', a: 'Anna ist Friseurin von Beruf.' },
+                { q: 'Wie oft kocht Anna?', a: 'Manchmal kocht Anna. / Anna kocht manchmal.' },
+                { q: 'Was kocht Anna am liebsten?', a: 'Anna kocht gerne Pasta. / Am liebsten kocht Anna Pasta.' },
+                { q: 'Was liest Tom gerne?', a: 'Tom liest gerne Bücher.' },
+                { q: 'Sieht Anna Filme?', a: 'Ja, Anna sieht gerne Filme.' },
+                { q: 'Was macht Tom in der Freizeit?', a: 'In der Freizeit spielt Tom Tennis und treibt Sport.' },
+                { q: 'Schwimmt Anna gerne?', a: 'Ja, Anna schwimmt gerne.' }
+            ];
+
+            let html = '';
+            ex1Items.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.q}</div>
+                        <textarea placeholder="Ваш ответ"></textarea>
+                        <button class="check-btn" data-answer="${item.a}" onclick="checkTextAnswer(this)">Проверить</button>
+                        <button class="check-btn" data-answer="${item.a}" onclick="revealAnswer(this)">Показать ответ</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex_l2_1').innerHTML = html;
+
+            // Задание 2 — заполните пропуски формами глаголов
+            const ex2Data = [
+                { text: 'Ich ___ (sehen) oft Filme.', answer: 'sehe' },
+                { text: 'Du ___ (laufen) jeden Morgen im Park.', answer: 'läufst' },
+                { text: 'Er ___ (schlafen) nur fünf Stunden.', answer: 'schläft' },
+                { text: 'Er ___ (stoßen) den Stuhl.', answer: 'stößt' },
+                { text: 'Ihr ___ (sehen) den neuen Film.', answer: 'seht' },
+                { text: 'Du ___ (laufen) schnell.', answer: 'läufst' },
+                { text: 'Ihr ___ (schlafen) gut.', answer: 'schlaft' },
+                { text: 'Ich ___ (sprechen) Deutsch und Englisch.', answer: 'spreche' },
+                { text: 'Du ___ (lesen) jeden Tag ein Buch.', answer: 'liest' },
+                { text: 'Wir ___ (laufen) im Park.', answer: 'laufen' },
+                { text: 'Er ___ (sprechen) Französisch.', answer: 'spricht' },
+                { text: 'Sie (она) ___ (lesen) gern Romane.', answer: 'liest' },
+                { text: 'Du ___ (laufen) sehr schnell.', answer: 'läufst' },
+                { text: 'Wir ___ (lesen) viele Bücher.', answer: 'lesen' }
+            ];
+
+            html = '';
+            ex2Data.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.text}</div>
+                        <input type="text" data-answer="${item.answer}" placeholder="Ответ">
+                        <button class="check-btn" onclick="checkAnswer(this, '${item.answer}')">Проверить</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex_l2_2').innerHTML = html;
+
+            // Задание 3 — переведите на немецкий язык (вопросы)
+            const ex3Items = [
+                { ru: 'Ты часто смотришь фильмы?', a: 'Siehst du oft Filme?' },
+                { ru: 'Ты по профессии инженер?', a: 'Bist du Ingenieur von Beruf?' },
+                { ru: 'Он спит только пять часов?', a: 'Schläft er nur fünf Stunden?' },
+                { ru: 'Вы занимаетесь спортом?', a: 'Treiben Sie Sport?' },
+                { ru: 'Ты сейчас в Берлине?', a: 'Bist du jetzt in Berlin?' },
+                { ru: 'Когда ты бегаешь?', a: 'Wann läufst du?' },
+                { ru: 'Почему она спит?', a: 'Warum schläft sie?' },
+                { ru: 'Кто по профессии врач?', a: 'Wer ist Arzt von Beruf?' },
+                { ru: 'Где она сейчас?', a: 'Wo ist sie jetzt?' },
+                { ru: 'Что он изучает?', a: 'Was studiert er?' },
+                { ru: 'Ты читаешь книги?', a: 'Liest du Bücher?' },
+                { ru: 'Кто живет в Берлине?', a: 'Wer wohnt in Berlin?' },
+                { ru: 'Что Вы сейчас читаете?', a: 'Was lesen Sie gerade?' },
+                { ru: 'Кто занимается спортом?', a: 'Wer treibt Sport?' },
+                { ru: 'Она играет в теннис?', a: 'Spielt sie Tennis?' }
+            ];
+
+            html = '';
+            ex3Items.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.ru}</div>
+                        <textarea placeholder="Перевод на немецкий"></textarea>
+                        <button class="check-btn" data-answer="${item.a}" onclick="checkTextAnswer(this)">Проверить</button>
+                        <button class="check-btn" data-answer="${item.a}" onclick="revealAnswer(this)">Показать ответ</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex_l2_3').innerHTML = html;
+
+            // Задание 4 — постройте вопросы с вопросительными словами
+            const ex4Items = [
+                { given: 'wann / du / laufen?', a: 'Wann läufst du?' },
+                { given: 'warum / sie / kaum / schlafen?', a: 'Warum schläft sie kaum?' },
+                { given: 'wie oft / ihr / Filme / sehen?', a: 'Wie oft seht ihr Filme?' },
+                { given: 'wer / von Beruf / sein / Arzt?', a: 'Wer ist Arzt von Beruf?' },
+                { given: 'wo / sie / sein / jetzt?', a: 'Wo ist sie jetzt?' },
+                { given: 'was / er / studieren?', a: 'Was studiert er?' },
+                { given: 'welche / Bücher / du / lesen?', a: 'Welche Bücher liest du?' }
+            ];
+
+            html = '';
+            ex4Items.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.given}</div>
+                        <textarea placeholder="Составьте вопрос, поставив глагол в нужную форму"></textarea>
+                        <button class="check-btn" data-answer="${item.a}" onclick="checkTextAnswer(this)">Проверить</button>
+                        <button class="check-btn" data-answer="${item.a}" onclick="revealAnswer(this)">Показать ответ</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex_l2_4').innerHTML = html;
+
+            // Задание 5 — употребите глаголы в правильной форме
+            const ex5Data = [
+                { text: 'Er ___ Sascha. (sein)', answer: 'ist' },
+                { text: 'Sie ___ Bücher. (lesen)', answer: 'liest' },
+                { text: '___ du Bücher gern? (lesen)', answer: 'Liest' },
+                { text: 'Ja, ich ___ Bücher gern. (lesen)', answer: 'lese' },
+                { text: '___ Florian Filme gern? (sehen)', answer: 'Sieht' },
+                { text: 'Nein, er ___ Filme nicht gern. (sehen)', answer: 'sieht' },
+                { text: '___ du Ski? (laufen)', answer: 'Läufst' },
+                { text: 'Ja, ich ___ Ski oft und gern. (laufen)', answer: 'laufe' },
+                { text: '___ du Englisch? (sprechen)', answer: 'Sprichst' },
+                { text: 'Nein, ich ___ Deutsch. (sprechen)', answer: 'spreche' },
+                { text: 'Er ___ auch Deutsch. (sprechen)', answer: 'spricht' },
+                { text: '___ du Anna? (sein)', answer: 'Bist' },
+                { text: 'Nein, ich ___ Christian. (sein)', answer: 'bin' }
+            ];
+
+            html = '';
+            ex5Data.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.text}</div>
+                        <input type="text" data-answer="${item.answer}" placeholder="Ответ">
+                        <button class="check-btn" onclick="checkAnswer(this, '${item.answer}')">Проверить</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex_l2_5').innerHTML = html;
+
+            // Задание 6 — преобразуйте утвердительные предложения в вопросительные
+            const ex6Items = [
+                { given: 'Du läufst. (Ja/Nein-Frage)', a: 'Läufst du?' },
+                { given: 'Er sieht. (Ja/Nein-Frage)', a: 'Sieht er?' },
+                { given: 'Sie sieht Filme. (W-Frage)', a: 'Was sieht sie?' },
+                { given: 'Ich mache. (Ja/Nein-Frage)', a: 'Mache ich?' },
+                { given: 'Wir sprechen. (Ja/Nein-Frage)', a: 'Sprechen wir?' },
+                { given: 'Ihr sprecht Deutsch. (Ja/Nein-Frage)', a: 'Sprecht ihr Deutsch?' },
+                { given: 'Er spricht Englisch. (Ja/Nein-Frage)', a: 'Spricht er Englisch?' },
+                { given: 'Sie liest Bücher. (W-Frage)', a: 'Was liest sie?' },
+                { given: 'Er kommt aus Deutschland. (Ja/Nein-Frage)', a: 'Kommt er aus Deutschland?' }
+            ];
+
+            html = '';
+            ex6Items.forEach((item, i) => {
+                html += `
+                    <div class="exercise-item">
+                        <div class="exercise-label">${i+1}. ${item.given}</div>
+                        <textarea placeholder="Преобразуйте в вопрос"></textarea>
+                        <button class="check-btn" data-answer="${item.a}" onclick="checkTextAnswer(this)">Проверить</button>
+                        <button class="check-btn" data-answer="${item.a}" onclick="revealAnswer(this)">Показать ответ</button>
+                        <div class="result"></div>
+                    </div>
+                `;
+            });
+            document.getElementById('ex_l2_6').innerHTML = html;
+        }
+
+        function checkAnswer(btn, correctAnswer) {
+            const input = btn.parentElement.querySelector('input');
+            const userAnswer = input.value.trim().toLowerCase();
+            const result = btn.parentElement.querySelector('.result');
+
+            if (userAnswer === correctAnswer.toLowerCase()) {
+                result.className = 'result show correct';
+                result.textContent = '✓ Верно!';
+            } else {
+                result.className = 'result show incorrect';
+                result.textContent = `✗ Неверно. Ответ: ${correctAnswer}`;
+            }
+        }
+
+        function showAnswer(btn) {
+            const result = btn.parentElement.querySelector('.result');
+            result.className = 'result show';
+            result.style.display = 'block';
+            result.textContent = 'Открой раздел "🔑 Ключи (ответы)" ниже, чтобы свериться';
+        }
+
+        function revealAnswer(btn) {
+            const answer = btn.dataset.answer;
+            const result = btn.parentElement.querySelector('.result');
+            result.className = 'result show correct';
+            result.style.display = 'block';
+            result.textContent = '✓ Правильный ответ: ' + answer;
+        }
+
+        function normalizeText(s) {
+            return s.trim().toLowerCase().replace(/\s+/g, ' ').replace(/[.!?]+$/, '');
+        }
+
+        function checkTextAnswer(btn) {
+            const answerRaw = btn.dataset.answer;
+            const alternatives = answerRaw.split('/').map(a => normalizeText(a));
+            const textarea = btn.parentElement.querySelector('textarea');
+            const userVal = normalizeText(textarea.value);
+            const result = btn.parentElement.querySelector('.result');
+            result.style.display = 'block';
+            if (userVal.length > 0 && alternatives.includes(userVal)) {
+                result.className = 'result show correct';
+                result.textContent = '✓ Верно!';
+            } else {
+                result.className = 'result show incorrect';
+                result.textContent = '✗ Неверно. Попробуйте ещё раз.';
+            }
+        }
+
+        let germanVoice = null;
+
+        function initVoice() {
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) return;
+            const priorityKeywords = ['Google', 'Premium', 'Enhanced', 'Neural', 'Natural', 'Online'];
+            germanVoice = voices.find(v => v.lang.startsWith('de') && priorityKeywords.some(k => v.name.includes(k)));
+            if (!germanVoice) {
+                germanVoice = voices.find(v => v.lang.startsWith('de'));
+            }
+        }
+
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = initVoice;
+        }
+        initVoice();
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                if (!germanVoice) initVoice();
+                const msg = new SpeechSynthesisUtterance(text.trim());
+                msg.lang = 'de-DE';
+                msg.rate = 0.85;
+                if (germanVoice) msg.voice = germanVoice;
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
+        function initAudio() {
+            document.querySelectorAll('.speak-sentence, .speak-vocab').forEach(el => {
+                if (el.querySelector('.play-btn')) return;
+                const btn = document.createElement('button');
+                btn.className = 'play-btn';
+                btn.innerHTML = '🔊';
+                btn.style.marginLeft = '5px';
+                if(el.classList.contains('speak-vocab')) {
+                    btn.style.position = 'relative';
+                    btn.style.display = 'inline-flex';
+                    btn.style.transform = 'none';
+                    btn.style.width = '20px';
+                    btn.style.height = '20px';
+                    btn.style.fontSize = '12px';
+                    btn.style.background = 'none';
+                    el.insertAdjacentElement('afterend', btn);
+                } else {
+                    el.appendChild(btn);
+                }
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    speakText(el.textContent.replace('🔊', '').trim());
+                };
+            });
+        }
+
+        function speakFullText(btn) {
+            const container = btn.closest('.section').querySelector('.content');
+            const sentences = Array.from(container.querySelectorAll('.speak-sentence')).map(el => el.textContent.replace('🔊','').trim());
+            const fullText = sentences.join('. ');
+            if (!fullText) return;
+            speakText(fullText);
+        }
+
+        // Initialize
+        loadLesson(1);
+    </script>
+</body>
+</html>

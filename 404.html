@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перенаправление…</title>
+    <script>
+      // На этом сайте есть учебник Berliner Platz (React-приложение), у которого
+      // внутренние ссылки вида "Kapitel 2" / "Arbeitsbuch" сделаны как абсолютные
+      // пути (/kapitel-2, /arbeitsbuch) вместо путей относительно самого приложения.
+      // GitHub Pages — статический хостинг, у него нет файла по такому абсолютному
+      // пути, поэтому он показывает эту 404-страницу. Здесь мы её перехватываем:
+      // если путь похож на один из известных маршрутов учебника, отправляем
+      // пользователя обратно в папку приложения с этим же путём в hash,
+      // чтобы React-роутер внутри подхватил нужный раздел.
+      var knownRoutes = ['/arbeitsbuch', '/kapitel-1', '/kapitel-2', '/kapitel-3', '/kapitel-4', '/kapitel-5', '/kapitel-6'];
+      var path = window.location.pathname;
+      var appBase = '/deutsch-lernen/plaz/kursbuch-arbeitsbuch-offline/';
+
+      var matched = knownRoutes.find(function (r) { return path === r || path === r + '/'; });
+
+      if (matched) {
+        window.location.replace(appBase + 'index.html#' + matched);
+      }
+      // Примечание: роутер приложения ожидает хэш строго вида "#/kapitel-2"
+      // (со слэшем после решётки) — knownRoutes уже начинаются с "/", так что
+      // итоговая строка получается "#/kapitel-2", как нужно.
+      // Если путь не похож на известный маршрут учебника — остаётся обычная 404-страница ниже.
+    </script>
+  </head>
+  <body>
+    <p>Страница не найдена. <a href="/deutsch-lernen/">Вернуться на главную сайта</a>.</p>
+  </body>
+</html>
